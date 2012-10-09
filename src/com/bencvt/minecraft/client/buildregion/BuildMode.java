@@ -13,7 +13,8 @@ import libshapedraw.primitive.ReadonlyColor;
  */
 public enum BuildMode {
     INSIDE  (Color.DODGER_BLUE),
-    OUTSIDE (Color.CRIMSON);
+    OUTSIDE (Color.CRIMSON),
+    DISPLAY (Color.LEMON_CHIFFON);
 
     public final ReadonlyColor gridColor;
 
@@ -22,7 +23,13 @@ public enum BuildMode {
     }
 
     public BuildMode nextMode() {
-        return this == OUTSIDE ? INSIDE : OUTSIDE;
+        if (this == INSIDE) {
+            return OUTSIDE;
+        } else if (this == OUTSIDE) {
+            return DISPLAY;
+        } else {
+            return INSIDE;
+        }
     }
 
     public static BuildMode defaultMode() {

@@ -148,8 +148,10 @@ public class Controller {
             return true;
         } else if (buildMode == BuildMode.INSIDE) {
             return planeRegion.isInsideRegion(x, y, z);
-        } else {
+        } else if (buildMode == BuildMode.OUTSIDE) {
             return !planeRegion.isInsideRegion(x, y, z);
+        } else {
+            return true;
         }
     }
 
