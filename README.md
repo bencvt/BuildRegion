@@ -1,4 +1,4 @@
-## Basic usage
+## Purpose
 
 In Minecraft, having to go back and fix blocks that you accidentally placed or
 destroyed is time-consuming and annoying. BuildRegion is a user interface
@@ -9,7 +9,7 @@ misclicking; it will not click for you.
 
 BuildRegion is [open source](https://github.com/bencvt/BuildRegion)!
 
-## Full description
+## Usage
 
 To get started, use your mouse to `control-right-click`. This will make a grid
 appear in front of you. As long as the grid is active, you can only build inside
@@ -36,9 +36,9 @@ PlayerControllerMP class (`atc.class`, as of Minecraft 1.3.2).
 
 Installing this mod works exactly the same as any other Minecraft client mod.
 
-1.  Make sure the following two required mods are installed:  
-    [ModLoader](http://www.minecraftforum.net/topic/75440-modloader/)
-    [LibShapeDraw](http://www.minecraftforum.net/topic/1458931-libshapedraw/)
+1.  Make sure the following two required mods are installed:
+    + [ModLoader](http://www.minecraftforum.net/topic/75440-modloader/)
+    + [LibShapeDraw](http://www.minecraftforum.net/topic/1458931-libshapedraw/)
 2.  Download and extract the zip for the latest release.
 3.  Patch the contents of the zip file into your `minecraft.jar`, being sure to
     remove the `META-INF` folder.
