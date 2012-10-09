@@ -129,7 +129,8 @@ public class InputManager {
         if (shouldConsumeClick(isLeftClick)) {
             return false;
         }
-        if (!isLeftClick && !PlayerControllerHooks.isBuildReplaceBlock(blockX, blockY, blockZ)) {
+        if (!isLeftClick &&
+                !PlayerControllerHooks.isBuildReplaceBlock(blockX, blockY, blockZ, direction)) {
             Direction3D dir = Direction3D.fromValue(direction);
             blockX = dir.getNeighborX(blockX);
             blockY = dir.getNeighborY(blockY);

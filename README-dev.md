@@ -22,6 +22,7 @@ This is of course somewhat clunky... we're all waiting on the Minecraft API!
 ## Planned features
 
  *  More region types: cylinders, spheroids, cuboids, schematics.
+ *  Possibly allow half-height horizontal regions for slab placement.
  *  Pressing `shift-B` will open up a movable, semi-transparent, non-modal GUI
     window. This will be used for changing general settings and for adjusting
     region parameters (e.g., the sphere radius).

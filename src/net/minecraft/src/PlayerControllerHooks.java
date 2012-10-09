@@ -1,5 +1,6 @@
 package net.minecraft.src;
 
+import java.lang.reflect.Field;
 import java.util.LinkedHashSet;
 
 import net.minecraft.client.Minecraft;
@@ -10,7 +11,7 @@ import net.minecraft.client.Minecraft;
  * @author bencvt
  */
 public class PlayerControllerHooks {
-    public static final int VERSION = 1;
+    public static final int VERSION = 2;
 
     public interface PlayerControllerEventListener {
         /**
@@ -74,16 +75,65 @@ public class PlayerControllerHooks {
      *         that, when attempting to place a block adjacent to it, replaces
      *         the original block instead.
      */
-    public static boolean isBuildReplaceBlock(int blockX, int blockY, int blockZ) {
-        final WorldClient world = Minecraft.getMinecraft().theWorld;
-        if (world == null) {
+    public static boolean isBuildReplaceBlock(int blockX, int blockY, int blockZ, int direction) {
+        final Minecraft mc = Minecraft.getMinecraft();
+        if (mc.theWorld == null || mc.thePlayer == null) {
             return false;
         }
-        int blockId = world.getBlockId(blockX, blockY, blockZ);
-        return blockId == Block.snow.blockID ||
+
+        // Certain blocks that you can walk through are always treated as air
+        // by Minecraft when placing another block on top of it.
+        int blockId = mc.theWorld.getBlockId(blockX, blockY, blockZ);
+        if (blockId == Block.snow.blockID ||
                 blockId == Block.vine.blockID ||
                 blockId == Block.tallGrass.blockID ||
-                blockId == Block.deadBush.blockID;
+                blockId == Block.deadBush.blockID) {
+            return true;
+        }
+
+        // Is the player is attempting place a slab adjacent to another slab?
+        if (!(Block.blocksList[blockId] instanceof BlockHalfSlab)) {
+            return false;
+        }
+        ItemStack heldItemStack = mc.thePlayer.inventory.getCurrentItem();
+        if (heldItemStack == null || !(heldItemStack.getItem() instanceof ItemSlab)) {
+            return false;
+        }
+        ItemSlab heldSlab = (ItemSlab) heldItemStack.getItem();
+
+        // Do the slab types match?
+        if (blockId != getSlabBlockId(heldSlab)) {
+            return false;
+        }
+        int blockMetadata = mc.theWorld.getBlockMetadata(blockX, blockY, blockZ);
+        int slabSubtype = blockMetadata & 7;
+        if (slabSubtype != heldItemStack.getItemDamage()) {
+            return false;
+        }
+
+        // Is the player hitting it in the right spot for it to become a
+        // double slab?
+        boolean isUpsideDown = (blockMetadata & 8) != 0;
+        if (!((direction == 0 && isUpsideDown) || (direction == 1 && !isUpsideDown))) {
+            return false;
+        }
+
+        // We have a winner.
+        return true;
+    }
+
+    private static int getSlabBlockId(ItemSlab slab) {
+        try {
+            for (Field field : ItemSlab.class.getDeclaredFields()) {
+                if (field.getType() == BlockHalfSlab.class) {
+                    field.setAccessible(true);
+                    return ((BlockHalfSlab) field.get(slab)).blockID;
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("internal reflection error", e);
+        }
+        throw new RuntimeException("internal reflection error - missing field");
     }
 
     // ====
