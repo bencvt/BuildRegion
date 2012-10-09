@@ -75,9 +75,17 @@ public class InputManager {
                 controller.cmdMode();
             }
         } else if (key == KEYBIND_SHIFT_BACK) {
-            controller.cmdShift(-1);
+            if (isShiftKeyDown()) {
+                controller.cmdClear(false);
+            } else {
+                controller.cmdShift(-1);
+            }
         } else if (key == KEYBIND_SHIFT_FWD) {
-            controller.cmdShift(1);
+            if (isShiftKeyDown()) {
+                controller.cmdClear(false);
+            } else {
+                controller.cmdShift(1);
+            }
         }
     }
 
@@ -136,7 +144,9 @@ public class InputManager {
         final String mid = "\u00a7r \u2014 ";
         final String rarr = "\u27f6";
 
-        chat.printChatMessage(pre + MOD_KEY_NAME + "left-click" + mid + "clear");
+        chat.printChatMessage(pre + MOD_KEY_NAME + "left-click" +
+                "\u00a7r or \u00a7cshift-" + getUserBinding(PROPNAME_SHIFT_BACK) +
+                mid + "clear");
         chat.printChatMessage(pre + MOD_KEY_NAME + "right-click" + mid + "set");
         chat.printChatMessage(pre + getUserBinding(PROPNAME_MODE) + mid + "toggle mode");
         chat.printChatMessage(pre + "shift-" + getUserBinding(PROPNAME_MODE) + mid + "usage");
