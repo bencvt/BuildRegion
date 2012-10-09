@@ -91,7 +91,7 @@ public class PlayerControllerHooks {
             return true;
         }
 
-        // Is the player is attempting place a slab adjacent to another slab?
+        // Is the player is attempting to place a slab adjacent to another slab?
         if (!(Block.blocksList[blockId] instanceof BlockHalfSlab)) {
             return false;
         }

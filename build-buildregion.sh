@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-JAR=$PWD/BuildRegion-1.0.2.zip
+JAR=$PWD/BuildRegion-1.0.3.zip
 
 rm $JAR || true
 

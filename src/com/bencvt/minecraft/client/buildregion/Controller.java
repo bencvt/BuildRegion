@@ -4,6 +4,7 @@ import libshapedraw.LibShapeDraw;
 import libshapedraw.primitive.ReadonlyVector3;
 import libshapedraw.primitive.Vector3;
 import net.minecraft.client.Minecraft;
+import net.minecraft.src.BaseMod;
 import net.minecraft.src.PlayerControllerHooks;
 
 import com.bencvt.minecraft.client.buildregion.region.Direction3D;
@@ -31,13 +32,11 @@ public class Controller {
     private RegionPlane planeRegion;
     private BuildMode buildMode;
 
-    public Controller(Minecraft minecraft) {
-        Listener listener = new Listener(this);
-        PlayerControllerHooks.register(listener);
+    public Controller(LibShapeDraw libShapeDraw, BaseMod mod, Minecraft minecraft) {
         this.minecraft = minecraft;
-        inputManager = new InputManager(this, minecraft);
+        inputManager = new InputManager(this, mod, minecraft);
         messageManager = new MessageManager(minecraft);
-        shapeManager = new ShapeManager(new LibShapeDraw().addEventListener(listener));
+        shapeManager = new ShapeManager(libShapeDraw);
         buildMode = BuildMode.defaultMode();
     }
 

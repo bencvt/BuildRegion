@@ -51,12 +51,10 @@ public class InputManager {
     private final Minecraft minecraft;
     private long lastMouseEvent;
 
-    public InputManager(Controller controller, Minecraft minecraft) {
+    public InputManager(Controller controller, BaseMod mod, Minecraft minecraft) {
         this.controller = controller;
         this.minecraft = minecraft;
-    }
 
-    public void register(BaseMod mod) {
         ModLoader.registerKey(mod, KEYBIND_MODE, false);
         ModLoader.registerKey(mod, KEYBIND_SHIFT_BACK, false);
         ModLoader.registerKey(mod, KEYBIND_SHIFT_FWD, false);
