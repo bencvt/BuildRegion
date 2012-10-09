@@ -3,8 +3,6 @@ package com.bencvt.minecraft.client.buildregion.ui;
 import libshapedraw.MinecraftAccess;
 import libshapedraw.primitive.Color;
 import libshapedraw.primitive.ReadonlyVector3;
-import libshapedraw.primitive.Vector3;
-import libshapedraw.shape.Shape;
 
 import org.lwjgl.opengl.GL11;
 
@@ -17,75 +15,41 @@ import com.bencvt.minecraft.client.buildregion.region.Axis;
  * The plane is rendered as an infinite 1-block-thick wireframe grid. Only a
  * few cells of the grid are rendered, clustered around the origin, which can
  * change. Cells further away from the origin are increasingly transparent.
- * Grid lines may be visible through terrain and other game objects.
  * 
  * @author bencvt
  */
-public class PlaneShape extends Shape {
-    /** Small offset used when rendering cubes to avoid ugly intersections */
+public class RenderPlane extends RenderBase {
+    /** Small offset used when rendering cubes to avoid ugly intersections. */
     public static final double MARGIN = 1.0 / 32.0;
+    /**
+     * The sides of grid cubes (i.e., the lines parallel to the plane's axis)
+     * are rendered more subtly.
+     */
+    public static final double ALPHA_SIDE = 0.5;
+    /** How many grid cubes to render. */
     public static final int PLANE_RENDER_RADIUS = 10;
-    private static double[][] alphaTable; // lazily instantiated
+    /** Lazily instantiated lookup table. */
+    private static double[][] alphaTable;
 
-    private Axis axis;
-    private double coord;
-    private Color colorFront;
-    private Color colorBack;
-    private Color colorSides;
-    private float lineWidth;
-    private double alphaHidden; // [0.0, 1.0] scale to apply to lines hidden by terrain
-    private double alphaBase; // [0.0, 1.0] scale to apply to all lines
+    private final Axis axis;
 
     // Internal arrays used by renderLines, persisted to the instance so we
     // don't keep pushing temporary objects to the heap every rendering frame.
     private final double[] baseCoords = {0.0, 0.0, 0.0};
     private final double[] curCoords = {0.0, 0.0, 0.0};
 
-    public PlaneShape(Color colorFront, Color colorBack, Color colorSides, float lineWidth, double alphaHidden) {
-        super(Vector3.ZEROS.copy());
-        setRelativeToOrigin(false);
-        axis = null;
-        this.colorFront = colorFront;
-        this.colorBack = colorBack;
-        this.colorSides = colorSides;
-        this.lineWidth = lineWidth;
-        this.alphaHidden = alphaHidden;
-        setAlphaBase(1.0);
-    }
-
-    public PlaneShape(PlaneShape other) {
-        super(Vector3.ZEROS.copy());
-        setRelativeToOrigin(false);
-        copyFrom(other);
-    }
-
-    public void copyFrom(PlaneShape other) {
-        getOrigin().set(other.getOrigin());
-        axis = other.axis;
-        coord = other.coord;
-        colorFront = other.colorFront.copy();
-        colorBack = other.colorBack.copy();
-        colorSides = other.colorSides.copy();
-        lineWidth = other.lineWidth;
-        alphaHidden = other.alphaHidden;
-        setAlphaBase(other.alphaBase);
+    public RenderPlane(Color lineColor, Axis axis, double coord) {
+        super(lineColor);
+        if (axis == null) {
+            throw new NullPointerException();
+        }
+        this.axis = axis;
+        setShiftAxis(axis);
+        setShiftCoord(coord);
     }
 
     @Override
-    protected void renderShape(MinecraftAccess mc) {
-        if (axis == null || alphaBase <= 0.0) {
-            return;
-        }
-        GL11.glLineWidth(lineWidth);
-        GL11.glDepthFunc(GL11.GL_LEQUAL);
-        renderLines(mc, alphaBase);
-        if (alphaHidden > 0.0) {
-            GL11.glDepthFunc(GL11.GL_GREATER);
-            renderLines(mc, alphaBase * alphaHidden);
-        }
-    }
-
-    private void renderLines(MinecraftAccess mc, double alphaLine) {
+    protected void renderLines(MinecraftAccess mc, double alphaLine) {
         curCoords[0] = baseCoords[0] = getOriginReadonly().getX();
         curCoords[1] = baseCoords[1] = getOriginReadonly().getY();
         curCoords[2] = baseCoords[2] = getOriginReadonly().getZ();
@@ -120,9 +84,13 @@ public class PlaneShape extends Shape {
                 final double y1 = curCoords[1] + 1 - MARGIN;
                 final double z0 = curCoords[2] + MARGIN;
                 final double z1 = curCoords[2] + 1 - MARGIN;
-                GL11.glColor4d(colorBack.getRed(), colorBack.getGreen(), colorBack.getBlue(), colorBack.getAlpha() * alphaScale);
-                // Because the front, back, and sides can have different
-                // colors we need to check the axis again.
+                GL11.glColor4d(
+                        getLineColor().getRed(),
+                        getLineColor().getGreen(),
+                        getLineColor().getBlue(),
+                        getLineColor().getAlpha() * alphaScale);
+                // Because sides are rendered with a different transparency we
+                // need to check the axis again.
                 if (axis == Axis.X) {
                     // west
                     mc.startDrawing(GL11.GL_LINE_LOOP);
@@ -132,7 +100,6 @@ public class PlaneShape extends Shape {
                     mc.addVertex(x0, y0, z1);
                     mc.finishDrawing();
                     // east
-                    GL11.glColor4d(colorFront.getRed(), colorFront.getGreen(), colorFront.getBlue(), colorFront.getAlpha() * alphaScale);
                     mc.startDrawing(GL11.GL_LINE_LOOP);
                     mc.addVertex(x1, y0, z0);
                     mc.addVertex(x1, y1, z0);
@@ -140,7 +107,11 @@ public class PlaneShape extends Shape {
                     mc.addVertex(x1, y0, z1);
                     mc.finishDrawing();
                     // sides
-                    GL11.glColor4d(colorSides.getRed(), colorSides.getGreen(), colorSides.getBlue(), colorSides.getAlpha() * alphaScale);
+                    GL11.glColor4d(
+                            getLineColor().getRed(),
+                            getLineColor().getGreen(),
+                            getLineColor().getBlue(),
+                            getLineColor().getAlpha() * alphaScale * ALPHA_HIDDEN);
                     mc.startDrawing(GL11.GL_LINES);
                     mc.addVertex(x0, y0, z0);
                     mc.addVertex(x1, y0, z0);
@@ -160,7 +131,6 @@ public class PlaneShape extends Shape {
                     mc.addVertex(x0, y0, z1);
                     mc.finishDrawing();
                     // top
-                    GL11.glColor4d(colorFront.getRed(), colorFront.getGreen(), colorFront.getBlue(), colorFront.getAlpha() * alphaScale);
                     mc.startDrawing(GL11.GL_LINE_LOOP);
                     mc.addVertex(x0, y1, z0);
                     mc.addVertex(x1, y1, z0);
@@ -168,7 +138,11 @@ public class PlaneShape extends Shape {
                     mc.addVertex(x0, y1, z1);
                     mc.finishDrawing();
                     // sides
-                    GL11.glColor4d(colorSides.getRed(), colorSides.getGreen(), colorSides.getBlue(), colorSides.getAlpha() * alphaScale);
+                    GL11.glColor4d(
+                            getLineColor().getRed(),
+                            getLineColor().getGreen(),
+                            getLineColor().getBlue(),
+                            getLineColor().getAlpha() * alphaScale * ALPHA_HIDDEN);
                     mc.startDrawing(GL11.GL_LINES);
                     mc.addVertex(x0, y0, z0);
                     mc.addVertex(x0, y1, z0);
@@ -188,7 +162,6 @@ public class PlaneShape extends Shape {
                     mc.addVertex(x0, y1, z0);
                     mc.finishDrawing();
                     // south
-                    GL11.glColor4d(colorFront.getRed(), colorFront.getGreen(), colorFront.getBlue(), colorFront.getAlpha() * alphaScale);
                     mc.startDrawing(GL11.GL_LINE_LOOP);
                     mc.addVertex(x0, y0, z1);
                     mc.addVertex(x1, y0, z1);
@@ -196,7 +169,11 @@ public class PlaneShape extends Shape {
                     mc.addVertex(x0, y1, z1);
                     mc.finishDrawing();
                     // sides
-                    GL11.glColor4d(colorSides.getRed(), colorSides.getGreen(), colorSides.getBlue(), colorSides.getAlpha() * alphaScale);
+                    GL11.glColor4d(
+                            getLineColor().getRed(),
+                            getLineColor().getGreen(),
+                            getLineColor().getBlue(),
+                            getLineColor().getAlpha() * alphaScale * ALPHA_HIDDEN);
                     mc.startDrawing(GL11.GL_LINES);
                     mc.addVertex(x0, y0, z0);
                     mc.addVertex(x0, y0, z1);
@@ -226,33 +203,18 @@ public class PlaneShape extends Shape {
         return alphaTable[Math.abs(off0)][Math.abs(off1)];
     }
 
-    public Axis getAxis() {
-        return axis;
-    }
-    public void setAxisAndOrigin(Axis axis, ReadonlyVector3 origin) {
-        this.axis = axis;
-        getOrigin().set(origin);
-    }
-
-    public double getCoord() {
-        return coord;
-    }
-    public void setCoord(double coord) {
-        this.coord = coord;
-        if (axis == Axis.X) {
-            getOrigin().setX(coord);
-        } else if (axis == Axis.Y) {
-            getOrigin().setY(coord);
-        } else if (axis == Axis.Z) {
-            getOrigin().setZ(coord);
-        } else {
-            throw new IllegalStateException();
+    @Override
+    public void setShiftAxis(Axis shiftAxis) {
+        if (shiftAxis != axis) {
+            throw new IllegalArgumentException("a plane can only shift along its axis");
         }
+        super.setShiftAxis(shiftAxis);
     }
 
     /**
      * Keep up with the player, moving the shape along the plane.
      */
+    @Override
     public void updateProjection(ReadonlyVector3 playerCoords) {
         if (axis == Axis.X) {
             getOrigin().setY(playerCoords.getY()).setZ(playerCoords.getZ());
@@ -261,23 +223,5 @@ public class PlaneShape extends Shape {
         } else if (axis == Axis.Z) {
             getOrigin().setX(playerCoords.getX()).setY(playerCoords.getY());
         }
-    }
-
-    public double getAlphaBase() {
-        return alphaBase;
-    }
-    public PlaneShape setAlphaBase(double alphaBase) {
-        this.alphaBase = alphaBase;
-        return this;
-    }
-
-    public Color getColorFront() {
-        return colorFront;
-    }
-    public Color getColorBack() {
-        return colorBack;
-    }
-    public Color getColorSides() {
-        return colorSides;
     }
 }

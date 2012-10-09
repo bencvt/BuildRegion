@@ -8,7 +8,7 @@ import net.minecraft.src.Block;
 import net.minecraft.src.PlayerControllerHooks;
 
 import com.bencvt.minecraft.client.buildregion.region.Direction3D;
-import com.bencvt.minecraft.client.buildregion.region.PlaneRegion;
+import com.bencvt.minecraft.client.buildregion.region.RegionPlane;
 import com.bencvt.minecraft.client.buildregion.ui.InputManager;
 import com.bencvt.minecraft.client.buildregion.ui.MessageManager;
 import com.bencvt.minecraft.client.buildregion.ui.ShapeManager;
@@ -29,7 +29,7 @@ public class Controller {
     private final InputManager inputManager;
     private final MessageManager messageManager;
     private final ShapeManager shapeManager;
-    private PlaneRegion planeRegion;
+    private RegionPlane planeRegion;
     private BuildMode buildMode;
 
     public Controller(Minecraft minecraft) {
@@ -65,17 +65,18 @@ public class Controller {
                 minecraft.thePlayer.posX,
                 minecraft.thePlayer.posY,
                 minecraft.thePlayer.posZ);
-        planeRegion = new PlaneRegion(dir.axis, pos);
+        planeRegion = new RegionPlane(dir.axis, pos);
         planeRegion.addCoord(dir.axisDirection * 2);
 
         // Update UI.
         if (shiftRegion) {
-            shapeManager.animateShift(planeRegion.getCoord());
+            shapeManager.animateShift(dir.axis, planeRegion.getCoord());
         } else {
             if (redefineRegion) {
                 shapeManager.animateFadeOut();
             }
-            shapeManager.animateFadeIn(dir.axis, pos, planeRegion.getCoord());
+            shapeManager.animateFadeIn(buildMode, planeRegion);
+            shapeManager.updateProjection(pos);
         }
         messageManager.info("build region locked to " + planeRegion + "\n");
     }
@@ -98,7 +99,7 @@ public class Controller {
         planeRegion.addCoord(amount * dir.axisDirection);
 
         // Update UI.
-        shapeManager.animateShift(planeRegion.getCoord());
+        shapeManager.animateShift(dir.axis, planeRegion.getCoord());
         messageManager.info("build region shifted to " + planeRegion + "\n");
     }
 

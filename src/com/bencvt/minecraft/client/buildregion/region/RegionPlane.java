@@ -1,5 +1,9 @@
 package com.bencvt.minecraft.client.buildregion.region;
 
+import com.bencvt.minecraft.client.buildregion.BuildMode;
+import com.bencvt.minecraft.client.buildregion.ui.RenderBase;
+import com.bencvt.minecraft.client.buildregion.ui.RenderPlane;
+
 import libshapedraw.primitive.ReadonlyVector3;
 
 /**
@@ -8,11 +12,11 @@ import libshapedraw.primitive.ReadonlyVector3;
  * 
  * @author bencvt
  */
-public class PlaneRegion extends BuildRegion {
+public class RegionPlane extends RegionBase {
     private final Axis axis;
     private int coord;
 
-    public PlaneRegion(Axis axis, ReadonlyVector3 coords) {
+    public RegionPlane(Axis axis, ReadonlyVector3 coords) {
         this.axis = axis;
         if (axis == Axis.X) {
             coord = (int) coords.getX();
@@ -32,7 +36,7 @@ public class PlaneRegion extends BuildRegion {
     public int getCoord() {
         return coord;
     }
-    public PlaneRegion addCoord(int amount) {
+    public RegionPlane addCoord(int amount) {
         coord += amount;
         return this;
     }
@@ -66,5 +70,10 @@ public class PlaneRegion extends BuildRegion {
     @Override
     public String toString() {
         return "plane " + axis.toString().toLowerCase() + "=" + coord;
+    }
+
+    @Override
+    public RenderBase createShape(BuildMode buildMode) {
+        return new RenderPlane(buildMode.gridColor.copy(), axis, coord);
     }
 }
