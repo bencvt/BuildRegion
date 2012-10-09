@@ -12,14 +12,16 @@ import libshapedraw.primitive.ReadonlyColor;
  * @author bencvt
  */
 public enum BuildMode {
-    INSIDE  (Color.DODGER_BLUE),
-    OUTSIDE (Color.CRIMSON),
-    DISPLAY (Color.LEMON_CHIFFON);
+    INSIDE  (Color.DODGER_BLUE, Color.DODGER_BLUE.copy().setAlpha(3.0/8.0)),
+    OUTSIDE (Color.CRIMSON, Color.CRIMSON.copy().setAlpha(3.0/8.0)),
+    DISPLAY (Color.MEDIUM_SEA_GREEN, Color.SILVER.copy().setAlpha(3.0/8.0));
 
-    public final ReadonlyColor gridColor;
+    public final ReadonlyColor lineColorVisible;
+    public final ReadonlyColor lineColorHidden;
 
-    private BuildMode(ReadonlyColor gridColor) {
-        this.gridColor = gridColor;
+    private BuildMode(ReadonlyColor lineColorVisible, ReadonlyColor lineColorHidden) {
+        this.lineColorVisible = lineColorVisible;
+        this.lineColorHidden = lineColorHidden;
     }
 
     public BuildMode nextMode() {

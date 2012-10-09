@@ -2,6 +2,7 @@ package com.bencvt.minecraft.client.buildregion.ui;
 
 import libshapedraw.MinecraftAccess;
 import libshapedraw.primitive.Color;
+import libshapedraw.primitive.ReadonlyColor;
 import libshapedraw.primitive.ReadonlyVector3;
 
 import org.lwjgl.opengl.GL11;
@@ -38,8 +39,8 @@ public class RenderPlane extends RenderBase {
     private final double[] baseCoords = {0.0, 0.0, 0.0};
     private final double[] curCoords = {0.0, 0.0, 0.0};
 
-    public RenderPlane(Color lineColor, Axis axis, double coord) {
-        super(lineColor);
+    public RenderPlane(Color lineColorVisible, Color lineColorHidden, Axis axis, double coord) {
+        super(lineColorVisible, lineColorHidden);
         if (axis == null) {
             throw new NullPointerException();
         }
@@ -49,7 +50,7 @@ public class RenderPlane extends RenderBase {
     }
 
     @Override
-    protected void renderLines(MinecraftAccess mc, double alphaLine) {
+    protected void renderLines(MinecraftAccess mc, ReadonlyColor lineColor, double alphaLine) {
         curCoords[0] = baseCoords[0] = getOriginReadonly().getX();
         curCoords[1] = baseCoords[1] = getOriginReadonly().getY();
         curCoords[2] = baseCoords[2] = getOriginReadonly().getZ();
@@ -85,10 +86,10 @@ public class RenderPlane extends RenderBase {
                 final double z0 = curCoords[2] + MARGIN;
                 final double z1 = curCoords[2] + 1 - MARGIN;
                 GL11.glColor4d(
-                        getLineColor().getRed(),
-                        getLineColor().getGreen(),
-                        getLineColor().getBlue(),
-                        getLineColor().getAlpha() * alphaScale);
+                        lineColor.getRed(),
+                        lineColor.getGreen(),
+                        lineColor.getBlue(),
+                        lineColor.getAlpha() * alphaScale);
                 // Because sides are rendered with a different transparency we
                 // need to check the axis again.
                 if (axis == Axis.X) {
@@ -108,10 +109,10 @@ public class RenderPlane extends RenderBase {
                     mc.finishDrawing();
                     // sides
                     GL11.glColor4d(
-                            getLineColor().getRed(),
-                            getLineColor().getGreen(),
-                            getLineColor().getBlue(),
-                            getLineColor().getAlpha() * alphaScale * ALPHA_HIDDEN);
+                            lineColor.getRed(),
+                            lineColor.getGreen(),
+                            lineColor.getBlue(),
+                            lineColor.getAlpha() * alphaScale * ALPHA_SIDE);
                     mc.startDrawing(GL11.GL_LINES);
                     mc.addVertex(x0, y0, z0);
                     mc.addVertex(x1, y0, z0);
@@ -139,10 +140,10 @@ public class RenderPlane extends RenderBase {
                     mc.finishDrawing();
                     // sides
                     GL11.glColor4d(
-                            getLineColor().getRed(),
-                            getLineColor().getGreen(),
-                            getLineColor().getBlue(),
-                            getLineColor().getAlpha() * alphaScale * ALPHA_HIDDEN);
+                            lineColor.getRed(),
+                            lineColor.getGreen(),
+                            lineColor.getBlue(),
+                            lineColor.getAlpha() * alphaScale * ALPHA_SIDE);
                     mc.startDrawing(GL11.GL_LINES);
                     mc.addVertex(x0, y0, z0);
                     mc.addVertex(x0, y1, z0);
@@ -170,10 +171,10 @@ public class RenderPlane extends RenderBase {
                     mc.finishDrawing();
                     // sides
                     GL11.glColor4d(
-                            getLineColor().getRed(),
-                            getLineColor().getGreen(),
-                            getLineColor().getBlue(),
-                            getLineColor().getAlpha() * alphaScale * ALPHA_HIDDEN);
+                            lineColor.getRed(),
+                            lineColor.getGreen(),
+                            lineColor.getBlue(),
+                            lineColor.getAlpha() * alphaScale * ALPHA_SIDE);
                     mc.startDrawing(GL11.GL_LINES);
                     mc.addVertex(x0, y0, z0);
                     mc.addVertex(x0, y0, z1);

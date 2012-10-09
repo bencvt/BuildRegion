@@ -97,21 +97,40 @@ public class ShapeManager {
         animShift.play();
     }
 
-    public void animateGridColor(ReadonlyColor newColor) {
+    public void animateGridColor(BuildMode buildMode) {
         if (mainShape == null) {
             return;
         }
-        final Color color = mainShape.getLineColor();
+        final Color[] colors = {
+                mainShape.getLineColorVisible(),
+                mainShape.getLineColorHidden()};
+        final ReadonlyColor[] endColors = {
+                buildMode.lineColorVisible,
+                buildMode.lineColorHidden};
 
         if (animGridColor != null && !animGridColor.isDone()) {
             animGridColor.abort();
         }
 
-        animGridColor = new Timeline(color);
-        animGridColor.addPropertyToInterpolate("red",   color.getRed(),   newColor.getRed());
-        animGridColor.addPropertyToInterpolate("green", color.getGreen(), newColor.getGreen());
-        animGridColor.addPropertyToInterpolate("blue",  color.getBlue(),  newColor.getBlue());
-        animGridColor.addPropertyToInterpolate("alpha", color.getAlpha(), newColor.getAlpha());
+        animGridColor = new Timeline(mainShape);
+        for (int i = 0; i < colors.length; i++) {
+            animGridColor.addPropertyToInterpolate(Timeline.property("red")
+                    .on(colors[i])
+                    .from(colors[i].getRed())
+                    .to(endColors[i].getRed()));
+            animGridColor.addPropertyToInterpolate(Timeline.property("green")
+                    .on(colors[i])
+                    .from(colors[i].getGreen())
+                    .to(endColors[i].getGreen()));
+            animGridColor.addPropertyToInterpolate(Timeline.property("blue")
+                    .on(colors[i])
+                    .from(colors[i].getBlue())
+                    .to(endColors[i].getBlue()));
+            animGridColor.addPropertyToInterpolate(Timeline.property("alpha")
+                    .on(colors[i])
+                    .from(colors[i].getAlpha())
+                    .to(endColors[i].getAlpha()));
+        }
         animGridColor.setDuration(ANIM_DURATION);
         animGridColor.play();
     }

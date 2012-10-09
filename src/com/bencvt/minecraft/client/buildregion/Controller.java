@@ -105,7 +105,7 @@ public class Controller {
 
     public void cmdMode() {
         buildMode = buildMode.nextMode();
-        shapeManager.animateGridColor(buildMode.gridColor);
+        shapeManager.animateGridColor(buildMode);
         messageManager.info("build region mode: " + buildMode.toString().toLowerCase());
     }
 

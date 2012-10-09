@@ -2,6 +2,7 @@ package com.bencvt.minecraft.client.buildregion.ui;
 
 import libshapedraw.MinecraftAccess;
 import libshapedraw.primitive.Color;
+import libshapedraw.primitive.ReadonlyColor;
 import libshapedraw.primitive.ReadonlyVector3;
 import libshapedraw.primitive.Vector3;
 import libshapedraw.shape.Shape;
@@ -21,24 +22,36 @@ import com.bencvt.minecraft.client.buildregion.region.Axis;
  * @author bencvt
  */
 public abstract class RenderBase extends Shape {
-    /** [0.0, 1.0] scale to apply to lines hidden by terrain */
-    public static final double ALPHA_HIDDEN = 3.0 / 8.0;
     public static final float LINE_WIDTH = 2.0F;
 
-    private final Color lineColor;
+    private final Color lineColorVisible;
+    private final Color lineColorHidden;
     private double alphaBase; // [0.0, 1.0] alpha scaling factor to apply to all lines
     private final ShapeScale shapeScale; // transform the entire shape
     private Axis shiftAxis;
     private double shiftCoord;
 
-    public RenderBase(Color lineColor) {
+    public RenderBase(Color lineColorVisible, Color lineColorHidden) {
         super(Vector3.ZEROS.copy());
         setRelativeToOrigin(false);
-        this.lineColor = lineColor;
+        if (lineColorVisible == null || lineColorHidden == null ||
+                lineColorVisible == lineColorHidden) {
+            throw new IllegalArgumentException("line colors must be non-null and unique");
+        }
+        this.lineColorVisible = lineColorVisible;
+        this.lineColorHidden = lineColorHidden;
         setAlphaBase(1.0);
         shapeScale = new ShapeScale(1.0, 1.0, 1.0);
         addTransform(shapeScale);
         shiftCoord = 0.0;
+    }
+
+    public Color getLineColorVisible() {
+        return lineColorVisible;
+    }
+
+    public Color getLineColorHidden() {
+        return lineColorHidden;
     }
 
     @Override
@@ -48,18 +61,15 @@ public abstract class RenderBase extends Shape {
         }
         GL11.glLineWidth(LINE_WIDTH);
         GL11.glDepthFunc(GL11.GL_LEQUAL);
-        renderLines(mc, alphaBase);
-        if (ALPHA_HIDDEN > 0.0) {
+        // renderLines is responsible for setting the line color
+        renderLines(mc, getLineColorVisible(), alphaBase);
+        if (getLineColorHidden() != null) {
             GL11.glDepthFunc(GL11.GL_GREATER);
-            renderLines(mc, alphaBase * ALPHA_HIDDEN);
+            renderLines(mc, getLineColorHidden(), alphaBase);
         }
     }
 
-    protected abstract void renderLines(MinecraftAccess mc, double alphaLine);
-
-    public Color getLineColor() {
-        return lineColor;
-    }
+    protected abstract void renderLines(MinecraftAccess mc, ReadonlyColor lineColor, double alphaLine);
 
     public double getAlphaBase() {
         return alphaBase;

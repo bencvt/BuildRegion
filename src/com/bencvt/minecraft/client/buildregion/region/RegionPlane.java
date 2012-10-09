@@ -74,6 +74,10 @@ public class RegionPlane extends RegionBase {
 
     @Override
     public RenderBase createShape(BuildMode buildMode) {
-        return new RenderPlane(buildMode.gridColor.copy(), axis, coord);
+        return new RenderPlane(
+                buildMode.lineColorVisible.copy(),
+                buildMode.lineColorHidden.copy(),
+                axis,
+                coord);
     }
 }
