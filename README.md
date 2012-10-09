@@ -2,10 +2,11 @@
 
 In Minecraft, having to go back and fix blocks that you accidentally placed or
 destroyed is time-consuming and annoying. BuildRegion is a user interface
-enhancement client mod, designed to help you avoid these little accidents.
+enhancement mod, designed to help you avoid these little accidents.
 
 BuildRegion is *not* an auto-build tool. It will only prevent you from
-misclicking; it will not click for you.
+misclicking; it will not click for you. It's all client-side, meaning you can
+use this on SMP without the server having to run a special plugin.
 
 BuildRegion is [open source](https://github.com/bencvt/BuildRegion)!
 
@@ -20,16 +21,16 @@ You can easily redefine the region: just move around or face a different
 direction, then `control-right-click` again. You can also move the region
 around using `[` and `]`.
 
-Note that if you're using a Mac, use `command (⌘)` instead of `control`. If
-you prefer to use a keyboard shortcut instead of the mouse, `shift-[` and
-`shift-]` also work to clear and set the build region, respectively.
+If you're using a Mac, use `command (⌘)` instead of `control`. If you prefer
+to use a keyboard shortcut instead of the mouse, `shift-[` and `shift-]` also
+work to clear and set the build region, respectively.
 
-Additionally, pressing `B` will cycle to the next build region mode. The grid
-will change color to indicate the new mode. There are three possibilities:
+Additionally, you can press `B` to change how the build region works:
 
- 1.  *inside*: you can only place or destroy blocks inside the grid.
- 2.  *outside*: you can only place or destroy blocks outside the grid.
- 3.  *display*: the grid is visible but it doesn't affect block placement.
+ *   *Blue (default)*: you can only place or destroy blocks *inside* the grid.
+ *   *Red*: you can only place or destroy blocks *outside* the grid.
+ *   *Green and white*: the grid is for *display* only; it won't affect block
+     placement.
 
 Finally, press `shift-B` to get a list of all commands (i.e., a short version
 of everything you just read.)
