@@ -82,7 +82,7 @@ public class InputManager {
             }
         } else if (key == KEYBIND_SHIFT_FWD) {
             if (isShiftKeyDown()) {
-                controller.cmdClear(false);
+                controller.cmdSet();
             } else {
                 controller.cmdShift(1);
             }
@@ -129,7 +129,13 @@ public class InputManager {
                 if (kb.keyCode < 0) {
                     return "MOUSE";
                 }
-                return Keyboard.getKeyName(kb.keyCode);
+                String keyName = Keyboard.getKeyName(kb.keyCode);
+                if (keyName.equals("LBRACKET")) {
+                    keyName = "[";
+                } else if (keyName.equals("RBRACKET")) {
+                    keyName = "]";
+                }
+                return keyName;
             }
         }
         return "UNKNOWN";
@@ -143,15 +149,18 @@ public class InputManager {
         final String pre = "  \u00a7c";
         final String mid = "\u00a7r \u2014 ";
         final String rarr = "\u27f6";
+        final String keyMode = getUserBinding(PROPNAME_MODE);
+        final String keyBack = getUserBinding(PROPNAME_SHIFT_BACK);
+        final String keyFwd = getUserBinding(PROPNAME_SHIFT_FWD);
 
         chat.printChatMessage(pre + MOD_KEY_NAME + "left-click" +
-                "\u00a7r or \u00a7cshift-" + getUserBinding(PROPNAME_SHIFT_BACK) +
-                mid + "clear");
-        chat.printChatMessage(pre + MOD_KEY_NAME + "right-click" + mid + "set");
-        chat.printChatMessage(pre + getUserBinding(PROPNAME_MODE) + mid + "toggle mode");
-        chat.printChatMessage(pre + "shift-" + getUserBinding(PROPNAME_MODE) + mid + "usage");
-        chat.printChatMessage(pre + getUserBinding(PROPNAME_SHIFT_BACK) + mid + "shift back");
-        chat.printChatMessage(pre + getUserBinding(PROPNAME_SHIFT_FWD) + mid + "shift fwd");
+                "\u00a7r or \u00a7cshift-" + keyBack + mid + "clear");
+        chat.printChatMessage(pre + MOD_KEY_NAME + "right-click" +
+                "\u00a7r or \u00a7cshift-" + keyFwd + mid + "set");
+        chat.printChatMessage(pre + keyMode + mid + "toggle mode");
+        chat.printChatMessage(pre + "shift-" + keyMode + mid + "usage");
+        chat.printChatMessage(pre + keyBack + mid + "shift back");
+        chat.printChatMessage(pre + keyFwd + mid + "shift fwd");
         chat.printChatMessage("To adjust key binding: Esc " + rarr +
                 " Options... " + rarr + " Controls...");
     }
