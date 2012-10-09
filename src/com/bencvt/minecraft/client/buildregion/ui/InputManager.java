@@ -6,11 +6,13 @@ import net.minecraft.src.EnumOS;
 import net.minecraft.src.GuiNewChat;
 import net.minecraft.src.KeyBinding;
 import net.minecraft.src.ModLoader;
+import net.minecraft.src.PlayerControllerHooks;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import com.bencvt.minecraft.client.buildregion.Controller;
+import com.bencvt.minecraft.client.buildregion.region.Direction3D;
 
 /**
  * Handle user input (keyboard/mouse events).
@@ -121,6 +123,23 @@ public class InputManager {
             return true;
         }
         return false;
+    }
+
+    public boolean handleBlockClick(boolean isLeftClick, int blockX, int blockY, int blockZ, int direction) {
+        if (shouldConsumeClick(isLeftClick)) {
+            return false;
+        }
+        if (!isLeftClick && !PlayerControllerHooks.isBuildReplaceBlock(blockX, blockY, blockZ)) {
+            Direction3D dir = Direction3D.fromValue(direction);
+            blockX = dir.getNeighborX(blockX);
+            blockY = dir.getNeighborY(blockY);
+            blockZ = dir.getNeighborZ(blockZ);
+        }
+        boolean allow = controller.canBuild(blockX, blockY, blockZ);
+        if (!allow) {
+            controller.disallowedClick();
+        }
+        return allow;
     }
 
     private String getUserBinding(String propName) {

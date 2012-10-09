@@ -4,7 +4,6 @@ import libshapedraw.LibShapeDraw;
 import libshapedraw.primitive.ReadonlyVector3;
 import libshapedraw.primitive.Vector3;
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.Block;
 import net.minecraft.src.PlayerControllerHooks;
 
 import com.bencvt.minecraft.client.buildregion.region.Direction3D;
