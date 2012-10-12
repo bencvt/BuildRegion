@@ -52,7 +52,7 @@ public class PlayerControllerHooks {
     public static boolean register(PlayerControllerEventListener listener, boolean verifyPatch) {
         if (verifyPatch && !isPlayerControllerMPPatched()) {
             throw new RuntimeException("Unable to register click events. " +
-                    "This is most likely due to a mod overwriting " +
+                    "This is due to either an incomplete installation or a mod overwriting " +
                     PlayerControllerMP.class.getSimpleName() + ".class (PlayerControllerMP).");
         }
         return eventListeners.add(listener);

@@ -33,6 +33,9 @@ public class Controller {
     private BuildMode buildMode;
 
     public Controller(LibShapeDraw libShapeDraw, BaseMod mod, Minecraft minecraft) {
+        if (!LibShapeDraw.isControllerInitialized()) {
+            throw new RuntimeException("LibShapeDraw does not appear to be installed properly");
+        }
         this.minecraft = minecraft;
         inputManager = new InputManager(this, mod, minecraft);
         messageManager = new MessageManager(minecraft);
