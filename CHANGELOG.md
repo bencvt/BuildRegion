@@ -1,3 +1,6 @@
+## 1.0.3
+- no longer directly modify any vanilla classes, increasing compatibility
+
 ## 1.0.2
 - double slabs now work properly
 

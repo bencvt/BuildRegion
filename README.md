@@ -1,5 +1,3 @@
-## Purpose
-
 In Minecraft, having to go back and fix blocks that you accidentally placed or
 destroyed is time-consuming and annoying. BuildRegion is a user interface
 enhancement mod, designed to help you avoid these little accidents.
@@ -8,7 +6,41 @@ BuildRegion is *not* an auto-build tool. It will only prevent you from
 misclicking; it will not click for you. It's all client-side, meaning you can
 use this on SMP without the server having to run a special plugin.
 
-BuildRegion is [open source](https://github.com/bencvt/BuildRegion)!
+See the [official minecraftforums.net thread](http://www.minecraftforum.net/topic/1514724-buildregion/)
+for screenshots and a demo video.
+
+## Installation
+
+Installing this mod works exactly the same as any other Minecraft client mod.
+
+1.  Make sure that both
+    [LibShapeDraw](http://www.minecraftforum.net/topic/1458931-libshapedraw/) and
+    [ModLoader](http://www.minecraftforum.net/topic/75440-modloader/)
+    are installed as these are base requirements. If you prefer, you can use
+    [Forge](http://www.minecraftforge.net/forum/) instead of ModLoader;
+    BuildRegion is compatible with either.
+2.  Download and extract the zip for the latest release.
+3.  Patch the contents of the zip file into your `minecraft.jar`, being sure to
+    remove the `META-INF` folder.
+
+Utilities like [Magic Launcher](http://www.minecraftforum.net/topic/939149-/)
+can automate this process. Highly recommended! Manually copying `.class` files
+is for the birds.
+
+Also, if you prefer to place the zip file in the `mods/` directory instead of
+patching `minecraft.jar` directly, you can.
+
+## Compatibility
+
+BuildRegion does not modify *any* vanilla classes directly and therefore should
+be compatible with virtually every mod. Forge is supported but *not* required.
+
+By necessity, BuildRegion does set up a "PlayerControllerMP proxy" internally,
+which could potentially be a source of some incompatibilies. If you find an
+incompatible mod please post to
+[the minecraftforums thread](http://www.minecraftforum.net/topic/1514724-buildregion/)
+or [open an issue on github](https://github.com/bencvt/BuildRegion/issues)
+and we'll try to sort it out.
 
 ## Usage
 
@@ -35,22 +67,9 @@ Additionally, you can press `B` to change how the build region works:
 Finally, press `shift-B` to get a list of all commands (i.e., a short version
 of everything you just read.)
 
-## Installation
+## More info
 
-Installing this mod works exactly the same as any other Minecraft client mod.
-
-1.  Make sure the following two required mods are installed:
-    [ModLoader](http://www.minecraftforum.net/topic/75440-modloader/) and
-    [LibShapeDraw](http://www.minecraftforum.net/topic/1458931-libshapedraw/).
-2.  Download and extract the zip for the latest release.
-3.  Patch the contents of the zip file into your `minecraft.jar`, being sure to
-    remove the `META-INF` folder.
-
-Utilities like [Magic Launcher](http://www.minecraftforum.net/topic/939149-/)
-can automate this process. Highly recommended! Manually copying `.class` files
-is for the birds.
-
-## Compatibility
-
-BuildRegion should be compatible with every mod that does not modify the
-PlayerControllerMP class (`atc.class`, as of Minecraft 1.3.2).
+BuildRegion is open source! Visit the official project page at
+[github.com/bencvt/BuildRegion](https://github.com/bencvt/BuildRegion).
+In addition to the source code, the project documentation also includes the
+change log and a list of planned features.
