@@ -1,7 +1,9 @@
 #!/bin/bash
 set -e
 
-JAR=$PWD/BuildRegion-1.0.3.zip
+# replace with version number if creating a release
+# don't forget to update getVersion method and .info files
+JAR=$PWD/BuildRegion-SNAPSHOT.zip
 
 rm $JAR || true
 
@@ -19,5 +21,9 @@ echo "== Reobfuscating =="
 echo "== Packaging $JAR =="
 cd reobf/minecraft/
 rm -rf META-INF
+
+# resources
+cp ../../src/minecraft/*.info .
+
 #jar cfv $JAR ./
 zip -r $JAR *
