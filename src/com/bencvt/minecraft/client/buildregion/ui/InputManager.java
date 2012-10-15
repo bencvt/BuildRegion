@@ -49,11 +49,13 @@ public class InputManager {
 
     private final Controller controller;
     private final Minecraft minecraft;
+    private final String modTitle;
     private long lastMouseEvent;
 
     public InputManager(Controller controller, BaseMod mod, Minecraft minecraft) {
         this.controller = controller;
         this.minecraft = minecraft;
+        modTitle = mod.getName() + " v" + mod.getVersion();
 
         ModLoader.registerKey(mod, KEYBIND_MODE, false);
         ModLoader.registerKey(mod, KEYBIND_SHIFT_BACK, false);
@@ -162,7 +164,7 @@ public class InputManager {
     public void showUsage() {
         StringBuilder line;
         final GuiNewChat chat = minecraft.ingameGUI.getChatGUI();
-        chat.printChatMessage("BuildRegion usage:");
+        chat.printChatMessage(modTitle + " usage:");
 
         final String pre = "  \u00a7c";
         final String mid = "\u00a7r \u2014 ";
