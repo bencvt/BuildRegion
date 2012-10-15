@@ -136,7 +136,6 @@ public class PlayerControllerHooks extends PlayerControllerMP {
     }
 
     protected boolean dispatchBlockDamageEvent(int blockX, int blockY, int blockZ, int direction) {
-        boolean result = true;
         for (PlayerControllerEventListener listener : eventListeners) {
             if (!listener.onBlockDamage(blockX, blockY, blockZ, direction)) {
                 return false;
@@ -146,7 +145,6 @@ public class PlayerControllerHooks extends PlayerControllerMP {
     }
 
     protected boolean dispatchEntityClickEvent(boolean isLeftClick, Entity entity) {
-        boolean result = true;
         for (PlayerControllerEventListener listener : eventListeners) {
             if (!listener.onEntityClick(isLeftClick, entity)) {
                 return false;
