@@ -105,7 +105,13 @@ public class Controller {
     }
 
     public void cmdMode() {
-        buildMode = buildMode.nextMode();
+        cmdMode(buildMode.nextMode());
+    }
+    public void cmdMode(BuildMode newMode) {
+        if (newMode == null) {
+            throw new IllegalArgumentException();
+        }
+        buildMode = newMode;
         shapeManager.animateGridColor(buildMode);
         messageManager.info("build region mode: " + buildMode.toString().toLowerCase());
     }
@@ -159,5 +165,9 @@ public class Controller {
 
     public void disallowedClick() {
         messageManager.info("misclick blocked by build region\n");
+    }
+
+    public BuildMode getBuildMode() {
+        return buildMode;
     }
 }

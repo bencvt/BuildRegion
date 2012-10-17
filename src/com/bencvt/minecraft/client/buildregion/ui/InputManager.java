@@ -72,7 +72,8 @@ public class InputManager {
         }
         if (key == KEYBIND_MODE) {
             if (isShiftKeyDown()) {
-                showUsage();
+                showUsage(); // TODO: move to gui
+                minecraft.displayGuiScreen(new GuiBuildRegion(controller));
             } else {
                 controller.cmdMode();
             }
