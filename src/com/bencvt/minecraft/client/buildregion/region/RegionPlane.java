@@ -14,54 +14,30 @@ import libshapedraw.primitive.ReadonlyVector3;
  */
 public class RegionPlane extends RegionBase {
     private final Axis axis;
-    private int coord;
 
-    public RegionPlane(Axis axis, ReadonlyVector3 coords) {
+    public RegionPlane(Axis axis, ReadonlyVector3 origin) {
+        super(origin);
         this.axis = axis;
-        if (axis == Axis.X) {
-            coord = (int) coords.getX();
-        } else if (axis == Axis.Y) {
-            coord = (int) coords.getY();
-        } else if (axis == Axis.Z) {
-            coord = (int) coords.getZ();
-        } else {
-            throw new IllegalStateException();
-        }
     }
 
-    public Axis getAxis() {
-        return axis;
+    @Override
+    public RegionMode getRegionMode() {
+        return RegionMode.PLANE;
     }
 
-    public int getCoord() {
-        return coord;
-    }
-    public RegionPlane addCoord(int amount) {
-        coord += amount;
-        return this;
+    @Override
+    public boolean isValidAxis(Axis axis) {
+        return axis == this.axis;
     }
 
     @Override
     public boolean isInsideRegion(double x, double y, double z) {
         if (axis == Axis.X) {
-            return coord == (int) x;
+            return (int) getOrigin().getX() == (int) x;
         } else if (axis == Axis.Y) {
-            return coord == (int) y;
+            return (int) getOrigin().getY() == (int) y;
         } else if (axis == Axis.Z) {
-            return coord == (int) z;
-        } else {
-            throw new IllegalStateException();
-        }
-    }
-
-    @Override
-    public double distance(ReadonlyVector3 pos) {
-        if (axis == Axis.X) {
-            return Math.abs(pos.getX() - coord);
-        } else if (axis == Axis.Y) {
-            return Math.abs(pos.getY() - coord);
-        } else if (axis == Axis.Z) {
-            return Math.abs(pos.getZ() - coord);
+            return (int) getOrigin().getZ() == (int) z;
         } else {
             throw new IllegalStateException();
         }
@@ -69,15 +45,15 @@ public class RegionPlane extends RegionBase {
 
     @Override
     public String toString() {
-        return "plane " + axis.toString().toLowerCase() + "=" + coord;
+        return "plane " + axis.toString().toLowerCase() + "=" + (int) getCoord(axis);
     }
 
     @Override
-    public RenderBase createShape(BuildMode buildMode) {
+    public RenderBase createShape() {
         return new RenderPlane(
-                buildMode.lineColorVisible.copy(),
-                buildMode.lineColorHidden.copy(),
+                BuildMode.activeLineColorVisible,
+                BuildMode.activeLineColorHidden,
                 axis,
-                coord);
+                getCoord(axis));
     }
 }

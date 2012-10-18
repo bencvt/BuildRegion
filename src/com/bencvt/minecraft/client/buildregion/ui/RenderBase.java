@@ -1,6 +1,10 @@
 package com.bencvt.minecraft.client.buildregion.ui;
 
+import java.util.HashMap;
+import java.util.HashSet;
+
 import libshapedraw.MinecraftAccess;
+import libshapedraw.animation.trident.Timeline;
 import libshapedraw.primitive.Color;
 import libshapedraw.primitive.ReadonlyColor;
 import libshapedraw.primitive.ReadonlyVector3;
@@ -22,14 +26,16 @@ import com.bencvt.minecraft.client.buildregion.region.Axis;
  * @author bencvt
  */
 public abstract class RenderBase extends Shape {
+    public static final long ANIM_DURATION = 500;
+    public static final double ANIM_SCALE_FADE = 1.0 - 1.0/16.0;
     public static final float LINE_WIDTH = 2.0F;
 
     private final Color lineColorVisible;
     private final Color lineColorHidden;
     private double alphaBase; // [0.0, 1.0] alpha scaling factor to apply to all lines
     private final ShapeScale shapeScale; // transform the entire shape
-    private Axis shiftAxis;
-    private double shiftCoord;
+    private Timeline timelineFade;
+    private final HashMap<Axis, Timeline> timelineShift;
 
     public RenderBase(Color lineColorVisible, Color lineColorHidden) {
         super(Vector3.ZEROS.copy());
@@ -43,7 +49,7 @@ public abstract class RenderBase extends Shape {
         setAlphaBase(1.0);
         shapeScale = new ShapeScale(1.0, 1.0, 1.0);
         addTransform(shapeScale);
-        shiftCoord = 0.0;
+        timelineShift = new HashMap<Axis, Timeline>();
     }
 
     public Color getLineColorVisible() {
@@ -85,42 +91,57 @@ public abstract class RenderBase extends Shape {
         return shapeScale;
     }
 
-    public Axis getShiftAxis() {
-        return shiftAxis;
-    }
-    public void setShiftAxis(Axis shiftAxis) {
-        if (shiftAxis == null) {
-            throw new NullPointerException();
-        }
-        this.shiftAxis = shiftAxis;
-        if (shiftAxis == Axis.X) {
-            shiftCoord = getOrigin().getX();
-        } else if (shiftAxis == Axis.Y) {
-            shiftCoord = getOrigin().getY();
-        } else if (shiftAxis == Axis.Z) {
-            shiftCoord = getOrigin().getZ();
-        } else {
-            throw new IllegalStateException();
-        }
-    }
-
-    public double getShiftCoord() {
-        return shiftCoord;
-    }
-    public void setShiftCoord(double shiftCoord) {
-        this.shiftCoord = shiftCoord;
-        if (shiftAxis == Axis.X) {
-            getOrigin().setX(shiftCoord);
-        } else if (shiftAxis == Axis.Y) {
-            getOrigin().setY(shiftCoord);
-        } else if (shiftAxis == Axis.Z) {
-            getOrigin().setZ(shiftCoord);
-        } else {
-            throw new IllegalStateException();
-        }
-    }
-
-    public void updateProjection(ReadonlyVector3 playerCoords) {
+    public void updateObserverPosition(ReadonlyVector3 playerCoords) {
         // do nothing
+    }
+
+    public void shift(Axis axis, double newCoord) {
+        Timeline timeline = timelineShift.get(axis);
+        if (timeline != null && !timeline.isDone()) {
+            timeline.abort();
+        }
+        timeline = new Timeline(getOrigin());
+        if (axis == Axis.X) {
+            timeline.addPropertyToInterpolate("x", getOrigin().getX(), newCoord);
+        } else if (axis == Axis.Y) {
+            timeline.addPropertyToInterpolate("y", getOrigin().getY(), newCoord);
+        } else if (axis == Axis.Z) {
+            timeline.addPropertyToInterpolate("z", getOrigin().getZ(), newCoord);
+        } else {
+            throw new IllegalArgumentException();
+        }
+        timeline.setDuration(ANIM_DURATION);
+        timeline.play();
+        timelineShift.put(axis, timeline);
+    }
+
+    public void fadeIn() {
+        fadeStop();
+        setAlphaBase(0.0);
+        shapeScale.getScaleXYZ().set(ANIM_SCALE_FADE, ANIM_SCALE_FADE, ANIM_SCALE_FADE);
+        fadeStart(1.0, 1.0);
+    }
+    public void fadeOut() {
+        fadeStop();
+        fadeStart(0.0, ANIM_SCALE_FADE);
+    }
+    private void fadeStop() {
+        if (timelineFade != null && !timelineFade.isDone()) {
+            timelineFade.abort();
+        }
+        timelineFade = null;
+    }
+    private void fadeStart(double toAlphaBase, double toScale) {
+        timelineFade = new Timeline(this);
+        timelineFade.addPropertyToInterpolate("alphaBase", getAlphaBase(), toAlphaBase);
+        Vector3 scaleVec = shapeScale.getScaleXYZ();
+        timelineFade.addPropertyToInterpolate(Timeline.property("x")
+                .on(scaleVec).from(scaleVec.getX()).to(toScale));
+        timelineFade.addPropertyToInterpolate(Timeline.property("y")
+                .on(scaleVec).from(scaleVec.getY()).to(toScale));
+        timelineFade.addPropertyToInterpolate(Timeline.property("z")
+                .on(scaleVec).from(scaleVec.getZ()).to(toScale));
+        timelineFade.setDuration(ANIM_DURATION);
+        timelineFade.play();
     }
 }

@@ -43,7 +43,7 @@ public class GuiBuildRegion extends GuiScreen {
         for (BuildMode mode : BuildMode.values()) {
             buildModeSelect.setColors(mode, mode.lineColorVisible);
         }
-        buildModeSelect.setSelectedValue(controller.getBuildMode(), false);
+        buildModeSelect.setSelectedValue(BuildMode.getActiveMode(), false);
         controlList.add(buildModeSelect);
 
         controlList.add(new GuiEnumSelect<RegionMode>(

@@ -45,8 +45,9 @@ public class RenderPlane extends RenderBase {
             throw new NullPointerException();
         }
         this.axis = axis;
-        setShiftAxis(axis);
-        setShiftCoord(coord);
+        // Only one of these coords is relevant; the other two will be fixed
+        // later in updateObserverPosition.
+        getOrigin().set(coord, coord, coord);
     }
 
     @Override
@@ -204,19 +205,11 @@ public class RenderPlane extends RenderBase {
         return alphaTable[Math.abs(off0)][Math.abs(off1)];
     }
 
-    @Override
-    public void setShiftAxis(Axis shiftAxis) {
-        if (shiftAxis != axis) {
-            throw new IllegalArgumentException("a plane can only shift along its axis");
-        }
-        super.setShiftAxis(shiftAxis);
-    }
-
     /**
      * Keep up with the player, moving the shape along the plane.
      */
     @Override
-    public void updateProjection(ReadonlyVector3 playerCoords) {
+    public void updateObserverPosition(ReadonlyVector3 playerCoords) {
         if (axis == Axis.X) {
             getOrigin().setY(playerCoords.getY()).setZ(playerCoords.getZ());
         } else if (axis == Axis.Y) {
@@ -224,5 +217,13 @@ public class RenderPlane extends RenderBase {
         } else if (axis == Axis.Z) {
             getOrigin().setX(playerCoords.getX()).setY(playerCoords.getY());
         }
+    }
+
+    @Override
+    public void shift(Axis axis, double newCoord) {
+        if (axis != this.axis) {
+            throw new IllegalArgumentException("a plane can only shift along its axis");
+        }
+        super.shift(axis, newCoord);
     }
 }

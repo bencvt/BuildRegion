@@ -8,6 +8,7 @@ import net.minecraft.src.BaseMod;
 import net.minecraft.src.PlayerControllerHooks;
 
 import com.bencvt.minecraft.client.buildregion.region.Direction3D;
+import com.bencvt.minecraft.client.buildregion.region.RegionBase;
 import com.bencvt.minecraft.client.buildregion.region.RegionPlane;
 import com.bencvt.minecraft.client.buildregion.ui.InputManager;
 import com.bencvt.minecraft.client.buildregion.ui.MessageManager;
@@ -19,28 +20,20 @@ import com.bencvt.minecraft.client.buildregion.ui.ShapeManager;
  * @author bencvt
  */
 public class Controller {
-    /**
-     * Maximum number of blocks the player can be away from the region before
-     * it's automatically cancelled.
-     */
-    public final int MAX_DISTANCE = 50;
-
     private final Minecraft minecraft;
     private final InputManager inputManager;
     private final MessageManager messageManager;
     private final ShapeManager shapeManager;
-    private RegionPlane planeRegion;
-    private BuildMode buildMode;
+    private RegionBase region;
 
     public Controller(LibShapeDraw libShapeDraw, BaseMod mod, Minecraft minecraft) {
-        if (!LibShapeDraw.isControllerInitialized()) {
+        if (!LibShapeDraw.isControllerInitialized()) { // TODO: replace with .verifyInitialized()
             throw new RuntimeException("LibShapeDraw does not appear to be installed properly");
         }
         this.minecraft = minecraft;
         inputManager = new InputManager(this, mod, minecraft);
         messageManager = new MessageManager(minecraft);
         shapeManager = new ShapeManager(libShapeDraw);
-        buildMode = BuildMode.defaultMode();
     }
 
     public InputManager getInputManager() {
@@ -58,32 +51,29 @@ public class Controller {
         }
 
         // Remember stuff about existing region, if any.
-        boolean redefineRegion = planeRegion != null;
-        boolean shiftRegion = redefineRegion && dir.axis == planeRegion.getAxis();
+        boolean shiftRegion = region != null && region.isValidAxis(dir.axis);
 
         // Define new region.
         Vector3 pos = new Vector3(
                 minecraft.thePlayer.posX,
                 minecraft.thePlayer.posY,
                 minecraft.thePlayer.posZ);
-        planeRegion = new RegionPlane(dir.axis, pos);
-        planeRegion.addCoord(dir.axisDirection * 2);
+        region = new RegionPlane(dir.axis, pos);
+        region.shiftCoord(dir.axis, dir.axisDirection * 2);
 
         // Update UI.
         if (shiftRegion) {
-            shapeManager.animateShift(dir.axis, planeRegion.getCoord());
+            shapeManager.animateShift(dir.axis, region.getCoord(dir.axis));
         } else {
-            if (redefineRegion) {
-                shapeManager.animateFadeOut();
-            }
-            shapeManager.animateFadeIn(buildMode, planeRegion);
-            shapeManager.updateProjection(pos);
+            shapeManager.animateFadeOut();
+            shapeManager.animateFadeIn(region);
+            shapeManager.updateObserverPosition(pos);
         }
-        messageManager.info("build region locked to " + planeRegion + "\n");
+        messageManager.info("build region locked to " + region + "\n");
     }
 
     public void cmdShift(int amount) {
-        if (planeRegion == null) {
+        if (region == null) {
             cmdSet();
             return;
         }
@@ -91,29 +81,28 @@ public class Controller {
         if (dir == null) {
             return;
         }
-        if (dir.axis != planeRegion.getAxis()) {
+        if (!region.isValidAxis(dir.axis)) {
             cmdSet();
             return;
         }
 
         // Update region.
-        planeRegion.addCoord(amount * dir.axisDirection);
+        region.shiftCoord(dir.axis, amount * dir.axisDirection);
 
         // Update UI.
-        shapeManager.animateShift(dir.axis, planeRegion.getCoord());
-        messageManager.info("build region shifted to " + planeRegion + "\n");
+        shapeManager.animateShift(dir.axis, region.getCoord(dir.axis));
+        messageManager.info("build region shifted to " + region + "\n");
     }
 
     public void cmdMode() {
-        cmdMode(buildMode.nextMode());
+        cmdMode(BuildMode.getActiveMode().getNextMode());
     }
     public void cmdMode(BuildMode newMode) {
         if (newMode == null) {
             throw new IllegalArgumentException();
         }
-        buildMode = newMode;
-        shapeManager.animateGridColor(buildMode);
-        messageManager.info("build region mode: " + buildMode.toString().toLowerCase());
+        BuildMode.setActiveMode(newMode);
+        messageManager.info("build region mode: " + BuildMode.getActiveMode().toString().toLowerCase());
     }
 
     private Direction3D getFacingDirection() {
@@ -127,10 +116,10 @@ public class Controller {
     }
 
     private void unlockRegion(boolean silent) {
-        if (planeRegion == null) {
+        if (region == null) {
             return;
         }
-        planeRegion = null;
+        region = null;
         shapeManager.animateFadeOut();
         if (!silent) {
             messageManager.info("build region unlocked\n");
@@ -142,22 +131,16 @@ public class Controller {
     }
 
     public void updatePlayerPosition(ReadonlyVector3 playerCoords) {
-        shapeManager.updateProjection(playerCoords);
-        if (planeRegion != null && planeRegion.distance(playerCoords) > MAX_DISTANCE) {
-            // Player is too far away from the region; disable it.
-            unlockRegion(true);
-            messageManager.error("build region unlocked\nbecause you are beyond " +
-                    MAX_DISTANCE + " blocks away");
-        }
+        shapeManager.updateObserverPosition(playerCoords);
     }
 
     public boolean canBuild(double x, double y, double z) {
-        if (planeRegion == null) {
+        if (region == null) {
             return true;
-        } else if (buildMode == BuildMode.INSIDE) {
-            return planeRegion.isInsideRegion(x, y, z);
-        } else if (buildMode == BuildMode.OUTSIDE) {
-            return !planeRegion.isInsideRegion(x, y, z);
+        } else if (BuildMode.getActiveMode() == BuildMode.INSIDE) {
+            return region.isInsideRegion(x, y, z);
+        } else if (BuildMode.getActiveMode() == BuildMode.OUTSIDE) {
+            return !region.isInsideRegion(x, y, z);
         } else {
             return true;
         }
@@ -165,9 +148,5 @@ public class Controller {
 
     public void disallowedClick() {
         messageManager.info("misclick blocked by build region\n");
-    }
-
-    public BuildMode getBuildMode() {
-        return buildMode;
     }
 }
