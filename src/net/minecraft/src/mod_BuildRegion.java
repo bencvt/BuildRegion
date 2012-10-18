@@ -9,6 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.src.PlayerControllerHooks.PlayerControllerEventListener;
 
 import com.bencvt.minecraft.client.buildregion.Controller;
+import com.bencvt.minecraft.client.buildregion.UpdateCheck;
 import com.bencvt.minecraft.client.buildregion.ui.InputManager;
 
 /**
@@ -22,15 +23,20 @@ import com.bencvt.minecraft.client.buildregion.ui.InputManager;
 public class mod_BuildRegion extends BaseMod implements LSDEventListener, PlayerControllerEventListener {
     private Controller controller;
     private InputManager inputManager;
+    private UpdateCheck updateCheck;
 
     @Override
     public String getName() {
         return "BuildRegion";
     }
 
+    public String getModVersion() {
+        return "1.0.3-SNAPSHOT";
+    }
+
     @Override
     public String getVersion() {
-        return "1.0.3-SNAPSHOT [1.3.2]";
+        return getModVersion() + " [1.3.2]";
     }
 
     @Override
@@ -70,11 +76,20 @@ public class mod_BuildRegion extends BaseMod implements LSDEventListener, Player
     public void onRespawn(LSDRespawnEvent event) {
         controller.cmdClear(event.isNewServer());
         PlayerControllerHooks.installHooks();
+        if (updateCheck == null) {
+            updateCheck = new UpdateCheck(getModVersion());
+        }
     }
 
     @Override
     public void onGameTick(LSDGameTickEvent event) {
-        // do nothing
+        if (updateCheck != null && updateCheck.getResult() != null) {
+            GuiNewChat chat = Minecraft.getMinecraft().ingameGUI.getChatGUI();
+            for (String line : updateCheck.getResult().split("\n")) {
+                chat.printChatMessage(line);
+            }
+            updateCheck.setResult(null);
+        }
     }
 
     @Override
