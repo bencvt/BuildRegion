@@ -54,11 +54,11 @@ public class Controller {
         boolean shiftRegion = region != null && region.isValidAxis(dir.axis);
 
         // Define new region.
-        Vector3 pos = new Vector3(
+        Vector3 origin = new Vector3(
                 minecraft.thePlayer.posX,
                 minecraft.thePlayer.posY,
                 minecraft.thePlayer.posZ);
-        region = new RegionPlane(dir.axis, pos);
+        region = new RegionPlane(dir.axis, origin);
         region.shiftCoord(dir.axis, dir.axisDirection * 2);
 
         // Update UI.
@@ -67,7 +67,6 @@ public class Controller {
         } else {
             shapeManager.animateFadeOut();
             shapeManager.animateFadeIn(region);
-            shapeManager.updateObserverPosition(pos);
         }
         messageManager.info("build region locked to " + region + "\n");
     }
@@ -102,7 +101,8 @@ public class Controller {
             throw new IllegalArgumentException();
         }
         BuildMode.setActiveMode(newMode);
-        messageManager.info("build region mode: " + BuildMode.getActiveMode().toString().toLowerCase());
+        messageManager.info("build region mode: " +
+                BuildMode.getActiveMode().toString().toLowerCase()); // TODO: "\npress shift-<bind> for advanced options"
     }
 
     private Direction3D getFacingDirection() {

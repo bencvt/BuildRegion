@@ -24,7 +24,7 @@ public abstract class RegionBase {
         this.origin.setZ(origin.getZ());        
     }
 
-    public abstract RegionMode getRegionMode();
+    public abstract RegionType getRegionMode();
 
     public double getCoord(Axis axis) {
         validateAxis(axis);

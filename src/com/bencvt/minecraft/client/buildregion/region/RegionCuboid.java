@@ -13,7 +13,7 @@ public class RegionCuboid extends RegionBase {
     }
 
     @Override
-    public RegionMode getRegionMode() {
+    public RegionType getRegionMode() {
         // TODO Auto-generated method stub
         return null;
     }

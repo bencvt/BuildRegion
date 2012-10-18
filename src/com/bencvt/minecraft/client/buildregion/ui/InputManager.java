@@ -72,10 +72,10 @@ public class InputManager {
         }
         if (key == KEYBIND_MODE) {
             if (isShiftKeyDown()) {
-                showUsage(); // TODO: move to gui
-                minecraft.displayGuiScreen(new GuiBuildRegion(controller));
-            } else {
                 controller.cmdMode();
+            } else {
+                //showUsage(); // TODO: move to gui
+                minecraft.displayGuiScreen(new GuiBuildRegion(controller));
             }
         } else if (key == KEYBIND_SHIFT_BACK) {
             if (isShiftKeyDown()) {
@@ -178,8 +178,8 @@ public class InputManager {
                 "\u00a7r or \u00a7cshift-" + keyBack + mid + "clear");
         chat.printChatMessage(pre + MOD_KEY_NAME + "right-click" +
                 "\u00a7r or \u00a7cshift-" + keyFwd + mid + "set");
-        chat.printChatMessage(pre + keyMode + mid + "toggle mode");
-        chat.printChatMessage(pre + "shift-" + keyMode + mid + "usage");
+        chat.printChatMessage(pre + keyMode + mid + "open gui");
+        chat.printChatMessage(pre + "shift-" + keyMode + mid + "toggle mode");
         chat.printChatMessage(pre + keyBack + mid + "shift back");
         chat.printChatMessage(pre + keyFwd + mid + "shift fwd");
         chat.printChatMessage("To adjust key binding: Esc " + rarr +
