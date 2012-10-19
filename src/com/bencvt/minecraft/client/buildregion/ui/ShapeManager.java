@@ -3,6 +3,7 @@ package com.bencvt.minecraft.client.buildregion.ui;
 import libshapedraw.LibShapeDraw;
 import libshapedraw.primitive.ReadonlyVector3;
 
+import com.bencvt.minecraft.client.buildregion.Controller;
 import com.bencvt.minecraft.client.buildregion.region.Axis;
 import com.bencvt.minecraft.client.buildregion.region.RegionBase;
 
@@ -12,12 +13,25 @@ import com.bencvt.minecraft.client.buildregion.region.RegionBase;
  * @author bencvt
  */
 public class ShapeManager {
+    private final Controller controller;
     private final LibShapeDraw libShapeDraw;
     private RenderBase mainShape;
     private RenderBase prevShape;
 
-    public ShapeManager(LibShapeDraw libShapeDraw) {
+    public ShapeManager(Controller controller, LibShapeDraw libShapeDraw) {
+        this.controller = controller;
         this.libShapeDraw = libShapeDraw;
+    }
+
+    public void reset() {
+        if (mainShape == null) {
+            libShapeDraw.getShapes().remove(mainShape);
+        }
+        mainShape = null;
+        if (prevShape != null) {
+            libShapeDraw.getShapes().remove(prevShape);
+        }
+        prevShape = null;
     }
 
     public void animateFadeOut() {
@@ -36,7 +50,7 @@ public class ShapeManager {
         if (mainShape != null) {
             libShapeDraw.getShapes().remove(mainShape);
         }
-        mainShape = buildRegion.createShape();
+        mainShape = buildRegion.createShape(controller.getBuildMode());
         libShapeDraw.addShape(mainShape);
         mainShape.fadeIn();
     }

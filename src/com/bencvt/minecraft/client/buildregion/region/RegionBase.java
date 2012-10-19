@@ -1,10 +1,10 @@
 package com.bencvt.minecraft.client.buildregion.region;
 
-import com.bencvt.minecraft.client.buildregion.BuildMode;
-import com.bencvt.minecraft.client.buildregion.ui.RenderBase;
-
 import libshapedraw.primitive.ReadonlyVector3;
 import libshapedraw.primitive.Vector3;
+
+import com.bencvt.minecraft.client.buildregion.BuildModeValue;
+import com.bencvt.minecraft.client.buildregion.ui.RenderBase;
 
 /**
  * A geometric region in space.
@@ -75,5 +75,5 @@ public abstract class RegionBase {
     /**
      * @return a new Shape instance for rendering this region in the UI
      */
-    public abstract RenderBase createShape();
+    public abstract RenderBase createShape(BuildModeValue buildMode);
 }

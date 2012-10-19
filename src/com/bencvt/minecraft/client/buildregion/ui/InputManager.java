@@ -49,13 +49,11 @@ public class InputManager {
 
     private final Controller controller;
     private final Minecraft minecraft;
-    private final String modTitle;
     private long lastMouseEvent;
 
     public InputManager(Controller controller, BaseMod mod, Minecraft minecraft) {
         this.controller = controller;
         this.minecraft = minecraft;
-        modTitle = mod.getName() + " v" + mod.getVersion();
 
         ModLoader.registerKey(mod, KEYBIND_MODE, false);
         ModLoader.registerKey(mod, KEYBIND_SHIFT_BACK, false);
@@ -72,14 +70,14 @@ public class InputManager {
         }
         if (key == KEYBIND_MODE) {
             if (isShiftKeyDown()) {
-                controller.cmdMode();
+                controller.cmdModeNext();
             } else {
                 //showUsage(); // TODO: move to gui
                 minecraft.displayGuiScreen(new GuiBuildRegion(controller, minecraft.fontRenderer));
             }
         } else if (key == KEYBIND_SHIFT_BACK) {
             if (isShiftKeyDown()) {
-                controller.cmdClear(false);
+                controller.cmdClear();
             } else {
                 controller.cmdShift(-1);
             }
@@ -97,7 +95,7 @@ public class InputManager {
             long now = System.currentTimeMillis();
             if (now > lastMouseEvent + MOUSE_EVENT_INTERVAL) {
                 lastMouseEvent = now;
-                controller.cmdClear(false);
+                controller.cmdClear();
             }
         } else if (MOD_RIGHT_CLICK_SETS && Mouse.isButtonDown(1) && isModKeyDown()) {
             long now = System.currentTimeMillis();
@@ -165,7 +163,7 @@ public class InputManager {
     public void showUsage() {
         StringBuilder line;
         final GuiNewChat chat = minecraft.ingameGUI.getChatGUI();
-        chat.printChatMessage(modTitle + " usage:");
+        chat.printChatMessage(controller.getModTitle() + " usage:");
 
         final String pre = "  \u00a7c";
         final String mid = "\u00a7r \u2014 ";

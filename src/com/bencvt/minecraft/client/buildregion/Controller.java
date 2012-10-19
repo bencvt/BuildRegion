@@ -4,7 +4,7 @@ import libshapedraw.LibShapeDraw;
 import libshapedraw.primitive.ReadonlyVector3;
 import libshapedraw.primitive.Vector3;
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.BaseMod;
+import net.minecraft.src.mod_BuildRegion;
 
 import com.bencvt.minecraft.client.buildregion.region.Direction3D;
 import com.bencvt.minecraft.client.buildregion.region.RegionBase;
@@ -23,24 +23,39 @@ public class Controller {
     private final InputManager inputManager;
     private final MessageManager messageManager;
     private final ShapeManager shapeManager;
-    private RegionBase region;
+    private final String modTitle;
+    private final BuildModeValue buildMode;
+    private RegionBase region; // TODO: RegionManager class
 
-    public Controller(LibShapeDraw libShapeDraw, BaseMod mod, Minecraft minecraft) {
+    public Controller(LibShapeDraw libShapeDraw, mod_BuildRegion mod, Minecraft minecraft) {
         if (!LibShapeDraw.isControllerInitialized()) { // TODO: replace with .verifyInitialized()
             throw new RuntimeException("LibShapeDraw does not appear to be installed properly");
         }
         this.minecraft = minecraft;
         inputManager = new InputManager(this, mod, minecraft);
         messageManager = new MessageManager(minecraft);
-        shapeManager = new ShapeManager(libShapeDraw);
+        shapeManager = new ShapeManager(this, libShapeDraw);
+        modTitle = mod.getName() + " v" + mod.getModVersion();
+        buildMode = new BuildModeValue(BuildMode.INSIDE);
     }
 
     public InputManager getInputManager() {
         return inputManager;
     }
 
-    public void cmdClear(boolean silent) {
-        unlockRegion(silent);
+    public void cmdReset() {
+        buildMode.setValueNoAnimation(BuildMode.INSIDE);
+        region = null;
+        shapeManager.reset();
+    }
+
+    public void cmdClear() {
+        if (region == null) {
+            return;
+        }
+        region = null;
+        shapeManager.animateFadeOut();
+        messageManager.info("build region unlocked\n");
     }
 
     public void cmdSet() {
@@ -92,16 +107,14 @@ public class Controller {
         messageManager.info("build region shifted to " + region + "\n");
     }
 
-    public void cmdMode() {
-        cmdMode(BuildMode.getActiveMode().getNextMode());
+    public void cmdModeNext() {
+        buildMode.setValue(buildMode.getValue().getNextMode());
     }
+
     public void cmdMode(BuildMode newMode) {
-        if (newMode == null) {
-            throw new IllegalArgumentException();
-        }
-        BuildMode.setActiveMode(newMode);
+        buildMode.setValue(newMode);
         messageManager.info("build region mode: " +
-                BuildMode.getActiveMode().toString().toLowerCase()); // TODO: "\npress shift-<bind> for advanced options"
+                newMode.toString().toLowerCase()); // TODO: "\npress shift-<bind> for advanced options"
     }
 
     private Direction3D getFacingDirection() {
@@ -112,17 +125,6 @@ public class Controller {
             messageManager.error("ambiguous direction\nface north, south, east, west, up, or down");
         }
         return dir;
-    }
-
-    private void unlockRegion(boolean silent) {
-        if (region == null) {
-            return;
-        }
-        region = null;
-        shapeManager.animateFadeOut();
-        if (!silent) {
-            messageManager.info("build region unlocked\n");
-        }
     }
 
     public void render() {
@@ -136,9 +138,9 @@ public class Controller {
     public boolean canBuild(double x, double y, double z) {
         if (region == null) {
             return true;
-        } else if (BuildMode.getActiveMode() == BuildMode.INSIDE) {
+        } else if (buildMode.getValue() == BuildMode.INSIDE) {
             return region.isInsideRegion(x, y, z);
-        } else if (BuildMode.getActiveMode() == BuildMode.OUTSIDE) {
+        } else if (buildMode.getValue() == BuildMode.OUTSIDE) {
             return !region.isInsideRegion(x, y, z);
         } else {
             return true;
@@ -147,5 +149,13 @@ public class Controller {
 
     public void disallowedClick() {
         messageManager.info("misclick blocked by build region\n");
+    }
+
+    public String getModTitle() {
+        return modTitle;
+    }
+
+    public BuildModeValue getBuildMode() {
+        return buildMode;
     }
 }

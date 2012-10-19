@@ -11,7 +11,7 @@ import com.bencvt.minecraft.client.buildregion.region.Axis;
 
 /**
  * A LibShapeDraw Shape representing a plane. This is purely cosmetic; see
- * PlaneRegion for the object that actually defines the plane.
+ * RegionPlane for the object that actually defines the plane.
  * <p>
  * The plane is rendered as an infinite 1-block-thick wireframe grid. Only a
  * few cells of the grid are rendered, clustered around the origin, which can
@@ -39,7 +39,7 @@ public class RenderPlane extends RenderBase {
     private final double[] baseCoords = {0.0, 0.0, 0.0};
     private final double[] curCoords = {0.0, 0.0, 0.0};
 
-    public RenderPlane(Color lineColorVisible, Color lineColorHidden, Axis axis, double coord) {
+    public RenderPlane(ReadonlyColor lineColorVisible, ReadonlyColor lineColorHidden, Axis axis, double coord) {
         super(lineColorVisible, lineColorHidden);
         if (axis == null) {
             throw new NullPointerException();

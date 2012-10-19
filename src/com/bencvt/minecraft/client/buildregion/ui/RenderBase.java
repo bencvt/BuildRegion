@@ -30,14 +30,14 @@ public abstract class RenderBase extends Shape {
     public static final double ANIM_SCALE_FADE = 1.0 - 1.0/16.0;
     public static final float LINE_WIDTH = 2.0F;
 
-    private final Color lineColorVisible;
-    private final Color lineColorHidden;
+    private final ReadonlyColor lineColorVisible;
+    private final ReadonlyColor lineColorHidden;
     private double alphaBase; // [0.0, 1.0] alpha scaling factor to apply to all lines
     private final ShapeScale shapeScale; // transform the entire shape
     private Timeline timelineFade;
     private final HashMap<Axis, Timeline> timelineShift;
 
-    public RenderBase(Color lineColorVisible, Color lineColorHidden) {
+    public RenderBase(ReadonlyColor lineColorVisible, ReadonlyColor lineColorHidden) {
         super(Vector3.ZEROS.copy());
         setRelativeToOrigin(false);
         if (lineColorVisible == null || lineColorHidden == null ||
@@ -52,11 +52,11 @@ public abstract class RenderBase extends Shape {
         timelineShift = new HashMap<Axis, Timeline>();
     }
 
-    public Color getLineColorVisible() {
+    public ReadonlyColor getLineColorVisible() {
         return lineColorVisible;
     }
 
-    public Color getLineColorHidden() {
+    public ReadonlyColor getLineColorHidden() {
         return lineColorHidden;
     }
 

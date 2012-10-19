@@ -40,15 +40,18 @@ public class GuiInputDouble extends GuiLabeledControl {
                 valueString,
                 xOffset + valueWidth - fontRenderer.getStringWidth(valueString),
                 yPosition + PAD_TOP,
-                CONTROL_NORMAL_COLOR_ARGB);
+                CONTROL_NORMAL_ARGB);
     }
 
     @Override
-    public boolean mousePressed(Minecraft minecraft, int mouseX, int mouseY) {
-        if (!super.mousePressed(minecraft, mouseX, mouseY)) {
+    public boolean mousePressed(Minecraft minecraft, int xMouse, int yMouse) {
+        if (!super.mousePressed(minecraft, xMouse, yMouse)) {
             return false;
         }
-        // TODO
+        // TODO: clicking the value turns it into a text input box
+        // TODO: +/- buttons and a slider
+        // TODO: add the ability to lock the value to either full units or half units
+        // TODO: some way to lock this GuiInputDouble to another (e.g. shared radiuses)
         return true;
     }
 }

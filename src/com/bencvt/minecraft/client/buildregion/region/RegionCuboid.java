@@ -2,7 +2,7 @@ package com.bencvt.minecraft.client.buildregion.region;
 
 import libshapedraw.primitive.ReadonlyVector3;
 
-import com.bencvt.minecraft.client.buildregion.BuildMode;
+import com.bencvt.minecraft.client.buildregion.BuildModeValue;
 import com.bencvt.minecraft.client.buildregion.ui.RenderBase;
 
 public class RegionCuboid extends RegionBase {
@@ -25,7 +25,7 @@ public class RegionCuboid extends RegionBase {
     }
 
     @Override
-    public RenderBase createShape() {
+    public RenderBase createShape(BuildModeValue buildMode) {
         // TODO Auto-generated method stub
         return null;
     }

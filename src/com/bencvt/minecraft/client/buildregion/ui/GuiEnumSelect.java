@@ -20,7 +20,7 @@ public class GuiEnumSelect<T extends Enum> extends GuiLabeledControl {
     public static final int PAD_RIGHT = 2;
     public static final int PAD_TOP = 2;
     public static final int PAD_BOTTOM = 1;
-    public static final int ANIM_DURATION = 500;
+    public static final int ANIM_DURATION = 350;
     public static final double ALPHA_OFF = 0.0;
     public static final double ALPHA_ON = 1.0;
 
@@ -151,7 +151,7 @@ public class GuiEnumSelect<T extends Enum> extends GuiLabeledControl {
     }
 
     @Override
-    protected void drawControl(int mouseX, int mouseY) {
+    protected void drawControl(int xMouse, int yMouse) {
         int xOffset = getControlXOffset();
         for (Option option : options.values()) {
             // Draw background rectangle.
@@ -162,14 +162,14 @@ public class GuiEnumSelect<T extends Enum> extends GuiLabeledControl {
                     tempColor.getARGB());
 
             // Draw foreground text.
-            if (option.isMouseOver(mouseX, mouseY)) {
+            if (option.isMouseOver(xMouse, yMouse)) {
                 fontRenderer.drawString(option.textMouseOver,
                         xOffset + option.xBegin + PAD_LEFT, yPosition + PAD_TOP,
-                        CONTROL_MOUSEOVER_COLOR_ARGB);
+                        CONTROL_MOUSEOVER_ARGB);
             } else {
                 fontRenderer.drawString(option.text,
                         xOffset + option.xBegin + PAD_LEFT, yPosition + PAD_TOP,
-                        CONTROL_NORMAL_COLOR_ARGB);
+                        CONTROL_NORMAL_ARGB);
             }
         }
     }

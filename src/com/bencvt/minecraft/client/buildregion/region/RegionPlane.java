@@ -1,10 +1,11 @@
 package com.bencvt.minecraft.client.buildregion.region;
 
+import libshapedraw.primitive.ReadonlyVector3;
+
 import com.bencvt.minecraft.client.buildregion.BuildMode;
+import com.bencvt.minecraft.client.buildregion.BuildModeValue;
 import com.bencvt.minecraft.client.buildregion.ui.RenderBase;
 import com.bencvt.minecraft.client.buildregion.ui.RenderPlane;
-
-import libshapedraw.primitive.ReadonlyVector3;
 
 /**
  * Represent a plane, specified by an axis and an integer coordinate along
@@ -49,10 +50,10 @@ public class RegionPlane extends RegionBase {
     }
 
     @Override
-    public RenderBase createShape() {
+    public RenderBase createShape(BuildModeValue buildMode) {
         return new RenderPlane(
-                BuildMode.activeLineColorVisible,
-                BuildMode.activeLineColorHidden,
+                buildMode.getColorVisible(),
+                buildMode.getColorHidden(),
                 axis,
                 getCoord(axis));
     }

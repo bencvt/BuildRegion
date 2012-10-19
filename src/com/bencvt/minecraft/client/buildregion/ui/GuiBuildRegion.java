@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import libshapedraw.primitive.Color;
+import libshapedraw.primitive.ReadonlyColor;
 import net.minecraft.src.FontRenderer;
 import net.minecraft.src.GuiButton;
 import net.minecraft.src.GuiScreen;
@@ -23,12 +24,20 @@ import com.bencvt.minecraft.client.buildregion.region.RegionType;
 public class GuiBuildRegion extends GuiScreen {
     public static final int ROW_SPACING = 2;
     public static final int PAD = 2;
-    public static final int BACKGROUND_ARGB = Color.BLACK.copy().setAlpha(0.25).getARGB();
+    public static final int BORDER_THICKNESS = 1;
+    public static final int WINDOW_Y_ADJUST = -16;
+    public static final int HEADER_ARGB            = Color.WHITE.getARGB();
+    public static final int BACKGROUND_ARGB        = Color.BLACK.copy().setAlpha(3.0/16.0).getARGB();
+    public static final ReadonlyColor BORDER_COLOR = Color.BLACK.copy().setAlpha(1.0/8.0);
+    public static final int BORDER_ARGB            = BORDER_COLOR.getARGB();
+    public static final ReadonlyColor SELECT_COLOR = Color.DODGER_BLUE;
+
     private static final RegionType LONGEST_SUBTABLE = RegionType.CYLINDER; // for calculating window height
 
     private final Controller controller;
     private final GuiEnumSelect<BuildMode>    inputBuildMode;
     private final GuiEnumSelect<RegionType>   inputRegionType;
+    private final GuiHLine                    hLine;
     private final GuiEnumSelect<Axis>         inputPlaneAxis;
     private final GuiInputDouble              inputPlaneCoord;
     private final GuiInputDouble              inputCylinderOriginX;
@@ -51,15 +60,16 @@ public class GuiBuildRegion extends GuiScreen {
         // Create all controls.
         inputBuildMode = new GuiEnumSelect<BuildMode>("build mode:", fr, BuildMode.values(), null);
         for (BuildMode mode : BuildMode.values()) {
-            inputBuildMode.setOptionColor(mode, mode.lineColorVisible);
+            inputBuildMode.setOptionColor(mode, mode.colorVisible);
         }
-        inputRegionType = new GuiEnumSelect<RegionType>("region type:", fr, RegionType.values(), BuildMode.activeLineColorVisible);
-        inputPlaneAxis = new GuiEnumSelect<Axis>("axis:", fr, Axis.values(), BuildMode.activeLineColorVisible);
+        inputRegionType = new GuiEnumSelect<RegionType>("region type:", fr, RegionType.values(), SELECT_COLOR);
+        hLine = new GuiHLine(fr, BORDER_THICKNESS, BORDER_COLOR);
+        inputPlaneAxis = new GuiEnumSelect<Axis>("axis:", fr, Axis.values(), SELECT_COLOR);
         inputPlaneCoord = new GuiInputDouble("x coordinate:", fr);
         inputCylinderOriginX = new GuiInputDouble("origin x:", fr);
         inputCylinderOriginY = new GuiInputDouble("origin y:", fr);
         inputCylinderOriginZ = new GuiInputDouble("origin z:", fr);
-        inputCylinderAxis = new GuiEnumSelect<Axis>("axis:", fr, Axis.values(), BuildMode.activeLineColorVisible);
+        inputCylinderAxis = new GuiEnumSelect<Axis>("axis:", fr, Axis.values(), SELECT_COLOR);
         inputCylinderHeight = new GuiInputDouble("height:", fr);
         inputCylinderRadiusA = new GuiInputDouble("x radius:", fr);
         inputCylinderRadiusB = new GuiInputDouble("y radius:", fr);
@@ -71,6 +81,7 @@ public class GuiBuildRegion extends GuiScreen {
         }
         controlsByRegionType.get(RegionType.NONE).add(inputBuildMode);
         controlsByRegionType.get(RegionType.NONE).add(inputRegionType);
+        controlsByRegionType.get(RegionType.NONE).add(hLine);
         controlsByRegionType.get(RegionType.PLANE).add(inputPlaneAxis);
         controlsByRegionType.get(RegionType.PLANE).add(inputPlaneCoord);
         controlsByRegionType.get(RegionType.CYLINDER).add(inputCylinderOriginX);
@@ -86,9 +97,10 @@ public class GuiBuildRegion extends GuiScreen {
         // TODO: maintain individual Region instances for each type
         // TODO: coerce the active Region into instances for the other types with reasonable defaults
         // TODO: make controller accept a Region as a live preview
-        // TODO: remember the current active Region for the "Cancel" button
+        // TODO: remember the current active Region for the "Undo" button
         // TODO: possibly allow the user to look around by holding right-click and moving around
-        inputBuildMode.setSelectedValue(BuildMode.getActiveMode(), false);
+        // TODO: pressing B or Esc is the same as pressing the "OK" button
+        inputBuildMode.setSelectedValue(controller.getBuildMode().getValue(), false);
         inputRegionType.setSelectedValue(RegionType.PLANE, false);
         inputPlaneAxis.setSelectedValue(Axis.X, false);
         inputPlaneCoord.setValue(-4213.5);
@@ -123,7 +135,7 @@ public class GuiBuildRegion extends GuiScreen {
                 }
             }
         }
-        windowHeight += PAD + PAD;
+        windowHeight += BORDER_THICKNESS*2 + PAD*2;
 
         // Adjust controls' widths to match the above.
         // Calculate the window width.
@@ -139,15 +151,15 @@ public class GuiBuildRegion extends GuiScreen {
                 controlList.add(control);
             }
         }
-        windowWidth += PAD + PAD;
+        windowWidth += BORDER_THICKNESS*2 + PAD*2;
 
         // Center everything.
         windowXPosition = (width - windowWidth) / 2;
-        windowYPosition = (height - windowHeight) / 2;
+        windowYPosition = (height - windowHeight) / 2 + WINDOW_Y_ADJUST;
 
         // [Re]position all controls.
-        final int xPos = windowXPosition + PAD;
-        int yPos = windowYPosition + PAD;
+        final int xPos = windowXPosition + BORDER_THICKNESS + PAD;
+        int yPos = windowYPosition + BORDER_THICKNESS + PAD;
         int yPosBack = yPos;
         for (RegionType regionType : RegionType.values()) {
             for (GuiLabeledControl control : controlsByRegionType.get(regionType)) {
@@ -159,10 +171,11 @@ public class GuiBuildRegion extends GuiScreen {
                 yPos = yPosBack;
             }
         }
-        // TODO: add header with "BuildRegion vX.Y" text, no background
-        // TODO: add horizontal line between permanent rows and region-specific row
-        // TODO: add footer with buttons ("OK", "Usage", "Cancel")
-        // TODO: some way to lock two or three GuiInputDoubles together for shared radiuses
+
+        // TODO: buttons to rotate the region around its origin (for planes, fill in using player coords)
+        // TODO: eliminate click sounds
+        // TODO: row mouseover tooltips
+        // TODO: add footer with buttons ("OK", "Usage", "Undo" (gray out initially))
 
         updateControlProperties();
     }
@@ -193,14 +206,55 @@ public class GuiBuildRegion extends GuiScreen {
     }
 
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTick) {
-        drawRect(
-                windowXPosition,
-                windowYPosition,
-                windowXPosition + windowWidth,
-                windowYPosition + windowHeight,
-                BACKGROUND_ARGB);
-        super.drawScreen(mouseX, mouseY, partialTick);
+    public void drawScreen(int xMouse, int yMouse, float partialTick) {
+        final int xLeft   = windowXPosition;
+        final int xRight  = windowXPosition + windowWidth;
+        final int yTop    = windowYPosition;
+        final int yBottom = windowYPosition + windowHeight;
+
+        // Draw header above the window.
+        mc.fontRenderer.drawString(controller.getModTitle(),
+                xLeft + (windowWidth - mc.fontRenderer.getStringWidth(controller.getModTitle())) / 2,
+                yTop - mc.fontRenderer.FONT_HEIGHT - PAD,
+                HEADER_ARGB);
+
+        // Draw background.
+        drawRect(xLeft, yTop, xRight, yBottom, BACKGROUND_ARGB);
+
+        // Draw border on top of background.
+        if (BORDER_THICKNESS > 0) {
+            // Draw top border, including corners.
+            drawRect(
+                    xLeft,
+                    yTop,
+                    xRight,
+                    yTop + BORDER_THICKNESS,
+                    BORDER_ARGB);
+            // Draw bottom border, including corners.
+            drawRect(
+                    xLeft,
+                    yBottom - BORDER_THICKNESS,
+                    xRight,
+                    yBottom,
+                    BORDER_ARGB);
+            // Draw left border, excluding corners.
+            drawRect(
+                    xLeft,
+                    yTop + BORDER_THICKNESS,
+                    xLeft + BORDER_THICKNESS,
+                    yBottom - BORDER_THICKNESS,
+                    BORDER_ARGB);
+            // Draw right border, excluding corners.
+            drawRect(
+                    xRight - BORDER_THICKNESS,
+                    yTop + BORDER_THICKNESS,
+                    xRight,
+                    yBottom - BORDER_THICKNESS,
+                    BORDER_ARGB);
+        }
+
+        // Defer control rendering to parent class.
+        super.drawScreen(xMouse, yMouse, partialTick);
     }
 
     @Override
@@ -211,9 +265,9 @@ public class GuiBuildRegion extends GuiScreen {
         }
         if (guiButton == inputRegionType) {
             if (inputRegionType.getSelectedValue() == null) {
-                controller.cmdClear(true);
+                controller.cmdClear();
             }
-            // TODO
+            // TODO: interact with the controller to adjust region
         }
         updateControlProperties();
     }

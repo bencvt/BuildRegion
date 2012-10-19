@@ -74,7 +74,11 @@ public class mod_BuildRegion extends BaseMod implements LSDEventListener, Player
 
     @Override
     public void onRespawn(LSDRespawnEvent event) {
-        controller.cmdClear(event.isNewServer());
+        if (event.isNewServer()) {
+            controller.cmdReset();
+        } else {
+            controller.cmdClear();
+        }
         PlayerControllerHooks.installHooks();
         if (updateCheck == null) {
             updateCheck = new UpdateCheck(getModVersion());
