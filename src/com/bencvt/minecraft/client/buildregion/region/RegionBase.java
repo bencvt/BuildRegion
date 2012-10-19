@@ -3,7 +3,7 @@ package com.bencvt.minecraft.client.buildregion.region;
 import libshapedraw.primitive.ReadonlyVector3;
 import libshapedraw.primitive.Vector3;
 
-import com.bencvt.minecraft.client.buildregion.BuildModeValue;
+import com.bencvt.minecraft.client.buildregion.ReadonlyBuildModeValue;
 import com.bencvt.minecraft.client.buildregion.ui.RenderBase;
 
 /**
@@ -75,5 +75,5 @@ public abstract class RegionBase {
     /**
      * @return a new Shape instance for rendering this region in the UI
      */
-    public abstract RenderBase createShape(BuildModeValue buildMode);
+    public abstract RenderBase createShape(ReadonlyBuildModeValue buildMode);
 }

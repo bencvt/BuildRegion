@@ -10,7 +10,7 @@ import libshapedraw.primitive.ReadonlyColor;
  * 
  * @author bencvt
  */
-public class BuildModeValue {
+public class BuildModeValue implements ReadonlyBuildModeValue {
     public static final long ANIM_DURATION = 500;
 
     private BuildMode value;
@@ -19,19 +19,25 @@ public class BuildModeValue {
     private Timeline timeline;
 
     public BuildModeValue(BuildMode value) {
+        if (value == null) {
+            throw new IllegalArgumentException();
+        }
+        this.value = value;
         this.colorVisible = value.colorVisible.copy();
         this.colorHidden = value.colorHidden.copy();
-        this.value = value;
     }
 
+    @Override
     public ReadonlyColor getColorVisible() {
         return colorVisible;
     }
 
+    @Override
     public ReadonlyColor getColorHidden() {
         return colorHidden;
     }
 
+    @Override
     public BuildMode getValue() {
         return value;
     }
@@ -40,18 +46,18 @@ public class BuildModeValue {
         if (value == null) {
             throw new IllegalArgumentException();
         }
+        this.value = value;
 
         killAnimation();
         colorVisible.set(value.colorVisible);
         colorHidden.set(value.colorHidden);
-
-        this.value = value;
     }
 
     public void setValue(BuildMode value) {
         if (value == null) {
             throw new IllegalArgumentException();
         }
+        this.value = value;
 
         killAnimation();
         timeline = new Timeline();
@@ -59,8 +65,6 @@ public class BuildModeValue {
         animateColor(colorHidden, value.colorHidden);
         timeline.setDuration(ANIM_DURATION);
         timeline.play();
-
-        this.value = value;
     }
 
     private void killAnimation() {

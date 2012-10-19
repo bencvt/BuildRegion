@@ -155,7 +155,7 @@ public class Controller {
         return modTitle;
     }
 
-    public BuildModeValue getBuildMode() {
+    public ReadonlyBuildModeValue getBuildMode() {
         return buildMode;
     }
 }

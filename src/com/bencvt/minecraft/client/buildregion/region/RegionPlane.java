@@ -2,8 +2,7 @@ package com.bencvt.minecraft.client.buildregion.region;
 
 import libshapedraw.primitive.ReadonlyVector3;
 
-import com.bencvt.minecraft.client.buildregion.BuildMode;
-import com.bencvt.minecraft.client.buildregion.BuildModeValue;
+import com.bencvt.minecraft.client.buildregion.ReadonlyBuildModeValue;
 import com.bencvt.minecraft.client.buildregion.ui.RenderBase;
 import com.bencvt.minecraft.client.buildregion.ui.RenderPlane;
 
@@ -50,7 +49,7 @@ public class RegionPlane extends RegionBase {
     }
 
     @Override
-    public RenderBase createShape(BuildModeValue buildMode) {
+    public RenderBase createShape(ReadonlyBuildModeValue buildMode) {
         return new RenderPlane(
                 buildMode.getColorVisible(),
                 buildMode.getColorHidden(),
