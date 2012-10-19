@@ -2,11 +2,8 @@ package com.bencvt.minecraft.client.buildregion.ui;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import libshapedraw.primitive.Color;
-import net.minecraft.client.Minecraft;
-import net.minecraft.src.FontRenderer;
 import net.minecraft.src.GuiButton;
 import net.minecraft.src.GuiScreen;
 
@@ -26,14 +23,15 @@ public class GuiBuildRegion extends GuiScreen {
     public static final int BACKGROUND_ARGB = Color.BLACK.copy().setAlpha(0.25).getARGB();
 
     private final Controller controller;
+    private final HashMap<RegionType, ArrayList<GuiLabeledControl>> controlsByRegionType;
     private final GuiEnumSelect<BuildMode>    selectBuildMode;
     private final GuiEnumSelect<RegionType>   selectRegionType;
     private final GuiEnumSelect<Axis>         selectPlaneAxis;
-    private final HashMap<RegionType, ArrayList<GuiLabeledControl>> controlsByRegionType;
+    private final GuiInputDouble              inputPlaneCoord;
     private int windowXPosition = 0;
     private int windowYPosition = 0;
-    private int windowHeight;
-    private int windowWidth;
+    private int windowHeight; // calculated in initGui
+    private int windowWidth;  // calculated in initGui
 
     public GuiBuildRegion(Controller controller) {
         this.controller = controller;
@@ -49,19 +47,22 @@ public class GuiBuildRegion extends GuiScreen {
         }
         selectRegionType = new GuiEnumSelect<RegionType>(RegionType.class, "region type:", BuildMode.activeLineColorVisible);
         selectPlaneAxis = new GuiEnumSelect<Axis>(Axis.class, "axis:", BuildMode.activeLineColorVisible);
+        inputPlaneCoord = new GuiInputDouble("x coordinate:");
 
         controlsByRegionType.get(RegionType.NONE).add(selectBuildMode);
         controlsByRegionType.get(RegionType.NONE).add(selectRegionType);
         controlsByRegionType.get(RegionType.PLANE).add(selectPlaneAxis);
+        controlsByRegionType.get(RegionType.PLANE).add(inputPlaneCoord);
     }
 
-    public void updateVisibility() {
+    public void updateControlProperties() {
         RegionType activeRegionType = selectRegionType.getSelectedValue();
         for (RegionType regionType : controlsByRegionType.keySet()) {
             for (GuiLabeledControl control : controlsByRegionType.get(regionType)) {
                 control.drawButton = (regionType == RegionType.NONE || regionType == activeRegionType);
             }
         }
+        inputPlaneCoord.displayString = selectPlaneAxis.getSelectedValue().toString().toLowerCase() + " coordinate:";
     }
 
     @Override
@@ -75,18 +76,13 @@ public class GuiBuildRegion extends GuiScreen {
         }
 
         // [Re]initialize the layout of all controls.
-        int xPos = windowXPosition + PAD;
-        int yPos = windowYPosition + PAD;
+        setLayoutAll(labelWidth, windowXPosition + PAD, windowYPosition + PAD);
 
-        selectBuildMode.setLayout(fontRenderer, labelWidth, xPos, yPos);
+        // Populate the controls' contents from the controller.
         selectBuildMode.setSelectedValue(BuildMode.getActiveMode(), false);
-        yPos += selectBuildMode.getHeight() + ROW_SPACING;
-
-        selectRegionType.setLayout(fontRenderer, labelWidth, xPos, yPos);
         selectRegionType.setSelectedValue(RegionType.PLANE, false); // XXX
-        yPos += selectRegionType.getHeight() + ROW_SPACING;
-
-        initControlsPlane(labelWidth, xPos, yPos);
+        selectPlaneAxis.setSelectedValue(Axis.X, false); // XXX
+        inputPlaneCoord.setValue(-4213.5); // XXX
 
         // Calculate the window width and height.
         // Add all controls to the list of controls to render.
@@ -100,13 +96,20 @@ public class GuiBuildRegion extends GuiScreen {
             }
         }
 
-        updateVisibility();
+        updateControlProperties();
     }
 
-    private void initControlsPlane(int labelWidth, int xPos, int yPos) {
+    private void setLayoutAll(int labelWidth, int xPos, int yPos) {
+        selectBuildMode.setLayout(fontRenderer, labelWidth, xPos, yPos);
+        yPos += selectBuildMode.getHeight() + ROW_SPACING;
+        selectRegionType.setLayout(fontRenderer, labelWidth, xPos, yPos);
+        yPos += selectRegionType.getHeight() + ROW_SPACING;
+        setLayoutPlane(labelWidth, xPos, yPos);
+    }
+    private void setLayoutPlane(int labelWidth, int xPos, int yPos) {
         selectPlaneAxis.setLayout(fontRenderer, labelWidth, xPos, yPos);
-        selectPlaneAxis.setSelectedValue(Axis.X, false); // XXX
         yPos += selectPlaneAxis.getHeight() + ROW_SPACING;
+        inputPlaneCoord.setLayout(fontRenderer, labelWidth, xPos, yPos);
     }
 
     @Override
@@ -130,8 +133,8 @@ public class GuiBuildRegion extends GuiScreen {
             if (selectRegionType.getSelectedValue() == null) {
                 controller.cmdClear(true);
             }
-            updateVisibility();
             // TODO
         }
+        updateControlProperties();
     }
 }

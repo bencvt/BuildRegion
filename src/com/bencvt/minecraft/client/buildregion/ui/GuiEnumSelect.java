@@ -7,7 +7,6 @@ import libshapedraw.primitive.Color;
 import libshapedraw.primitive.ReadonlyColor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.FontRenderer;
-import net.minecraft.src.GuiButton;
 
 /**
  * A multi-select Minecraft GUI control.
@@ -16,7 +15,6 @@ import net.minecraft.src.GuiButton;
  * @author bencvt
  */
 public class GuiEnumSelect<T extends Enum> extends GuiLabeledControl {
-    public static final int LABEL_SPACING = 4;
     public static final int OPTION_SPACING = 2;
     public static final int PAD_LEFT = 2;
     public static final int PAD_RIGHT = 2;
@@ -175,10 +173,10 @@ public class GuiEnumSelect<T extends Enum> extends GuiLabeledControl {
                     yPosition + height,
                     tempColor.getARGB());
             minecraft.fontRenderer.drawString(
-                    mouseOver ? option.textMouseOver : option.text,
+                    (mouseOver ? option.textMouseOver : option.text),
                     option.xBegin + PAD_LEFT,
                     yPosition + PAD_TOP,
-                    0xffffffff);
+                    CONTROL_COLOR_ARGB);
         }
     }
     /** so we don't create a bunch of temporary objects when rendering */

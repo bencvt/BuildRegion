@@ -5,7 +5,6 @@ import libshapedraw.primitive.ReadonlyVector3;
 import libshapedraw.primitive.Vector3;
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.BaseMod;
-import net.minecraft.src.PlayerControllerHooks;
 
 import com.bencvt.minecraft.client.buildregion.region.Direction3D;
 import com.bencvt.minecraft.client.buildregion.region.RegionBase;

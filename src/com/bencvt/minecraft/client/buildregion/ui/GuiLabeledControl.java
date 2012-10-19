@@ -6,7 +6,9 @@ import net.minecraft.src.FontRenderer;
 import net.minecraft.src.GuiButton;
 
 public abstract class GuiLabeledControl extends GuiButton {
+    public static final int LABEL_SPACING = 4;
     public static final int LABEL_COLOR_ARGB = Color.LIGHT_GRAY.getARGB();
+    public static final int CONTROL_COLOR_ARGB = Color.WHITE.getARGB();
     private static int topId;
 
     public GuiLabeledControl(String labelText) {

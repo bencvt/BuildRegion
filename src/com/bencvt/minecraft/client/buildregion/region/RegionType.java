@@ -5,7 +5,6 @@ public enum RegionType {
     PLANE,
     CUBOID,
     CYLINDER,
-    SPHEROID,
-    SCHEMATIC;
+    SPHEROID;
     // TODO: SCHEMATIC
 }
