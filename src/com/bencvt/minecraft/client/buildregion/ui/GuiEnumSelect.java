@@ -29,25 +29,31 @@ public class GuiEnumSelect<T extends Enum> extends GuiLabeledControl {
         protected String text;
         protected String textMouseOver;
         protected ReadonlyColor color;
+        protected int xBegin; // relative to the control column's x coordinate
+        protected int xEnd;   // relative to the control column's x coordinate
+        protected Timeline alphaTimeline;
+        protected double alpha;
 
-        private double alpha;
         // getter/setter required for property interpolation
         public double getAlpha() { return alpha; }
         public void setAlpha(double alpha) { this.alpha = alpha; }
-        protected Timeline alphaTimeline;
 
-        protected int xBegin;
-        protected int xEnd;
+        public boolean isMouseOver(int xMouse, int yMouse) {
+            int xOffset = getControlXOffset();
+            return xMouse >= xOffset + xBegin && xMouse <= xOffset + xEnd &&
+                    yMouse >= yPosition && yMouse <= yPosition + height;
+        }
     }
     private final LinkedHashMap<T, Option> options;
     private int labelWidth;
     private boolean allowSetNull;
     private T selectedValue;
 
-    public GuiEnumSelect(Class<T> enumType, String labelText, ReadonlyColor color) {
-        super(labelText);
+    public GuiEnumSelect(String displayString, FontRenderer fontRenderer, T[] values, ReadonlyColor color) {
+        super(displayString, fontRenderer);
         options = new LinkedHashMap<T, Option>();
-        for (T value : enumType.getEnumConstants()) {
+        int controlWidth = 0;
+        for (T value : values) {
             Option option = new Option();
             option.value = value;
             option.text = value.toString().toLowerCase();
@@ -55,29 +61,17 @@ public class GuiEnumSelect<T extends Enum> extends GuiLabeledControl {
             option.color = color;
             option.setAlpha(ALPHA_OFF);
             option.alphaTimeline = null;
-            // option.xBegin and option.xEnd deferred to setLayout
+            if (controlWidth > 0) {
+                controlWidth += OPTION_SPACING;
+            }
+            option.xBegin = controlWidth;
+            controlWidth += PAD_LEFT + fontRenderer.getStringWidth(option.text) + PAD_RIGHT;
+            option.xEnd = controlWidth;
             options.put(value, option);
         }
         selectedValue = null;
-    }
-
-    @Override
-    public void setLayout(FontRenderer fontRenderer, int labelWidth, int x, int y) {
-        this.labelWidth = labelWidth;
-        xPosition = x;
-        yPosition = y;
+        setControlWidth(controlWidth); // also sets width
         height = PAD_TOP + fontRenderer.FONT_HEIGHT + PAD_BOTTOM;
-        width = labelWidth + LABEL_SPACING;
-        boolean first = true;
-        for (Option option : options.values()) {
-            if (!first) {
-                width += OPTION_SPACING;
-            }
-            first = false;
-            option.xBegin = width;
-            width += PAD_LEFT + fontRenderer.getStringWidth(option.text) + PAD_RIGHT;
-            option.xEnd = width;
-        }
     }
 
     private Option getOptionForValue(T value) {
@@ -152,43 +146,44 @@ public class GuiEnumSelect<T extends Enum> extends GuiLabeledControl {
     }
 
     @Override
-    public void drawButton(Minecraft minecraft, int mouseX, int mouseY) {
-        if (!drawButton) {
-            return;
-        }
-        minecraft.fontRenderer.drawString(
-                displayString,
-                xPosition + labelWidth - minecraft.fontRenderer.getStringWidth(displayString),
-                yPosition + PAD_TOP,
-                LABEL_COLOR_ARGB);
+    protected int getLabelYOffset() {
+        return PAD_TOP;
+    }
+
+    @Override
+    protected void drawControl(int mouseX, int mouseY) {
+        int xOffset = getControlXOffset();
         for (Option option : options.values()) {
-            boolean mouseOver = (
-                    mouseX >= option.xBegin && mouseX <= option.xEnd &&
-                    mouseY >= yPosition && mouseY <= yPosition + height);
+            // Draw background rectangle.
             tempColor.set(option.color).scaleAlpha(option.getAlpha());
             drawRect(
-                    option.xBegin,
-                    yPosition,
-                    option.xEnd,
-                    yPosition + height,
+                    xOffset + option.xBegin,  yPosition,
+                    xOffset + option.xEnd,    yPosition + height,
                     tempColor.getARGB());
-            minecraft.fontRenderer.drawString(
-                    (mouseOver ? option.textMouseOver : option.text),
-                    option.xBegin + PAD_LEFT,
-                    yPosition + PAD_TOP,
-                    CONTROL_COLOR_ARGB);
+
+            // Draw foreground text.
+            if (option.isMouseOver(mouseX, mouseY)) {
+                fontRenderer.drawString(option.textMouseOver,
+                        xOffset + option.xBegin + PAD_LEFT, yPosition + PAD_TOP,
+                        CONTROL_MOUSEOVER_COLOR_ARGB);
+            } else {
+                fontRenderer.drawString(option.text,
+                        xOffset + option.xBegin + PAD_LEFT, yPosition + PAD_TOP,
+                        CONTROL_NORMAL_COLOR_ARGB);
+            }
         }
     }
     /** so we don't create a bunch of temporary objects when rendering */
     private static final Color tempColor = Color.BLACK.copy();
 
     @Override
-    public boolean mousePressed(Minecraft minecraft, int mouseX, int mouseY) {
-        if (!super.mousePressed(minecraft, mouseX, mouseY)) {
+    public boolean mousePressed(Minecraft minecraft, int xMouse, int yMouse) {
+        if (!super.mousePressed(minecraft, xMouse, yMouse)) {
             return false;
         }
+        int xOffset = getControlXOffset();
         for (Option option : options.values()) {
-            if (mouseX >= option.xBegin && mouseX <= option.xEnd) {
+            if (xMouse >= option.xBegin + xOffset && xMouse <= option.xEnd + xOffset) {
                 if (allowSetNull && selectedValue == option.value) {
                     setSelectedValue(null, true);
                 } else {

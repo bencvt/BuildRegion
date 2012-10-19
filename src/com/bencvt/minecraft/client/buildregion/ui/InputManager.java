@@ -75,7 +75,7 @@ public class InputManager {
                 controller.cmdMode();
             } else {
                 //showUsage(); // TODO: move to gui
-                minecraft.displayGuiScreen(new GuiBuildRegion(controller));
+                minecraft.displayGuiScreen(new GuiBuildRegion(controller, minecraft.fontRenderer));
             }
         } else if (key == KEYBIND_SHIFT_BACK) {
             if (isShiftKeyDown()) {
