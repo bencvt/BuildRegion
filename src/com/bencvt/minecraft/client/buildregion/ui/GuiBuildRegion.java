@@ -2,14 +2,12 @@ package com.bencvt.minecraft.client.buildregion.ui;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 
 import libshapedraw.primitive.Color;
 import libshapedraw.primitive.ReadonlyColor;
 import net.minecraft.src.FontRenderer;
 import net.minecraft.src.GuiButton;
 import net.minecraft.src.GuiScreen;
-import net.minecraft.src.ScaledResolution;
 
 import com.bencvt.minecraft.client.buildregion.BuildMode;
 import com.bencvt.minecraft.client.buildregion.Controller;

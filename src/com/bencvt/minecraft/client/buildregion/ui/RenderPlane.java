@@ -1,7 +1,6 @@
 package com.bencvt.minecraft.client.buildregion.ui;
 
 import libshapedraw.MinecraftAccess;
-import libshapedraw.primitive.Color;
 import libshapedraw.primitive.ReadonlyColor;
 import libshapedraw.primitive.ReadonlyVector3;
 

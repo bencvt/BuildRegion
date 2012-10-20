@@ -1,7 +1,5 @@
 package com.bencvt.minecraft.client.buildregion.ui;
 
-import com.bencvt.minecraft.client.buildregion.ui.GuiEnumSelect.Option;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.FontRenderer;
 

@@ -1,11 +1,9 @@
 package com.bencvt.minecraft.client.buildregion.ui;
 
 import java.util.HashMap;
-import java.util.HashSet;
 
 import libshapedraw.MinecraftAccess;
 import libshapedraw.animation.trident.Timeline;
-import libshapedraw.primitive.Color;
 import libshapedraw.primitive.ReadonlyColor;
 import libshapedraw.primitive.ReadonlyVector3;
 import libshapedraw.primitive.Vector3;

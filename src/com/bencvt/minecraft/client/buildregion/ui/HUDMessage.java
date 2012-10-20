@@ -1,7 +1,5 @@
 package com.bencvt.minecraft.client.buildregion.ui;
 
-import org.lwjgl.opengl.GL11;
-
 import libshapedraw.animation.trident.Timeline;
 import libshapedraw.primitive.Color;
 import libshapedraw.primitive.ReadonlyColor;

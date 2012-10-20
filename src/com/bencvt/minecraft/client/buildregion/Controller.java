@@ -10,7 +10,6 @@ import com.bencvt.minecraft.client.buildregion.region.Axis;
 import com.bencvt.minecraft.client.buildregion.region.Direction3D;
 import com.bencvt.minecraft.client.buildregion.region.RegionBase;
 import com.bencvt.minecraft.client.buildregion.region.RegionPlane;
-import com.bencvt.minecraft.client.buildregion.region.RegionType;
 import com.bencvt.minecraft.client.buildregion.ui.InputManager;
 import com.bencvt.minecraft.client.buildregion.ui.MessageManager;
 import com.bencvt.minecraft.client.buildregion.ui.ShapeManager;
