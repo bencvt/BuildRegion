@@ -44,11 +44,41 @@ public enum Direction3D {
     }
 
     /**
-     * @param yaw
-     * @param pitch
-     * @return the cardinal direction matching the angles, or null if ambiguous
+     * @param yaw angle in degrees
+     * @param pitch angle in degrees and in range [-90.0, 90.0]
+     * @return the cardinal direction matching the angles, will never be null
      */
     public static Direction3D fromYawPitch(double yaw, double pitch) {
+        if (pitch > 45.0) {
+            return DOWN;
+        } else if (pitch < -45.0) {
+            return UP;
+        }
+
+        yaw = yaw % 360;
+        if (yaw < 0.0) {
+            yaw += 360.0;
+        }
+
+        if (yaw < 45.0) {
+            return SOUTH;
+        } else if (yaw < 90.0 + 45.0) {
+            return WEST;
+        } else if (yaw < 180.0 + 45.0) {
+            return NORTH;
+        } else if (yaw < 270.0 + 45.0) {
+            return EAST;
+        } else {
+            return SOUTH;
+        }
+    }
+
+    /**
+     * @param yaw angle in degrees
+     * @param pitch angle in degrees and in range [-90.0, 90.0]
+     * @return the cardinal direction matching the angles, or null if ambiguous
+     */
+    public static Direction3D fromYawPitchUnambiguously(double yaw, double pitch) {
         final double A = 26.25;
 
         if (pitch > 90.0 - A) {
@@ -78,7 +108,7 @@ public enum Direction3D {
             return null;
         } else if (yaw < 270.0 + A) {
             return EAST;
-        } else if (yaw < 360 - A) {
+        } else if (yaw < 360.0 - A) {
             return null;
         } else {
             return SOUTH;

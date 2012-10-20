@@ -10,6 +10,7 @@ import com.bencvt.minecraft.client.buildregion.region.Axis;
 import com.bencvt.minecraft.client.buildregion.region.Direction3D;
 import com.bencvt.minecraft.client.buildregion.region.RegionBase;
 import com.bencvt.minecraft.client.buildregion.region.RegionPlane;
+import com.bencvt.minecraft.client.buildregion.region.RegionType;
 import com.bencvt.minecraft.client.buildregion.ui.InputManager;
 import com.bencvt.minecraft.client.buildregion.ui.MessageManager;
 import com.bencvt.minecraft.client.buildregion.ui.ShapeManager;
@@ -27,7 +28,7 @@ public class Controller {
     private final String modTitle;
     private final BuildModeValue buildMode;
     private RegionBase curRegion;
-    private RegionBase prevRegion;
+    private RegionBase prevRegion; // will never be null
 
     public Controller(LibShapeDraw libShapeDraw, mod_BuildRegion mod, Minecraft minecraft) {
         if (!LibShapeDraw.isControllerInitialized()) { // TODO: replace with .verifyInitialized()
@@ -68,7 +69,9 @@ public class Controller {
     }
 
     public void cmdSet(RegionBase newRegion) {
-        prevRegion = curRegion;
+        if (curRegion != null) {
+            prevRegion = curRegion;
+        }
         curRegion = newRegion;
 
         // Update UI.
@@ -81,7 +84,8 @@ public class Controller {
     }
 
     public void cmdSetFacing() {
-        Direction3D dir = getFacingDirection();
+        RegionBase protoRegion = getPrototypeRegion();
+        Direction3D dir = getFacingDirection(false);
         if (dir == null) {
             return;
         }
@@ -89,7 +93,7 @@ public class Controller {
                 minecraft.thePlayer.posX,
                 minecraft.thePlayer.posY,
                 minecraft.thePlayer.posZ);
-        RegionBase newRegion = getPrototypeRegion().copyUsing(origin, dir.axis);
+        RegionBase newRegion = protoRegion.copyUsing(origin, dir.axis);
         // Move the origin so it's in front of the player.
         newRegion.shiftCoord(dir.axis, dir.axisDirection * 2);
 
@@ -97,7 +101,7 @@ public class Controller {
     }
 
     public void cmdShiftFacing(int amount) {
-        Direction3D dir = getFacingDirection();
+        Direction3D dir = getFacingDirection(true);
         if (dir == null) {
             return;
         }
@@ -168,14 +172,20 @@ public class Controller {
     // Internal helper methods
     // ========
 
-    private Direction3D getFacingDirection() {
-        Direction3D dir = Direction3D.fromYawPitch(
-                minecraft.thePlayer.rotationYaw,
-                minecraft.thePlayer.rotationPitch);
-        if (dir == null) {
-            messageManager.error("ambiguous direction\nface north, south, east, west, up, or down");
+    private Direction3D getFacingDirection(boolean unambiguously) {
+        if (unambiguously) {
+            Direction3D dir = Direction3D.fromYawPitchUnambiguously(
+                    minecraft.thePlayer.rotationYaw,
+                    minecraft.thePlayer.rotationPitch);
+            if (dir == null) {
+                messageManager.error("ambiguous direction\nface north, south, east, west, up, or down");
+            }
+            return dir;
+        } else {
+            return Direction3D.fromYawPitch(
+                    minecraft.thePlayer.rotationYaw,
+                    minecraft.thePlayer.rotationPitch);
         }
-        return dir;
     }
 
     private RegionBase getPrototypeRegion() {

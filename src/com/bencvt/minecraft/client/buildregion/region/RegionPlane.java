@@ -29,7 +29,7 @@ public class RegionPlane extends RegionBase {
     }
 
     @Override
-    public RegionType getRegionMode() {
+    public RegionType getRegionType() {
         return RegionType.PLANE;
     }
 

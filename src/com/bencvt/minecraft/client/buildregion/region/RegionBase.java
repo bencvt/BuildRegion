@@ -22,7 +22,7 @@ public abstract class RegionBase {
 
     public abstract RegionBase copyUsing(ReadonlyVector3 origin, Axis axis);
 
-    public abstract RegionType getRegionMode();
+    public abstract RegionType getRegionType();
 
     public Vector3 getOrigin() {
         return origin;

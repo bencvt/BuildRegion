@@ -6,6 +6,11 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 
+/**
+ * Check the remote website for updates.
+ * 
+ * @author bencvt
+ */
 public class UpdateCheck {
     public static final String MAIN_URL = "http://www.minecraftforum.net/topic/1514724-";
     public static final String SHORT_URL = "http://bit.ly/BuildRegion";
