@@ -79,13 +79,13 @@ public class InputManager {
             if (isShiftKeyDown()) {
                 controller.cmdClear();
             } else {
-                controller.cmdShift(-1);
+                controller.cmdShiftFacing(-1);
             }
         } else if (key == KEYBIND_SHIFT_FWD) {
             if (isShiftKeyDown()) {
-                controller.cmdSet();
+                controller.cmdSetFacing();
             } else {
-                controller.cmdShift(1);
+                controller.cmdShiftFacing(1);
             }
         }
     }
@@ -101,7 +101,7 @@ public class InputManager {
             long now = System.currentTimeMillis();
             if (now > lastMouseEvent + MOUSE_EVENT_INTERVAL) {
                 lastMouseEvent = now;
-                controller.cmdSet();
+                controller.cmdSetFacing();
             }
         }
     }
@@ -137,7 +137,7 @@ public class InputManager {
         }
         boolean allow = controller.canBuild(blockX, blockY, blockZ);
         if (!allow) {
-            controller.disallowedClick();
+            controller.cmdDenyClick();
         }
         return allow;
     }

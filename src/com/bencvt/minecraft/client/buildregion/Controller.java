@@ -6,6 +6,7 @@ import libshapedraw.primitive.Vector3;
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.mod_BuildRegion;
 
+import com.bencvt.minecraft.client.buildregion.region.Axis;
 import com.bencvt.minecraft.client.buildregion.region.Direction3D;
 import com.bencvt.minecraft.client.buildregion.region.RegionBase;
 import com.bencvt.minecraft.client.buildregion.region.RegionPlane;
@@ -25,7 +26,8 @@ public class Controller {
     private final ShapeManager shapeManager;
     private final String modTitle;
     private final BuildModeValue buildMode;
-    private RegionBase region; // TODO: RegionManager class
+    private RegionBase curRegion;
+    private RegionBase prevRegion;
 
     public Controller(LibShapeDraw libShapeDraw, mod_BuildRegion mod, Minecraft minecraft) {
         if (!LibShapeDraw.isControllerInitialized()) { // TODO: replace with .verifyInitialized()
@@ -37,78 +39,79 @@ public class Controller {
         shapeManager = new ShapeManager(this, libShapeDraw);
         modTitle = mod.getName() + " v" + mod.getModVersion();
         buildMode = new BuildModeValue(BuildMode.INSIDE);
+        cmdReset();
     }
 
-    public InputManager getInputManager() {
-        return inputManager;
-    }
+    // ========
+    // cmd methods to update state
+    // ========
 
     public void cmdReset() {
         buildMode.setValueNoAnimation(BuildMode.INSIDE);
-        region = null;
+        curRegion = null;
+        prevRegion = new RegionPlane(new Vector3(0, 63, 0), Axis.Y);
         shapeManager.reset();
     }
 
     public void cmdClear() {
-        if (region == null) {
+        if (curRegion == null) {
             return;
         }
-        region = null;
+        prevRegion = curRegion;
+        curRegion = null;
         shapeManager.animateFadeOut();
         messageManager.info("build region unlocked\n");
     }
 
-    public void cmdSet() {
+    public void cmdDenyClick() {
+        messageManager.info("misclick blocked by build region\n");
+    }
+
+    public void cmdSet(RegionBase newRegion) {
+        prevRegion = curRegion;
+        curRegion = newRegion;
+
+        // Update UI.
+        // TODO: make the shapeManager smart enough to animate with a shift or
+        // even a rotate instead of a fade when appropriate.
+        //shapeManager.animateShift(dir.axis, region.getCoord(dir.axis));
+        shapeManager.animateFadeOut();
+        shapeManager.animateFadeIn(curRegion);
+        messageManager.info("build region locked to " + curRegion + "\n");
+    }
+
+    public void cmdSetFacing() {
         Direction3D dir = getFacingDirection();
         if (dir == null) {
             return;
         }
-
-        // Remember stuff about existing region, if any.
-        boolean shiftRegion = region != null && region.isValidAxis(dir.axis);
-
-        // Define new region.
         Vector3 origin = new Vector3(
                 minecraft.thePlayer.posX,
                 minecraft.thePlayer.posY,
                 minecraft.thePlayer.posZ);
-        region = new RegionPlane(dir.axis, origin);
-        region.shiftCoord(dir.axis, dir.axisDirection * 2);
+        RegionBase newRegion = getPrototypeRegion().copyUsing(origin, dir.axis);
+        // Move the origin so it's in front of the player.
+        newRegion.shiftCoord(dir.axis, dir.axisDirection * 2);
 
-        // Update UI.
-        if (shiftRegion) {
-            shapeManager.animateShift(dir.axis, region.getCoord(dir.axis));
-        } else {
-            shapeManager.animateFadeOut();
-            shapeManager.animateFadeIn(region);
-        }
-        messageManager.info("build region locked to " + region + "\n");
+        cmdSet(newRegion);
     }
 
-    public void cmdShift(int amount) {
-        if (region == null) {
-            cmdSet();
-            return;
-        }
+    public void cmdShiftFacing(int amount) {
         Direction3D dir = getFacingDirection();
         if (dir == null) {
             return;
         }
-        if (!region.isValidAxis(dir.axis)) {
-            cmdSet();
+        if (curRegion == null || !curRegion.isValidAxis(dir.axis)) {
+            cmdSetFacing();
             return;
         }
 
         // Update region.
-        region.shiftCoord(dir.axis, amount * dir.axisDirection);
+        curRegion.shiftCoord(dir.axis, amount * dir.axisDirection);
 
         // Update UI.
-        shapeManager.animateShift(dir.axis, region.getCoord(dir.axis));
-        messageManager.info("build region shifted to " + region + "\n");
-    }
-
-    public void cmdModeNext() {
-        buildMode.setValue(buildMode.getValue().getNextMode());
+        shapeManager.animateShift(dir.axis, curRegion.getCoord(dir.axis));
+        messageManager.info("build region shifted to " + curRegion + "\n");
     }
 
     public void cmdMode(BuildMode newMode) {
@@ -116,6 +119,54 @@ public class Controller {
         messageManager.info("build region mode: " +
                 newMode.toString().toLowerCase()); // TODO: "\npress shift-<bind> for advanced options"
     }
+
+    public void cmdModeNext() {
+        buildMode.setValue(buildMode.getValue().getNextMode());
+    }
+
+    // ========
+    // Methods called from mod_BuildRegion to react to game events
+    // ========
+
+    public void renderHUD() {
+        messageManager.render();
+    }
+
+    public void updatePlayerPosition(ReadonlyVector3 playerCoords) {
+        shapeManager.updateObserverPosition(playerCoords);
+    }
+
+    // ========
+    // Misc accessors
+    // ========
+
+    public InputManager getInputManager() {
+        return inputManager;
+    }
+
+    public String getModTitle() {
+        return modTitle;
+    }
+
+    public ReadonlyBuildModeValue getBuildMode() {
+        return buildMode;
+    }
+
+    public boolean canBuild(double x, double y, double z) {
+        if (curRegion == null) {
+            return true;
+        } else if (buildMode.getValue() == BuildMode.INSIDE) {
+            return curRegion.isInsideRegion(x, y, z);
+        } else if (buildMode.getValue() == BuildMode.OUTSIDE) {
+            return !curRegion.isInsideRegion(x, y, z);
+        } else {
+            return true;
+        }
+    }
+
+    // ========
+    // Internal helper methods
+    // ========
 
     private Direction3D getFacingDirection() {
         Direction3D dir = Direction3D.fromYawPitch(
@@ -127,35 +178,13 @@ public class Controller {
         return dir;
     }
 
-    public void render() {
-        messageManager.render();
-    }
-
-    public void updatePlayerPosition(ReadonlyVector3 playerCoords) {
-        shapeManager.updateObserverPosition(playerCoords);
-    }
-
-    public boolean canBuild(double x, double y, double z) {
-        if (region == null) {
-            return true;
-        } else if (buildMode.getValue() == BuildMode.INSIDE) {
-            return region.isInsideRegion(x, y, z);
-        } else if (buildMode.getValue() == BuildMode.OUTSIDE) {
-            return !region.isInsideRegion(x, y, z);
-        } else {
-            return true;
+    private RegionBase getPrototypeRegion() {
+        if (curRegion != null) {
+            return curRegion;
         }
-    }
-
-    public void disallowedClick() {
-        messageManager.info("misclick blocked by build region\n");
-    }
-
-    public String getModTitle() {
-        return modTitle;
-    }
-
-    public ReadonlyBuildModeValue getBuildMode() {
-        return buildMode;
+        if (prevRegion != null) {
+            return prevRegion;
+        }
+        throw new IllegalStateException("prevRegion should never be null");
     }
 }

@@ -14,17 +14,19 @@ import com.bencvt.minecraft.client.buildregion.ui.RenderBase;
 public abstract class RegionBase {
     private final Vector3 origin = Vector3.ZEROS.copy();
 
-    public Vector3 getOrigin() {
-        return origin;
-    }
-
     public RegionBase(ReadonlyVector3 origin) {
         this.origin.setX(origin.getX());
         this.origin.setY(origin.getY());
         this.origin.setZ(origin.getZ());        
     }
 
+    public abstract RegionBase copyUsing(ReadonlyVector3 origin, Axis axis);
+
     public abstract RegionType getRegionMode();
+
+    public Vector3 getOrigin() {
+        return origin;
+    }
 
     public double getCoord(Axis axis) {
         validateAxis(axis);
@@ -59,7 +61,7 @@ public abstract class RegionBase {
     private void validateAxis(Axis axis) {
         if (!isValidAxis(axis)) {
             throw new IllegalArgumentException(String.valueOf(axis) +
-                    " is not an invalid axis for " + this);
+                    " is an invalid axis for " + this);
         }
     }
 

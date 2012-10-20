@@ -13,9 +13,14 @@ public class RegionCuboid extends RegionBase {
     }
 
     @Override
+    public RegionBase copyUsing(ReadonlyVector3 origin, Axis axis) {
+        // ignore axis
+        return new RegionCuboid(origin.copy());
+    }
+
+    @Override
     public RegionType getRegionMode() {
-        // TODO Auto-generated method stub
-        return null;
+        return RegionType.CUBOID;
     }
 
     @Override

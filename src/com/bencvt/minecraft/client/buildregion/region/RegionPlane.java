@@ -15,9 +15,17 @@ import com.bencvt.minecraft.client.buildregion.ui.RenderPlane;
 public class RegionPlane extends RegionBase {
     private final Axis axis;
 
-    public RegionPlane(Axis axis, ReadonlyVector3 origin) {
+    public RegionPlane(ReadonlyVector3 origin, Axis axis) {
         super(origin);
+        if (axis == null) {
+            throw new IllegalArgumentException();
+        }
         this.axis = axis;
+    }
+
+    @Override
+    public RegionBase copyUsing(ReadonlyVector3 origin, Axis axis) {
+        return new RegionPlane(origin.copy(), axis);
     }
 
     @Override

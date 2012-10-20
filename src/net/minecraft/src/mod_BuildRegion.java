@@ -59,7 +59,7 @@ public class mod_BuildRegion extends BaseMod implements LSDEventListener, Player
     @Override
     public boolean onTickInGame(float partialTickTime, Minecraft minecraft) {
         inputManager.checkForMouseEvent();
-        controller.render();
+        controller.renderHUD();
         return true;
     }
 
