@@ -50,6 +50,12 @@ public abstract class RegionBase {
 
     public abstract double size();
 
+    /**
+     * Get the axis-aligned minimum bounding box around this region.
+     * @return true if bounds were set, false if this region is infinite
+     */
+    public abstract boolean getAABB(Vector3 lower, Vector3 upper);
+
     // ========
     // Accessors and mutators
     // ========
@@ -95,30 +101,30 @@ public abstract class RegionBase {
     // Utility methods
     // ========
 
-    protected static final void truncateHalfUnits(Vector3 v) {
-        v.scale(2.0).truncate().scale(0.5);
+    protected static final void enforceHalfUnits(Vector3 v) {
+        v.scale(2.0).floor().scale(0.5);
     }
 
-    protected static final double truncateHalfUnits(double d) {
-        return truncateWholeUnits(d * 2.0) * 0.5;
+    protected static final double enforceHalfUnits(double d) {
+        return enforceWholeUnits(d * 2.0) * 0.5;
     }
 
-    protected static final void truncateWholeUnits(Vector3 v) {
-        v.truncate();
+    protected static final void encforceWholeUnits(Vector3 v) {
+        v.floor();
     }
 
-    protected static final double truncateWholeUnits(double d) {
-        return (int) d;
+    protected static final double enforceWholeUnits(double d) {
+        return Math.floor(d);
     }
 
     protected static final String strXYZ(Vector3 v) {
-        return "x=" + strTruncateIfPossible(v.getX()) +
-                ", y=" + strTruncateIfPossible(v.getY()) +
-                ", z=" + strTruncateIfPossible(v.getZ());
+        return "x=" + strFloorIfPossible(v.getX()) +
+                ", y=" + strFloorIfPossible(v.getY()) +
+                ", z=" + strFloorIfPossible(v.getZ());
     }
 
-    protected static final String strTruncateIfPossible(double d) {
-        int i = (int) d;
+    protected static final String strFloorIfPossible(double d) {
+        int i = (int) Math.floor(d);
         return d == i ? Integer.toString(i) : Double.toString(d);
     }
 }

@@ -30,15 +30,27 @@ import com.bencvt.minecraft.buildregion.region.RegionBase;
 public abstract class RenderBase extends Shape {
     public static final long ANIM_DURATION = 500;
     public static final double ANIM_SCALE_FADE = 1.0 - 1.0/16.0;
-    /** Shifting over too far a distance looks ugly; just fade out/in if over this distance. */
+    /**
+     * Shifting over too far a distance looks ugly; just fade out/in if over
+     * this distance.
+     */
     public static final double SHIFT_MAX_SQUARED = Math.pow(32.0, 2.0);
+    /**
+     * Small offset used when rendering cubes to avoid ugly intersections with
+     * block boundaries.
+     */
+    public static final double CUBE_MARGIN = 1.0/32.0;
+    /**
+     * For shapes that are aligned to an axis, the sides of grid cubes (i.e.,
+     * the lines parallel to the shape's axis) are rendered more subtly.
+     */
+    public static final double ALPHA_SIDE = 0.5;
     public static final float LINE_WIDTH = 2.0F;
-
     public static final Color ORIGIN_MARKER_COLOR_VISIBLE = Color.WHITE.copy().setAlpha(0.5);
     public static final Color ORIGIN_MARKER_COLOR_HIDDEN = Color.WHITE.copy().setAlpha(0.125);
-    public static final float ORIGIN_MARKER_RADIUS = 3.0F/16.0F;
-    protected static final ShapeRotate SPHERE_UPRIGHT = new ShapeRotate(90.0, 1.0, 0.0, 0.0);
+    public static final float ORIGIN_MARKER_RADIUS = 0.49F;
     protected static final ShapeTranslate CENTER_WITHIN_BLOCK = new ShapeTranslate(0.5, 0.5, 0.5);
+    protected static final ShapeRotate SPHERE_UPRIGHT = new ShapeRotate(90.0, 1.0, 0.0, 0.0);
 
     private final ReadonlyColor lineColorVisible;
     private final ReadonlyColor lineColorHidden;
@@ -74,7 +86,7 @@ public abstract class RenderBase extends Shape {
                 ORIGIN_MARKER_COLOR_HIDDEN,
                 ORIGIN_MARKER_RADIUS);
         marker.setSlices(16).setStacks(16).getGLUQuadric().setDrawStyle(GLU.GLU_LINE);
-        marker.addTransform(SPHERE_UPRIGHT).addTransform(CENTER_WITHIN_BLOCK);
+        marker.addTransform(CENTER_WITHIN_BLOCK).addTransform(SPHERE_UPRIGHT);
         return marker;
     }
 

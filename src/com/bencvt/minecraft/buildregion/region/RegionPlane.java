@@ -1,6 +1,7 @@
 package com.bencvt.minecraft.buildregion.region;
 
 import libshapedraw.primitive.ReadonlyVector3;
+import libshapedraw.primitive.Vector3;
 
 /**
  * Represent a plane, specified by an axis and an integer coordinate along
@@ -31,7 +32,7 @@ public class RegionPlane extends RegionBase {
 
     @Override
     protected void onOriginUpdate() {
-        truncateWholeUnits(getOrigin());
+        encforceWholeUnits(getOrigin());
     }
 
     @Override
@@ -55,6 +56,11 @@ public class RegionPlane extends RegionBase {
     @Override
     public double size() {
         return Double.POSITIVE_INFINITY;
+    }
+
+    @Override
+    public boolean getAABB(Vector3 lower, Vector3 upper) {
+        return false;
     }
 
     @Override

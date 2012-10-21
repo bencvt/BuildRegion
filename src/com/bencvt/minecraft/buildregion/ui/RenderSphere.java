@@ -1,5 +1,6 @@
 package com.bencvt.minecraft.buildregion.ui;
 
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 
 import libshapedraw.MinecraftAccess;
@@ -28,6 +29,8 @@ import com.bencvt.minecraft.buildregion.region.RegionSphere;
 public class RenderSphere extends RenderBase {
     private static final Color SHELL_COLOR = Color.PALE_GOLDENROD.copy().scaleAlpha(1.0/4.0);
 
+    private final Vector3 lower; // cached AABB for rendering
+    private final Vector3 upper; // cached AABB for rendering
     private final Vector3 radii;
     private final GLUSphere shell;
     private final ShapeScale shellScale;
@@ -40,7 +43,10 @@ public class RenderSphere extends RenderBase {
         shell = new GLUSphere(getOrigin(), SHELL_COLOR, null, 1.0F);
         shell.getGLUQuadric().setDrawStyle(GLU.GLU_LINE);
         shellScale = new ShapeScale(radii);
-        shell.addTransform(SPHERE_UPRIGHT).addTransform(CENTER_WITHIN_BLOCK).addTransform(shellScale);
+        shell.addTransform(CENTER_WITHIN_BLOCK).addTransform(SPHERE_UPRIGHT).addTransform(shellScale);
+        lower = new Vector3();
+        upper = new Vector3();
+        region.getAABB(lower, upper);
     }
 
     @Override
@@ -50,7 +56,79 @@ public class RenderSphere extends RenderBase {
 
     @Override
     protected void renderLines(MinecraftAccess mc, ReadonlyColor lineColor) {
-        // TODO Auto-generated method stub
+        GL11.glColor4d(
+                lineColor.getRed(),
+                lineColor.getGreen(),
+                lineColor.getBlue(),
+                lineColor.getAlpha());
+        final double x0 = lower.getX();
+        final double x1 = upper.getX();
+        final double y0 = lower.getY();
+        final double y1 = upper.getY();
+        final double z0 = lower.getZ();
+        final double z1 = upper.getZ();
+        // bottom
+        mc.startDrawing(GL11.GL_LINE_LOOP);
+        mc.addVertex(x0, y0, z0);
+        mc.addVertex(x1, y0, z0);
+        mc.addVertex(x1, y0, z1);
+        mc.addVertex(x0, y0, z1);
+        mc.finishDrawing();
+        // top
+        mc.startDrawing(GL11.GL_LINE_LOOP);
+        mc.addVertex(x0, y1, z0);
+        mc.addVertex(x1, y1, z0);
+        mc.addVertex(x1, y1, z1);
+        mc.addVertex(x0, y1, z1);
+        mc.finishDrawing();
+        // sides
+        mc.startDrawing(GL11.GL_LINES);
+        mc.addVertex(x0, y0, z0);
+        mc.addVertex(x0, y1, z0);
+        mc.addVertex(x1, y0, z0);
+        mc.addVertex(x1, y1, z0);
+        mc.addVertex(x1, y0, z1);
+        mc.addVertex(x1, y1, z1);
+        mc.addVertex(x0, y0, z1);
+        mc.addVertex(x0, y1, z1);
+        mc.finishDrawing();
+
+        /*
+        final double x1 = upper.getX();
+        final double y1 = upper.getY();
+        final double z1 = upper.getZ();
+        for (double x0 = lower.getX(); x0<=upper.getX(); x0+=2){
+            for (double y0 = lower.getY(); y0<=upper.getY(); y0+=2){
+                for (double z0 = lower.getZ(); z0<=upper.getZ(); z0+=2){
+
+                    // bottom
+                    mc.startDrawing(GL11.GL_LINE_LOOP);
+                    mc.addVertex(x0, y0, z0);
+                    mc.addVertex(x1, y0, z0);
+                    mc.addVertex(x1, y0, z1);
+                    mc.addVertex(x0, y0, z1);
+                    mc.finishDrawing();
+                    // top
+                    mc.startDrawing(GL11.GL_LINE_LOOP);
+                    mc.addVertex(x0, y1, z0);
+                    mc.addVertex(x1, y1, z0);
+                    mc.addVertex(x1, y1, z1);
+                    mc.addVertex(x0, y1, z1);
+                    mc.finishDrawing();
+                    // sides
+                    mc.startDrawing(GL11.GL_LINES);
+                    mc.addVertex(x0, y0, z0);
+                    mc.addVertex(x0, y1, z0);
+                    mc.addVertex(x1, y0, z0);
+                    mc.addVertex(x1, y1, z0);
+                    mc.addVertex(x1, y0, z1);
+                    mc.addVertex(x1, y1, z1);
+                    mc.addVertex(x0, y0, z1);
+                    mc.addVertex(x0, y1, z1);
+                    mc.finishDrawing();
+                }
+            }
+        }*/
     }
 
     @Override

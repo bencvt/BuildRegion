@@ -23,6 +23,8 @@ public class UpdateCheck {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                // TODO: check for a "noupdatecheck.txt" file
+                // TODO: sleep for a few seconds
                 String response = getUrlContents(UPDATE_URL_PREFIX + curVersion);
                 if (response == null) {
                     return;

@@ -47,9 +47,8 @@ public class Controller {
     public void cmdReset() {
         buildMode.setValueNoAnimation(BuildMode.INSIDE);
         curRegion = null;
-        //XXX
         //prevRegion = new RegionPlane(new Vector3(0, 63, 0), Axis.Y);
-        prevRegion = new RegionSphere(new Vector3(0, 7, 0), new Vector3(5.5, 3, 3));
+        prevRegion = new RegionSphere(new Vector3(0, 7, 0), new Vector3(7,7,7));//XXX
         shapeManager.reset();
     }
 
@@ -86,7 +85,7 @@ public class Controller {
         Vector3 origin = new Vector3(
                 minecraft.thePlayer.posX,
                 minecraft.thePlayer.posY,
-                minecraft.thePlayer.posZ).truncate();
+                minecraft.thePlayer.posZ).floor();
         RegionBase newRegion = protoRegion.copyUsing(origin, dir.axis);
         // Move the origin so it's in front of the player.
         newRegion.shiftCoord(dir.axis, dir.axisDirection * 2);

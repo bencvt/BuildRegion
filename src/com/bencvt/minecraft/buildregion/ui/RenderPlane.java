@@ -22,13 +22,6 @@ import com.bencvt.minecraft.buildregion.region.RegionPlane;
  * @author bencvt
  */
 public class RenderPlane extends RenderBase {
-    /** Small offset used when rendering cubes to avoid ugly intersections. */
-    public static final double MARGIN = 1.0 / 32.0;
-    /**
-     * The sides of grid cubes (i.e., the lines parallel to the plane's axis)
-     * are rendered more subtly.
-     */
-    public static final double ALPHA_SIDE = 0.5;
     /** How many grid cubes to render. */
     public static final int PLANE_RENDER_RADIUS = 10;
     /** Lazily instantiated lookup table. */
@@ -43,7 +36,7 @@ public class RenderPlane extends RenderBase {
     private final double[] curCoords = {0.0, 0.0, 0.0};
 
     public RenderPlane(ReadonlyColor lineColorVisible, ReadonlyColor lineColorHidden, RegionPlane region) {
-        super(lineColorVisible, lineColorHidden, false);
+        super(lineColorVisible, lineColorHidden, true);//XXXfalse);
         getOrigin().set(region.getOriginReadonly());
         axis = region.getAxis();
         observerPosition = new Vector3(); // only two of these coords are relevant
@@ -63,6 +56,12 @@ public class RenderPlane extends RenderBase {
         }
         shift(plane.getOriginReadonly());
         return true;
+    }
+
+    @Override
+    public void updateObserverPosition(ReadonlyVector3 observerPosition) {
+        // Keep up with the player, moving the shape along the plane.
+        this.observerPosition.set(observerPosition);
     }
 
     @Override
@@ -100,12 +99,12 @@ public class RenderPlane extends RenderBase {
                 if (alphaScale <= 0.0) {
                     continue;
                 }
-                final double x0 = curCoords[0] + MARGIN;
-                final double x1 = curCoords[0] + 1 - MARGIN;
-                final double y0 = curCoords[1] + MARGIN;
-                final double y1 = curCoords[1] + 1 - MARGIN;
-                final double z0 = curCoords[2] + MARGIN;
-                final double z1 = curCoords[2] + 1 - MARGIN;
+                final double x0 = curCoords[0] + CUBE_MARGIN;
+                final double x1 = curCoords[0] + 1 - CUBE_MARGIN;
+                final double y0 = curCoords[1] + CUBE_MARGIN;
+                final double y1 = curCoords[1] + 1 - CUBE_MARGIN;
+                final double z0 = curCoords[2] + CUBE_MARGIN;
+                final double z1 = curCoords[2] + 1 - CUBE_MARGIN;
                 GL11.glColor4d(
                         lineColor.getRed(),
                         lineColor.getGreen(),
@@ -235,13 +234,5 @@ public class RenderPlane extends RenderBase {
         } else {
             throw new IllegalStateException();
         }
-    }
-
-    /**
-     * Keep up with the player, moving the shape along the plane.
-     */
-    @Override
-    public void updateObserverPosition(ReadonlyVector3 observerPosition) {
-        this.observerPosition.set(observerPosition);
     }
 }

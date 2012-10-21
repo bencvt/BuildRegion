@@ -1,13 +1,14 @@
 package com.bencvt.minecraft.buildregion.region;
 
 import libshapedraw.primitive.ReadonlyVector3;
+import libshapedraw.primitive.Vector3;
 
 /**
  * Represent a cylinder -- actually an elliptic cylinder, or cylindroid --
  * specified by an origin 3-tuple, a radii 2-tuple, an axis, and a height.
- * The components of each tuple are truncated to half units; the height is
- * truncated to whole units. The one component of the origin matching the axis
- * is also truncated to whole units. Radii are non-negative and >=0.5. Height
+ * The components of each tuple are reduced to half units; the height is
+ * reduced to whole units. The one component of the origin matching the axis
+ * is also reduced to whole units. Radii are non-negative and >=0.5. Height
  * is non negative and >=1.0.
  * 
  * @author bencvt
@@ -24,7 +25,7 @@ public class RegionCylinder extends RegionBase {
         this.height = height;
         this.radiusA = radiusA;
         this.radiusB = radiusB;
-        // TODO truncate stuff
+        // TODO reduce values
     }
 
     @Override
@@ -40,9 +41,9 @@ public class RegionCylinder extends RegionBase {
 
     @Override
     protected void onOriginUpdate() {
-        truncateHalfUnits(getOrigin());
+        enforceHalfUnits(getOrigin());
         if (axis != null) { // can be null during the constructor
-            setCoord(axis, truncateWholeUnits(getCoord(axis)));
+            setCoord(axis, enforceWholeUnits(getCoord(axis)));
         }
     }
 
@@ -55,6 +56,23 @@ public class RegionCylinder extends RegionBase {
     @Override
     public double size() {
         return Math.PI * radiusA * radiusB * height;
+    }
+
+    @Override
+    public boolean getAABB(Vector3 lower, Vector3 upper) {
+        Vector3 radii;
+        if (axis == Axis.X) {
+            radii = new Vector3(height/2.0, radiusA, radiusB);
+        } else if (axis == Axis.Y) {
+            radii = new Vector3(radiusA, height/2.0, radiusB);
+        } else if (axis == Axis.Z) {
+            radii = new Vector3(radiusA, radiusB, height/2.0);
+        } else {
+            throw new IllegalStateException();
+        }
+        lower.set(getOriginReadonly()).subtract(radii);
+        upper.set(getOriginReadonly()).add(radii);
+        return true;
     }
 
     @Override

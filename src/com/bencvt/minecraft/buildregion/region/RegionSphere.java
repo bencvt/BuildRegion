@@ -5,7 +5,7 @@ import libshapedraw.primitive.Vector3;
 
 /**
  * Represent a sphere -- actually an ellipsoid -- specified by an origin
- * 3-tuple and a radii 3-tuple. The components of each tuple are truncated to
+ * 3-tuple and a radii 3-tuple. The components of each tuple are reduced to
  * half units. Radii are non-negative and >=0.5.
  * 
  * @author bencvt
@@ -16,7 +16,7 @@ public class RegionSphere extends RegionBase {
     public RegionSphere(ReadonlyVector3 origin, ReadonlyVector3 radii) {
         super(origin);
         this.radii = radii.copy().absolute();
-        truncateHalfUnits(this.radii);
+        enforceHalfUnits(this.radii);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class RegionSphere extends RegionBase {
 
     @Override
     protected void onOriginUpdate() {
-        truncateHalfUnits(getOrigin());
+        enforceHalfUnits(getOrigin());
     }
 
     @Override
@@ -46,6 +46,13 @@ public class RegionSphere extends RegionBase {
     @Override
     public double size() {
         return 4.0 / 3.0 * Math.PI * radii.getX() * radii.getY() * radii.getZ();
+    }
+
+    @Override
+    public boolean getAABB(Vector3 lower, Vector3 upper) {
+        lower.set(getOriginReadonly()).subtract(radii);
+        upper.set(getOriginReadonly()).add(radii);
+        return true;
     }
 
     @Override
@@ -66,20 +73,20 @@ public class RegionSphere extends RegionBase {
         return radii.getX();
     }
     public void setRadiusX(double radiusX) {
-        truncateHalfUnits(radii.setX(Math.max(0.5, Math.abs(radiusX))));
+        enforceHalfUnits(radii.setX(Math.max(0.5, Math.abs(radiusX))));
     }
 
     public double getRadiusY() {
         return radii.getY();
     }
     public void setRadiusY(double radiusY) {
-        truncateHalfUnits(radii.setY(Math.max(0.5, Math.abs(radiusY))));
+        enforceHalfUnits(radii.setY(Math.max(0.5, Math.abs(radiusY))));
     }
 
     public double getRadiusZ() {
         return radii.getZ();
     }
     public void setRadiusZ(double radiusZ) {
-        truncateHalfUnits(radii.setZ(Math.max(0.5, Math.abs(radiusZ))));
+        enforceHalfUnits(radii.setZ(Math.max(0.5, Math.abs(radiusZ))));
     }
 }
