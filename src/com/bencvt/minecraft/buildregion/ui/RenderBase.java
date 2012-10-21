@@ -15,6 +15,7 @@ import libshapedraw.transform.ShapeScale;
 import org.lwjgl.opengl.GL11;
 
 import com.bencvt.minecraft.buildregion.region.Axis;
+import com.bencvt.minecraft.buildregion.region.RegionBase;
 
 /**
  * A LibShapeDraw Shape representing a geometric region. This is purely
@@ -63,6 +64,10 @@ public abstract class RenderBase extends Shape {
 
     public ReadonlyColor getLineColorHidden() {
         return lineColorHidden;
+    }
+
+    public boolean updateIfPossible(RegionBase region) {
+        return false;
     }
 
     @Override

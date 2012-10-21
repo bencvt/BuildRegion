@@ -2,10 +2,6 @@ package com.bencvt.minecraft.buildregion.region;
 
 import libshapedraw.primitive.ReadonlyVector3;
 
-import com.bencvt.minecraft.buildregion.ReadonlyBuildModeValue;
-import com.bencvt.minecraft.buildregion.ui.RenderBase;
-import com.bencvt.minecraft.buildregion.ui.RenderPlane;
-
 /**
  * Represent a plane, specified by an axis and an integer coordinate along
  * that axis.
@@ -13,7 +9,7 @@ import com.bencvt.minecraft.buildregion.ui.RenderPlane;
  * @author bencvt
  */
 public class RegionPlane extends RegionBase {
-    private final Axis axis;
+    private Axis axis;
 
     public RegionPlane(ReadonlyVector3 origin, Axis axis) {
         super(origin);
@@ -54,19 +50,21 @@ public class RegionPlane extends RegionBase {
 
     @Override
     public String toString() {
-        return "plane " + axis.toString().toLowerCase() + "=" + (int) getCoord(axis);
-    }
-
-    @Override
-    public RenderBase createShape(ReadonlyBuildModeValue buildMode) {
-        return new RenderPlane(
-                buildMode.getColorVisible(),
-                buildMode.getColorHidden(),
-                axis,
-                getCoord(axis));
+        return "plane " + axis.toString().toLowerCase() + "=" + (int) getCoord();
     }
 
     public Axis getAxis() {
         return axis;
+    }
+
+    public void setAxis(Axis axis) {
+        if (axis == null) {
+            throw new IllegalArgumentException();
+        }
+        this.axis = axis;
+    }
+
+    public double getCoord() {
+        return getCoord(axis);
     }
 }

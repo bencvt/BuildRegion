@@ -2,9 +2,6 @@ package com.bencvt.minecraft.buildregion.region;
 
 import libshapedraw.primitive.ReadonlyVector3;
 
-import com.bencvt.minecraft.buildregion.ReadonlyBuildModeValue;
-import com.bencvt.minecraft.buildregion.ui.RenderBase;
-
 public class RegionCuboid extends RegionBase {
 
     public RegionCuboid(ReadonlyVector3 origin) {
@@ -27,11 +24,5 @@ public class RegionCuboid extends RegionBase {
     public boolean isInsideRegion(double x, double y, double z) {
         // TODO Auto-generated method stub
         return false;
-    }
-
-    @Override
-    public RenderBase createShape(ReadonlyBuildModeValue buildMode) {
-        // TODO Auto-generated method stub
-        return null;
     }
 }

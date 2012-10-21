@@ -56,7 +56,7 @@ public class Controller {
         }
         prevRegion = curRegion;
         curRegion = null;
-        shapeManager.animateFadeOut();
+        shapeManager.updateRegion(curRegion);
         messageManager.info("build region unlocked\n");
     }
 
@@ -65,17 +65,16 @@ public class Controller {
     }
 
     public void cmdSet(RegionBase newRegion) {
+        if (newRegion == null) {
+            cmdClear();
+        }
         if (curRegion != null) {
             prevRegion = curRegion;
         }
         curRegion = newRegion;
 
         // Update UI.
-        // TODO: make the shapeManager smart enough to animate with a shift or
-        // even a rotate instead of a fade when appropriate.
-        //shapeManager.animateShift(dir.axis, region.getCoord(dir.axis));
-        shapeManager.animateFadeOut();
-        shapeManager.animateFadeIn(curRegion);
+        shapeManager.updateRegion(curRegion);
         messageManager.info("build region locked to " + curRegion + "\n");
     }
 
@@ -110,7 +109,7 @@ public class Controller {
         curRegion.shiftCoord(dir.axis, amount * dir.axisDirection);
 
         // Update UI.
-        shapeManager.animateShift(dir.axis, curRegion.getCoord(dir.axis));
+        shapeManager.updateRegion(curRegion);
         messageManager.info("build region shifted to " + curRegion + "\n");
     }
 

@@ -4,8 +4,8 @@ import libshapedraw.LibShapeDraw;
 import libshapedraw.primitive.ReadonlyVector3;
 
 import com.bencvt.minecraft.buildregion.Controller;
-import com.bencvt.minecraft.buildregion.region.Axis;
 import com.bencvt.minecraft.buildregion.region.RegionBase;
+import com.bencvt.minecraft.buildregion.region.RegionPlane;
 
 /**
  * Manage LibShapeDraw Shape objects and animations... i.e., the in-world GUI.
@@ -34,7 +34,21 @@ public class ShapeManager {
         prevShape = null;
     }
 
-    public void animateFadeOut() {
+    public void updateRegion(RegionBase region) {
+        if (region == null) {
+            removeShape();
+            return;
+        }
+        if (mainShape != null && mainShape.updateIfPossible(region)) {
+            return;
+        }
+        removeShape();
+        mainShape = createShape(region);
+        libShapeDraw.addShape(mainShape);
+        mainShape.fadeIn();
+    }
+
+    private void removeShape() {
         if (mainShape == null) {
             return;
         }
@@ -46,20 +60,28 @@ public class ShapeManager {
         prevShape.fadeOut();
     }
 
-    public void animateFadeIn(RegionBase buildRegion) {
-        if (mainShape != null) {
-            libShapeDraw.getShapes().remove(mainShape);
+    private RenderBase createShape(RegionBase region) {
+        switch (region.getRegionType()) {
+        case NONE:
+            break;
+        case PLANE:
+            RegionPlane plane = (RegionPlane) region;
+            return new RenderPlane(
+                    controller.getBuildMode().getColorVisible(),
+                    controller.getBuildMode().getColorHidden(),
+                    plane.getAxis(),
+                    plane.getCoord());
+        case CUBOID:
+            // TODO
+            return null;
+        case CYLINDER:
+            // TODO
+            return null;
+        case SPHEROID:
+            // TODO
+            return null;
         }
-        mainShape = buildRegion.createShape(controller.getBuildMode());
-        libShapeDraw.addShape(mainShape);
-        mainShape.fadeIn();
-    }
-
-    public void animateShift(Axis axis, double newCoord) {
-        if (mainShape == null) {
-            return;
-        }
-        mainShape.shift(axis, newCoord);
+        throw new IllegalStateException();
     }
 
     public void updateObserverPosition(ReadonlyVector3 playerCoords) {

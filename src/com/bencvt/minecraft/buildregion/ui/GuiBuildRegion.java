@@ -103,7 +103,7 @@ public class GuiBuildRegion extends GuiScreen {
             inputRegionType.setSelectedValue(RegionType.NONE, false);
         }
         inputPlaneAxis.setSelectedValue(regionFactory.getPlane().getAxis(), false);
-        inputPlaneCoord.setValue(regionFactory.getPlane().getCoord(regionFactory.getPlane().getAxis()));
+        inputPlaneCoord.setValue(regionFactory.getPlane().getCoord());
         // TODO: other region types
         inputCylinderOriginX.setValue(32.5);
         inputCylinderOriginY.setValue(75.0);
@@ -265,12 +265,7 @@ public class GuiBuildRegion extends GuiScreen {
         if (guiButton == inputBuildMode) {
             controller.cmdMode(inputBuildMode.getSelectedValue());
         } else {
-            RegionBase activeRegion = regionFactory.getRegionAs(inputRegionType.getSelectedValue());
-            if (activeRegion == null) {
-                controller.cmdClear();
-            } else {
-                controller.cmdSet(activeRegion);
-            }
+            controller.cmdSet(regionFactory.getRegionAs(inputRegionType.getSelectedValue()));
         }
         updateControlProperties();
     }

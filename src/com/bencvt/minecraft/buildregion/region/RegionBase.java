@@ -3,9 +3,6 @@ package com.bencvt.minecraft.buildregion.region;
 import libshapedraw.primitive.ReadonlyVector3;
 import libshapedraw.primitive.Vector3;
 
-import com.bencvt.minecraft.buildregion.ReadonlyBuildModeValue;
-import com.bencvt.minecraft.buildregion.ui.RenderBase;
-
 /**
  * A geometric region in space.
  * 
@@ -28,7 +25,7 @@ public abstract class RegionBase {
         return origin;
     }
 
-    public double getCoord(Axis axis) {
+    protected double getCoord(Axis axis) {
         validateAxis(axis);
         if (axis == Axis.X) {
             return getOrigin().getX();
@@ -41,7 +38,7 @@ public abstract class RegionBase {
         }
     }
 
-    public void setCoord(Axis axis, double value) {
+    private void setCoord(Axis axis, double value) {
         validateAxis(axis);
         if (axis == Axis.X) {
             getOrigin().setX(value);
@@ -73,9 +70,4 @@ public abstract class RegionBase {
      * @return true if the position (x,y,z) is inside this region
      */
     public abstract boolean isInsideRegion(double x, double y, double z);
-
-    /**
-     * @return a new Shape instance for rendering this region in the UI
-     */
-    public abstract RenderBase createShape(ReadonlyBuildModeValue buildMode);
 }
