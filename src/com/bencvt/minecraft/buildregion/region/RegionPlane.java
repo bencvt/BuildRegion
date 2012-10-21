@@ -17,12 +17,6 @@ public class RegionPlane extends RegionBase {
             throw new IllegalArgumentException();
         }
         this.axis = axis;
-        getOrigin().truncate();
-    }
-
-    @Override
-    public RegionBase copyUsing(ReadonlyVector3 origin, Axis axis) {
-        return new RegionPlane(origin.copy(), axis);
     }
 
     @Override
@@ -31,7 +25,17 @@ public class RegionPlane extends RegionBase {
     }
 
     @Override
-    public boolean isValidAxis(Axis axis) {
+    public RegionBase copyUsing(ReadonlyVector3 origin, Axis axis) {
+        return new RegionPlane(origin.copy(), axis);
+    }
+
+    @Override
+    protected void onOriginUpdate() {
+        truncateWholeUnits(getOrigin());
+    }
+
+    @Override
+    public boolean canShiftAlongAxis(Axis axis) {
         return axis == this.axis;
     }
 
@@ -49,6 +53,11 @@ public class RegionPlane extends RegionBase {
     }
 
     @Override
+    public double size() {
+        return Double.POSITIVE_INFINITY;
+    }
+
+    @Override
     public String toString() {
         return "plane " + axis.toString().toLowerCase() + "=" + (int) getCoord();
     }
@@ -56,7 +65,6 @@ public class RegionPlane extends RegionBase {
     public Axis getAxis() {
         return axis;
     }
-
     public void setAxis(Axis axis) {
         if (axis == null) {
             throw new IllegalArgumentException();
@@ -66,5 +74,8 @@ public class RegionPlane extends RegionBase {
 
     public double getCoord() {
         return getCoord(axis);
+    }
+    public void setCoord(double value) {
+        setCoord(axis, value);
     }
 }

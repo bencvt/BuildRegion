@@ -32,6 +32,8 @@ public abstract class RenderBase extends Shape {
     public static final float LINE_WIDTH = 2.0F;
     public static final Color ORIGIN_MARKER_COLOR_VISIBLE = Color.WHITE.copy().setAlpha(0.5);
     public static final Color ORIGIN_MARKER_COLOR_HIDDEN = Color.WHITE.copy().setAlpha(0.125);
+    /** Shifting over too far a distance looks ugly; just fade out/in if over this distance. */
+    public static final double SHIFT_MAX_SQUARED = Math.pow(32.0, 2.0);
 
     private final ReadonlyColor lineColorVisible;
     private final ReadonlyColor lineColorHidden;
@@ -66,6 +68,13 @@ public abstract class RenderBase extends Shape {
         return lineColorHidden;
     }
 
+    /**
+     * Attempt to update this instance to match the specified region,
+     * animating the change as appropriate.
+     * 
+     * @return false if the ShapeManager should just fade this instance out
+     *         and create a new RenderBase instance instead.
+     */
     public boolean updateIfPossible(RegionBase region) {
         return false;
     }

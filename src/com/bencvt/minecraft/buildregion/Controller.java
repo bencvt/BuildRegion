@@ -100,7 +100,7 @@ public class Controller {
         if (dir == null) {
             return;
         }
-        if (curRegion == null || !curRegion.isValidAxis(dir.axis)) {
+        if (curRegion == null || !curRegion.canShiftAlongAxis(dir.axis)) {
             cmdSetFacing();
             return;
         }

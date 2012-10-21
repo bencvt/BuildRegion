@@ -7,6 +7,8 @@ import libshapedraw.primitive.ReadonlyVector3;
 import org.lwjgl.opengl.GL11;
 
 import com.bencvt.minecraft.buildregion.region.Axis;
+import com.bencvt.minecraft.buildregion.region.RegionBase;
+import com.bencvt.minecraft.buildregion.region.RegionPlane;
 
 /**
  * A LibShapeDraw Shape representing a plane. This is purely cosmetic; see
@@ -48,6 +50,22 @@ public class RenderPlane extends RenderBase {
         // Only one of these coords is relevant; the other two will be fixed
         // later in updateObserverPosition.
         getOrigin().set(coord, coord, coord);
+    }
+
+    @Override
+    public boolean updateIfPossible(RegionBase region) {
+        if (!(region instanceof RegionPlane)) {
+            return false;
+        }
+        RegionPlane plane = (RegionPlane) region;
+        if (axis != plane.getAxis()) {
+            return false;
+        }
+        if (Math.pow(getCoord() - plane.getCoord(), 2.0) > SHIFT_MAX_SQUARED) {
+            return false;
+        }
+        shift(axis, plane.getCoord());
+        return true;
     }
 
     @Override
@@ -205,6 +223,18 @@ public class RenderPlane extends RenderBase {
             }
         }
         return alphaTable[Math.abs(off0)][Math.abs(off1)];
+    }
+
+    private double getCoord() {
+        if (axis == Axis.X) {
+            return getOriginReadonly().getX();
+        } else if (axis == Axis.Y) {
+            return getOriginReadonly().getY();
+        } else if (axis == Axis.Z) {
+            return getOriginReadonly().getZ();
+        } else {
+            throw new IllegalStateException();
+        }
     }
 
     /**

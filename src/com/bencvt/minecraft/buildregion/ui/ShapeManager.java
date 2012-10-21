@@ -5,7 +5,10 @@ import libshapedraw.primitive.ReadonlyVector3;
 
 import com.bencvt.minecraft.buildregion.Controller;
 import com.bencvt.minecraft.buildregion.region.RegionBase;
+import com.bencvt.minecraft.buildregion.region.RegionCuboid;
+import com.bencvt.minecraft.buildregion.region.RegionCylinder;
 import com.bencvt.minecraft.buildregion.region.RegionPlane;
+import com.bencvt.minecraft.buildregion.region.RegionSphere;
 
 /**
  * Manage LibShapeDraw Shape objects and animations... i.e., the in-world GUI.
@@ -72,12 +75,15 @@ public class ShapeManager {
                     plane.getAxis(),
                     plane.getCoord());
         case CUBOID:
+            RegionCuboid cuboid = (RegionCuboid) region;
             // TODO
             return null;
         case CYLINDER:
+            RegionCylinder cylinder = (RegionCylinder) region;
             // TODO
             return null;
-        case SPHEROID:
+        case SPHERE:
+            RegionSphere sphere = (RegionSphere) region;
             // TODO
             return null;
         }

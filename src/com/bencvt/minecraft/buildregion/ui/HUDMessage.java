@@ -34,6 +34,9 @@ public class HUDMessage {
      */
     public void update(String message, ReadonlyColor startColor, ReadonlyColor fadeToColor, long fadeDuration) {
         clear();
+        if (minecraft.gameSettings.hideGUI || minecraft.currentScreen != null) {
+            return;
+        }
 
         lines = message.split("\n");
         color = startColor.copy();

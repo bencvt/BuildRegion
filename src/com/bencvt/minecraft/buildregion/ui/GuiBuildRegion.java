@@ -12,7 +12,6 @@ import net.minecraft.src.GuiScreen;
 import com.bencvt.minecraft.buildregion.BuildMode;
 import com.bencvt.minecraft.buildregion.Controller;
 import com.bencvt.minecraft.buildregion.region.Axis;
-import com.bencvt.minecraft.buildregion.region.RegionBase;
 import com.bencvt.minecraft.buildregion.region.RegionFactory;
 import com.bencvt.minecraft.buildregion.region.RegionType;
 

@@ -9,24 +9,60 @@ import libshapedraw.primitive.Vector3;
  * @author bencvt
  */
 public abstract class RegionBase {
-    private final Vector3 origin = Vector3.ZEROS.copy();
+    private final Vector3 origin;
 
-    public RegionBase(ReadonlyVector3 origin) {
-        this.origin.setX(origin.getX());
-        this.origin.setY(origin.getY());
-        this.origin.setZ(origin.getZ());        
+    protected RegionBase(ReadonlyVector3 origin) {
+        this.origin = origin.copy();
+        onOriginUpdate();
     }
 
-    public abstract RegionBase copyUsing(ReadonlyVector3 origin, Axis axis);
+    // ========
+    // Methods for child classes to override (don't forget toString!)
+    // ========
 
     public abstract RegionType getRegionType();
 
-    public Vector3 getOrigin() {
+    /**
+     * Deep copy this region but use a different origin. The axis parameter
+     * may be used too, though it isn't applicable to all region types.
+     */
+    public abstract RegionBase copyUsing(ReadonlyVector3 origin, Axis axis);
+
+    /**
+     * Called whenever one of the origin's components is modified; this is the
+     * hook to force origin coordinates to be a whole (or half) number.
+     */
+    protected abstract void onOriginUpdate();
+
+    /**
+     * @return true if it makes sense to shift the region along the specified
+     *         axis. Will only ever be false if the region is infinite in one
+     *         or more directions.
+     */
+    public boolean canShiftAlongAxis(Axis axis) {
+        return axis != null;
+    }
+
+    /**
+     * @return true if the position (x,y,z) is inside this region
+     */
+    public abstract boolean isInsideRegion(double x, double y, double z);
+
+    public abstract double size();
+
+    // ========
+    // Accessors and mutators
+    // ========
+
+    public final ReadonlyVector3 getOriginReadonly() {
         return origin;
     }
 
-    protected double getCoord(Axis axis) {
-        validateAxis(axis);
+    protected final Vector3 getOrigin() {
+        return origin;
+    }
+
+    public final double getCoord(Axis axis) {
         if (axis == Axis.X) {
             return getOrigin().getX();
         } else if (axis == Axis.Y) {
@@ -38,8 +74,7 @@ public abstract class RegionBase {
         }
     }
 
-    private void setCoord(Axis axis, double value) {
-        validateAxis(axis);
+    public final void setCoord(Axis axis, double value) {
         if (axis == Axis.X) {
             getOrigin().setX(value);
         } else if (axis == Axis.Y) {
@@ -49,25 +84,30 @@ public abstract class RegionBase {
         } else {
             throw new IllegalArgumentException();
         }
+        onOriginUpdate();
     }
 
-    public void shiftCoord(Axis axis, double amount) {
+    public final void shiftCoord(Axis axis, double amount) {
         setCoord(axis, getCoord(axis) + amount);
     }
 
-    private void validateAxis(Axis axis) {
-        if (!isValidAxis(axis)) {
-            throw new IllegalArgumentException(String.valueOf(axis) +
-                    " is an invalid axis for " + this);
-        }
+    // ========
+    // Utility methods
+    // ========
+
+    protected static final void truncateHalfUnits(Vector3 v) {
+        v.scale(2.0).truncate().scale(0.5);
     }
 
-    public boolean isValidAxis(Axis axis) {
-        return axis != null;
+    protected static final double truncateHalfUnits(double d) {
+        return truncateWholeUnits(d * 2.0) * 0.5;
     }
 
-    /**
-     * @return true if the position (x,y,z) is inside this region
-     */
-    public abstract boolean isInsideRegion(double x, double y, double z);
+    protected static final void truncateWholeUnits(Vector3 v) {
+        v.truncate();
+    }
+
+    protected static final double truncateWholeUnits(double d) {
+        return (int) d;
+    }
 }
