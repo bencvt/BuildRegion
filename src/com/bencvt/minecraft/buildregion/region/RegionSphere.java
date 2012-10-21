@@ -27,7 +27,7 @@ public class RegionSphere extends RegionBase {
     @Override
     public RegionBase copyUsing(ReadonlyVector3 origin, Axis axis) {
         // ignore axis
-        return new RegionSphere(getOrigin(), radii);
+        return new RegionSphere(origin, radii);
     }
 
     @Override
@@ -52,9 +52,9 @@ public class RegionSphere extends RegionBase {
     public String toString() {
         double r = radii.getX();
         if (r == radii.getY() && r == radii.getZ()) {
-            return "sphere @" + getOrigin() + " radius " + r;
+            return "sphere @ " + strXYZ(getOrigin()) + "\nradius " + r;
         } else {
-            return "ellipsoid @" + getOrigin() + " radius " + radii;
+            return "ellipsoid @ " + strXYZ(getOrigin()) + "\nradius " + strXYZ(radii);
         }
     }
 

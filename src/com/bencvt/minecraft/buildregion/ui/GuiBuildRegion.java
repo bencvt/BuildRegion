@@ -34,6 +34,7 @@ public class GuiBuildRegion extends GuiScreen {
     private static final RegionType LONGEST_SUBTABLE = RegionType.CYLINDER; // for calculating window height
 
     private final Controller controller;
+    private final GuiEmptyRow                 emptyRow;
     private final GuiEnumSelect<BuildMode>    inputBuildMode;
     private final GuiEnumSelect<RegionType>   inputRegionType;
     private final GuiHLine                    hLine;
@@ -46,6 +47,12 @@ public class GuiBuildRegion extends GuiScreen {
     private final GuiInputDouble              inputCylinderHeight;
     private final GuiInputDouble              inputCylinderRadiusA;
     private final GuiInputDouble              inputCylinderRadiusB;
+    private final GuiInputDouble              inputSphereOriginX;
+    private final GuiInputDouble              inputSphereOriginY;
+    private final GuiInputDouble              inputSphereOriginZ;
+    private final GuiInputDouble              inputSphereRadiusX;
+    private final GuiInputDouble              inputSphereRadiusY;
+    private final GuiInputDouble              inputSphereRadiusZ;
     private final HashMap<RegionType, ArrayList<GuiLabeledControl>> controlsByRegionType;
     // Position, height, and width are calculated in initGui().
     private int windowXPosition;
@@ -58,6 +65,7 @@ public class GuiBuildRegion extends GuiScreen {
         this.controller = controller;
 
         // Create all controls.
+        emptyRow = new GuiEmptyRow(fr);
         inputBuildMode = new GuiEnumSelect<BuildMode>("build mode:", fr, BuildMode.values(), null);
         for (BuildMode mode : BuildMode.values()) {
             inputBuildMode.setOptionColor(mode, mode.colorVisible);
@@ -66,6 +74,7 @@ public class GuiBuildRegion extends GuiScreen {
         hLine = new GuiHLine(fr, BORDER_THICKNESS, BORDER_COLOR);
         inputPlaneAxis = new GuiEnumSelect<Axis>("axis:", fr, Axis.values(), SELECT_COLOR);
         inputPlaneCoord = new GuiInputDouble("x coordinate:", fr);
+        // TODO: cuboid inputs
         inputCylinderOriginX = new GuiInputDouble("origin x:", fr);
         inputCylinderOriginY = new GuiInputDouble("origin y:", fr);
         inputCylinderOriginZ = new GuiInputDouble("origin z:", fr);
@@ -73,6 +82,12 @@ public class GuiBuildRegion extends GuiScreen {
         inputCylinderHeight = new GuiInputDouble("height:", fr);
         inputCylinderRadiusA = new GuiInputDouble("x radius:", fr);
         inputCylinderRadiusB = new GuiInputDouble("y radius:", fr);
+        inputSphereOriginX = new GuiInputDouble("origin x:", fr);
+        inputSphereOriginY = new GuiInputDouble("origin y:", fr);
+        inputSphereOriginZ = new GuiInputDouble("origin z:", fr);
+        inputSphereRadiusX = new GuiInputDouble("x radius:", fr);
+        inputSphereRadiusY = new GuiInputDouble("y radius:", fr);
+        inputSphereRadiusZ = new GuiInputDouble("z radius:", fr);
 
         // Add each control to the appropriate list.
         controlsByRegionType = new HashMap<RegionType, ArrayList<GuiLabeledControl>>();
@@ -82,8 +97,11 @@ public class GuiBuildRegion extends GuiScreen {
         controlsByRegionType.get(RegionType.NONE).add(inputBuildMode);
         controlsByRegionType.get(RegionType.NONE).add(inputRegionType);
         controlsByRegionType.get(RegionType.NONE).add(hLine);
-        controlsByRegionType.get(RegionType.PLANE).add(inputPlaneAxis);
+        controlsByRegionType.get(RegionType.PLANE).add(emptyRow);
+        controlsByRegionType.get(RegionType.PLANE).add(emptyRow);
         controlsByRegionType.get(RegionType.PLANE).add(inputPlaneCoord);
+        controlsByRegionType.get(RegionType.PLANE).add(inputPlaneAxis);
+        // TODO: cuboid inputs
         controlsByRegionType.get(RegionType.CYLINDER).add(inputCylinderOriginX);
         controlsByRegionType.get(RegionType.CYLINDER).add(inputCylinderOriginY);
         controlsByRegionType.get(RegionType.CYLINDER).add(inputCylinderOriginZ);
@@ -91,6 +109,13 @@ public class GuiBuildRegion extends GuiScreen {
         controlsByRegionType.get(RegionType.CYLINDER).add(inputCylinderHeight);
         controlsByRegionType.get(RegionType.CYLINDER).add(inputCylinderRadiusA);
         controlsByRegionType.get(RegionType.CYLINDER).add(inputCylinderRadiusB);
+        controlsByRegionType.get(RegionType.SPHERE).add(inputSphereOriginX);
+        controlsByRegionType.get(RegionType.SPHERE).add(inputSphereOriginY);
+        controlsByRegionType.get(RegionType.SPHERE).add(inputSphereOriginZ);
+        controlsByRegionType.get(RegionType.SPHERE).add(emptyRow);
+        controlsByRegionType.get(RegionType.SPHERE).add(inputSphereRadiusX);
+        controlsByRegionType.get(RegionType.SPHERE).add(inputSphereRadiusY);
+        controlsByRegionType.get(RegionType.SPHERE).add(inputSphereRadiusZ);
 
         // Populate the controls' contents from the controller.
         regionFactory = new RegionFactory(controller.getPrototypeRegion());
@@ -103,14 +128,20 @@ public class GuiBuildRegion extends GuiScreen {
         }
         inputPlaneAxis.setSelectedValue(regionFactory.getPlane().getAxis(), false);
         inputPlaneCoord.setValue(regionFactory.getPlane().getCoord());
-        // TODO: other region types
-        inputCylinderOriginX.setValue(32.5);
-        inputCylinderOriginY.setValue(75.0);
-        inputCylinderOriginZ.setValue(-322.0);
-        inputCylinderAxis.setSelectedValue(Axis.Y, false);
+        // TODO: cuboid inputs
+        inputCylinderOriginX.setValue(regionFactory.getCylinder().getOriginReadonly().getX());
+        inputCylinderOriginY.setValue(regionFactory.getCylinder().getOriginReadonly().getY());
+        inputCylinderOriginZ.setValue(regionFactory.getCylinder().getOriginReadonly().getZ());
+        inputCylinderAxis.setSelectedValue(regionFactory.getCylinder().getAxis(), false);
         inputCylinderHeight.setValue(3.0);
         inputCylinderRadiusA.setValue(8.0);
         inputCylinderRadiusB.setValue(8.0);
+        inputSphereOriginX.setValue(regionFactory.getSphere().getOriginReadonly().getX());
+        inputSphereOriginY.setValue(regionFactory.getSphere().getOriginReadonly().getY());
+        inputSphereOriginZ.setValue(regionFactory.getSphere().getOriginReadonly().getZ());
+        inputSphereRadiusX.setValue(regionFactory.getSphere().getRadiusX());
+        inputSphereRadiusY.setValue(regionFactory.getSphere().getRadiusY());
+        inputSphereRadiusZ.setValue(regionFactory.getSphere().getRadiusZ());
 
         updateControlProperties();
 
@@ -191,6 +222,7 @@ public class GuiBuildRegion extends GuiScreen {
     }
 
     public void updateControlProperties() {
+        // Hide controls that don't match the current region type being modified.
         RegionType activeRegionType = inputRegionType.getSelectedValue();
         for (RegionType regionType : RegionType.values()) {
             for (GuiLabeledControl control : controlsByRegionType.get(regionType)) {
@@ -198,21 +230,10 @@ public class GuiBuildRegion extends GuiScreen {
             }
         }
 
-        inputPlaneCoord.displayString = inputPlaneAxis.getSelectedValue().toString().toLowerCase() + " coordinate:";
-
-        Axis cylAxis = inputCylinderAxis.getSelectedValue();
-        if (cylAxis == Axis.X) {
-            inputCylinderRadiusA.displayString = "y radius";
-            inputCylinderRadiusB.displayString = "z radius";
-        } else if (cylAxis == Axis.Y) {
-            inputCylinderRadiusA.displayString = "x radius";
-            inputCylinderRadiusB.displayString = "z radius";
-        } else if (cylAxis == Axis.Z) {
-            inputCylinderRadiusA.displayString = "x radius";
-            inputCylinderRadiusB.displayString = "y radius";
-        } else {
-            throw new IllegalStateException();
-        }
+        // Adjust dynamic label texts.
+        inputPlaneCoord.displayString = regionFactory.getPlane().getAxis().toString().toLowerCase() + " coordinate:";
+        inputCylinderRadiusA.displayString = regionFactory.getCylinder().getRadiusAxisA().toString().toLowerCase() + " radius:";
+        inputCylinderRadiusB.displayString = regionFactory.getCylinder().getRadiusAxisB().toString().toLowerCase() + " radius:";
     }
 
     @Override

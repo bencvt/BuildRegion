@@ -110,4 +110,15 @@ public abstract class RegionBase {
     protected static final double truncateWholeUnits(double d) {
         return (int) d;
     }
+
+    protected static final String strXYZ(Vector3 v) {
+        return "x=" + strTruncateIfPossible(v.getX()) +
+                ", y=" + strTruncateIfPossible(v.getY()) +
+                ", z=" + strTruncateIfPossible(v.getZ());
+    }
+
+    protected static final String strTruncateIfPossible(double d) {
+        int i = (int) d;
+        return d == i ? Integer.toString(i) : Double.toString(d);
+    }
 }

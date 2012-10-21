@@ -10,6 +10,7 @@ import com.bencvt.minecraft.buildregion.region.Axis;
 import com.bencvt.minecraft.buildregion.region.Direction3D;
 import com.bencvt.minecraft.buildregion.region.RegionBase;
 import com.bencvt.minecraft.buildregion.region.RegionPlane;
+import com.bencvt.minecraft.buildregion.region.RegionSphere;
 import com.bencvt.minecraft.buildregion.ui.InputManager;
 import com.bencvt.minecraft.buildregion.ui.MessageManager;
 import com.bencvt.minecraft.buildregion.ui.ShapeManager;
@@ -46,7 +47,9 @@ public class Controller {
     public void cmdReset() {
         buildMode.setValueNoAnimation(BuildMode.INSIDE);
         curRegion = null;
-        prevRegion = new RegionPlane(new Vector3(0, 63, 0), Axis.Y);
+        //XXX
+        //prevRegion = new RegionPlane(new Vector3(0, 63, 0), Axis.Y);
+        prevRegion = new RegionSphere(new Vector3(0, 7, 0), new Vector3(5.5, 3, 3));
         shapeManager.reset();
     }
 
@@ -57,7 +60,7 @@ public class Controller {
         prevRegion = curRegion;
         curRegion = null;
         shapeManager.updateRegion(curRegion);
-        messageManager.info("build region unlocked\n");
+        messageManager.info("build region unlocked");
     }
 
     public void cmdSet(RegionBase newRegion) {
@@ -71,7 +74,7 @@ public class Controller {
 
         // Update UI.
         shapeManager.updateRegion(curRegion);
-        messageManager.info("build region locked to " + curRegion + "\n");
+        messageManager.info("build region locked:\n" + curRegion);
     }
 
     public void cmdSetFacing() {
@@ -83,7 +86,7 @@ public class Controller {
         Vector3 origin = new Vector3(
                 minecraft.thePlayer.posX,
                 minecraft.thePlayer.posY,
-                minecraft.thePlayer.posZ);
+                minecraft.thePlayer.posZ).truncate();
         RegionBase newRegion = protoRegion.copyUsing(origin, dir.axis);
         // Move the origin so it's in front of the player.
         newRegion.shiftCoord(dir.axis, dir.axisDirection * 2);
@@ -106,7 +109,7 @@ public class Controller {
 
         // Update UI.
         shapeManager.updateRegion(curRegion);
-        messageManager.info("build region shifted to " + curRegion + "\n");
+        messageManager.info("build region shifted:\n" + curRegion);
     }
 
     public void cmdMode(BuildMode newMode) {
@@ -133,7 +136,7 @@ public class Controller {
     }
 
     public void notifyDenyClick() {
-        messageManager.info("misclick blocked by build region\n");
+        messageManager.info("misclick blocked by build region");
     }
 
     public void toggleGui(boolean isGuiScreenActive) {

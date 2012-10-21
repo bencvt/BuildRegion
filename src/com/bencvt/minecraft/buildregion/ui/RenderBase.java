@@ -2,15 +2,19 @@ package com.bencvt.minecraft.buildregion.ui;
 
 import libshapedraw.MinecraftAccess;
 import libshapedraw.animation.trident.Timeline;
+import libshapedraw.animation.trident.Timeline$RepeatBehavior;
 import libshapedraw.primitive.Color;
 import libshapedraw.primitive.ReadonlyColor;
 import libshapedraw.primitive.ReadonlyVector3;
 import libshapedraw.primitive.Vector3;
 import libshapedraw.shape.GLUSphere;
 import libshapedraw.shape.Shape;
+import libshapedraw.transform.ShapeRotate;
 import libshapedraw.transform.ShapeScale;
+import libshapedraw.transform.ShapeTranslate;
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.glu.GLU;
 
 import com.bencvt.minecraft.buildregion.region.RegionBase;
 
@@ -26,24 +30,27 @@ import com.bencvt.minecraft.buildregion.region.RegionBase;
 public abstract class RenderBase extends Shape {
     public static final long ANIM_DURATION = 500;
     public static final double ANIM_SCALE_FADE = 1.0 - 1.0/16.0;
+    /** Shifting over too far a distance looks ugly; just fade out/in if over this distance. */
+    public static final double SHIFT_MAX_SQUARED = Math.pow(32.0, 2.0);
     public static final float LINE_WIDTH = 2.0F;
+
     public static final Color ORIGIN_MARKER_COLOR_VISIBLE = Color.WHITE.copy().setAlpha(0.5);
     public static final Color ORIGIN_MARKER_COLOR_HIDDEN = Color.WHITE.copy().setAlpha(0.125);
     public static final float ORIGIN_MARKER_RADIUS = 3.0F/16.0F;
-    /** Shifting over too far a distance looks ugly; just fade out/in if over this distance. */
-    public static final double SHIFT_MAX_SQUARED = Math.pow(32.0, 2.0);
+    protected static final ShapeRotate SPHERE_UPRIGHT = new ShapeRotate(90.0, 1.0, 0.0, 0.0);
+    protected static final ShapeTranslate CENTER_WITHIN_BLOCK = new ShapeTranslate(0.5, 0.5, 0.5);
 
     private final ReadonlyColor lineColorVisible;
     private final ReadonlyColor lineColorHidden;
     private double alphaBase; // [0.0, 1.0] alpha scaling factor to apply to all lines
     private final ShapeScale shapeScale; // transform the entire shape
-    private final Shape originMarker;
+    private final GLUSphere originMarker;
     private Timeline timelineFade;
     private Timeline timelineShift;
     private boolean renderOriginMarkerNow;
-    protected boolean renderOriginMarkerNormally = true;
+    private final boolean renderOriginMarkerNormally;
 
-    public RenderBase(ReadonlyColor lineColorVisible, ReadonlyColor lineColorHidden) {
+    protected RenderBase(ReadonlyColor lineColorVisible, ReadonlyColor lineColorHidden, boolean renderOriginMarkerNormally) {
         super(Vector3.ZEROS.copy());
         setRelativeToOrigin(false);
         if (lineColorVisible == null || lineColorHidden == null ||
@@ -55,10 +62,20 @@ public abstract class RenderBase extends Shape {
         setAlphaBase(1.0);
         shapeScale = new ShapeScale(1.0, 1.0, 1.0);
         addTransform(shapeScale);
-        originMarker = new GLUSphere(getOrigin(),
+        originMarker = createOriginMarker();
+        this.renderOriginMarkerNormally = renderOriginMarkerNormally;
+    }
+
+    private GLUSphere createOriginMarker() {
+        // TODO: also create a tick marker that's rendered every 10 blocks along the axes, so long as it's inside the shape
+        // TODO: setting... markers: off origin ticks
+        GLUSphere marker = new GLUSphere(getOrigin(),
                 ORIGIN_MARKER_COLOR_VISIBLE,
                 ORIGIN_MARKER_COLOR_HIDDEN,
                 ORIGIN_MARKER_RADIUS);
+        marker.setSlices(16).setStacks(16).getGLUQuadric().setDrawStyle(GLU.GLU_LINE);
+        marker.addTransform(SPHERE_UPRIGHT).addTransform(CENTER_WITHIN_BLOCK);
+        return marker;
     }
 
     public ReadonlyColor getLineColorVisible() {
@@ -76,9 +93,7 @@ public abstract class RenderBase extends Shape {
      * @return false if the ShapeManager should just fade this instance out
      *         and create a new RenderBase instance instead.
      */
-    public boolean updateIfPossible(RegionBase region) {
-        return false;
-    }
+    public abstract boolean updateIfPossible(RegionBase region);
 
     @Override
     protected final void renderShape(MinecraftAccess mc) {
@@ -88,6 +103,7 @@ public abstract class RenderBase extends Shape {
         if (renderOriginMarkerNormally || renderOriginMarkerNow) {
             originMarker.render(mc);
         }
+        renderShell(mc);
         GL11.glLineWidth(LINE_WIDTH);
         GL11.glDepthFunc(GL11.GL_LEQUAL);
         // renderLines is responsible for setting the line color
@@ -96,6 +112,10 @@ public abstract class RenderBase extends Shape {
             GL11.glDepthFunc(GL11.GL_GREATER);
             renderLines(mc, getLineColorHidden());
         }
+    }
+
+    protected void renderShell(MinecraftAccess mc) {
+        // do nothing
     }
 
     protected abstract void renderLines(MinecraftAccess mc, ReadonlyColor lineColor);

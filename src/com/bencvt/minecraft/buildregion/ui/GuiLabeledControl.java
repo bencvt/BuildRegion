@@ -47,7 +47,7 @@ public abstract class GuiLabeledControl extends GuiButtonMoveable {
     }
 
     @Override
-    public final void drawButton(Minecraft minecraft, int xMouse, int yMouse) {
+    public void drawButton(Minecraft minecraft, int xMouse, int yMouse) {
         if (!drawButton) {
             return;
         }

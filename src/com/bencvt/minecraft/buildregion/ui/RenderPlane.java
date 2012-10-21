@@ -42,15 +42,11 @@ public class RenderPlane extends RenderBase {
     private final double[] baseCoords = {0.0, 0.0, 0.0};
     private final double[] curCoords = {0.0, 0.0, 0.0};
 
-    public RenderPlane(ReadonlyColor lineColorVisible, ReadonlyColor lineColorHidden, Axis axis, ReadonlyVector3 origin) {
-        super(lineColorVisible, lineColorHidden);
-        if (axis == null) {
-            throw new NullPointerException();
-        }
-        this.axis = axis;
+    public RenderPlane(ReadonlyColor lineColorVisible, ReadonlyColor lineColorHidden, RegionPlane region) {
+        super(lineColorVisible, lineColorHidden, false);
+        getOrigin().set(region.getOriginReadonly());
+        axis = region.getAxis();
         observerPosition = new Vector3(); // only two of these coords are relevant
-        getOrigin().set(origin);
-        renderOriginMarkerNormally = false;
     }
 
     @Override

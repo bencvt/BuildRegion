@@ -2,8 +2,10 @@ package com.bencvt.minecraft.buildregion.ui;
 
 import libshapedraw.LibShapeDraw;
 import libshapedraw.primitive.ReadonlyVector3;
+import libshapedraw.primitive.Vector3;
 
 import com.bencvt.minecraft.buildregion.Controller;
+import com.bencvt.minecraft.buildregion.region.Axis;
 import com.bencvt.minecraft.buildregion.region.RegionBase;
 import com.bencvt.minecraft.buildregion.region.RegionCuboid;
 import com.bencvt.minecraft.buildregion.region.RegionCylinder;
@@ -70,25 +72,29 @@ public class ShapeManager {
         case NONE:
             break;
         case PLANE:
-            RegionPlane plane = (RegionPlane) region;
             return new RenderPlane(
                     controller.getBuildMode().getColorVisible(),
                     controller.getBuildMode().getColorHidden(),
-                    plane.getAxis(),
-                    plane.getOriginReadonly());
+                    (RegionPlane) region);
+        /* TODO:
         case CUBOID:
-            RegionCuboid cuboid = (RegionCuboid) region;
-            // TODO
-            return null;
+            return new RenderCuboid(
+                    controller.getBuildMode().getColorVisible(),
+                    controller.getBuildMode().getColorHidden(),
+                    (RegionCuboid) region);
         case CYLINDER:
-            RegionCylinder cylinder = (RegionCylinder) region;
-            // TODO
-            return null;
+            return new RenderCylinder(
+                    controller.getBuildMode().getColorVisible(),
+                    controller.getBuildMode().getColorHidden(),
+                    (RegionCylinder) region);
+        */
         case SPHERE:
-            RegionSphere sphere = (RegionSphere) region;
-            // TODO
-            return null;
+            return new RenderSphere(
+                    controller.getBuildMode().getColorVisible(),
+                    controller.getBuildMode().getColorHidden(),
+                    (RegionSphere) region);
         }
+        if(true)return new RenderPlane(controller.getBuildMode().getColorVisible(),controller.getBuildMode().getColorHidden(),new RegionPlane(Vector3.ZEROS, Axis.Z));//XXX
         throw new IllegalStateException();
     }
 
