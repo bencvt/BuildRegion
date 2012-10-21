@@ -4,9 +4,11 @@ import java.util.HashMap;
 
 import libshapedraw.MinecraftAccess;
 import libshapedraw.animation.trident.Timeline;
+import libshapedraw.primitive.Color;
 import libshapedraw.primitive.ReadonlyColor;
 import libshapedraw.primitive.ReadonlyVector3;
 import libshapedraw.primitive.Vector3;
+import libshapedraw.shape.GLUSphere;
 import libshapedraw.shape.Shape;
 import libshapedraw.transform.ShapeScale;
 
@@ -27,13 +29,17 @@ public abstract class RenderBase extends Shape {
     public static final long ANIM_DURATION = 500;
     public static final double ANIM_SCALE_FADE = 1.0 - 1.0/16.0;
     public static final float LINE_WIDTH = 2.0F;
+    public static final Color ORIGIN_MARKER_COLOR_VISIBLE = Color.WHITE.copy().setAlpha(0.5);
+    public static final Color ORIGIN_MARKER_COLOR_HIDDEN = Color.WHITE.copy().setAlpha(0.125);
 
     private final ReadonlyColor lineColorVisible;
     private final ReadonlyColor lineColorHidden;
     private double alphaBase; // [0.0, 1.0] alpha scaling factor to apply to all lines
     private final ShapeScale shapeScale; // transform the entire shape
+    private final Shape originMarker;
     private Timeline timelineFade;
     private final HashMap<Axis, Timeline> timelineShift;
+    protected boolean shouldRenderOriginMarker = true;
 
     public RenderBase(ReadonlyColor lineColorVisible, ReadonlyColor lineColorHidden) {
         super(Vector3.ZEROS.copy());
@@ -47,6 +53,7 @@ public abstract class RenderBase extends Shape {
         setAlphaBase(1.0);
         shapeScale = new ShapeScale(1.0, 1.0, 1.0);
         addTransform(shapeScale);
+        originMarker = new GLUSphere(getOrigin(), ORIGIN_MARKER_COLOR_VISIBLE, ORIGIN_MARKER_COLOR_HIDDEN, 0.125F);
         timelineShift = new HashMap<Axis, Timeline>();
     }
 
@@ -63,17 +70,20 @@ public abstract class RenderBase extends Shape {
         if (alphaBase <= 0.0) {
             return;
         }
+        if (shouldRenderOriginMarker) {
+            originMarker.render(mc);
+        }
         GL11.glLineWidth(LINE_WIDTH);
         GL11.glDepthFunc(GL11.GL_LEQUAL);
         // renderLines is responsible for setting the line color
-        renderLines(mc, getLineColorVisible(), alphaBase);
+        renderLines(mc, getLineColorVisible());
         if (getLineColorHidden() != null) {
             GL11.glDepthFunc(GL11.GL_GREATER);
-            renderLines(mc, getLineColorHidden(), alphaBase);
+            renderLines(mc, getLineColorHidden());
         }
     }
 
-    protected abstract void renderLines(MinecraftAccess mc, ReadonlyColor lineColor, double alphaLine);
+    protected abstract void renderLines(MinecraftAccess mc, ReadonlyColor lineColor);
 
     public double getAlphaBase() {
         return alphaBase;

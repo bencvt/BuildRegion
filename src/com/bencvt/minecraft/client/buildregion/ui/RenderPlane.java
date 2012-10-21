@@ -40,6 +40,7 @@ public class RenderPlane extends RenderBase {
 
     public RenderPlane(ReadonlyColor lineColorVisible, ReadonlyColor lineColorHidden, Axis axis, double coord) {
         super(lineColorVisible, lineColorHidden);
+        shouldRenderOriginMarker = false;
         if (axis == null) {
             throw new NullPointerException();
         }
@@ -50,7 +51,9 @@ public class RenderPlane extends RenderBase {
     }
 
     @Override
-    protected void renderLines(MinecraftAccess mc, ReadonlyColor lineColor, double alphaLine) {
+    protected void renderLines(MinecraftAccess mc, ReadonlyColor lineColor) {
+        double alphaLine = getAlphaBase();
+
         curCoords[0] = baseCoords[0] = getOriginReadonly().getX();
         curCoords[1] = baseCoords[1] = getOriginReadonly().getY();
         curCoords[2] = baseCoords[2] = getOriginReadonly().getZ();
