@@ -12,6 +12,8 @@ import net.minecraft.src.GuiScreen;
 import com.bencvt.minecraft.client.buildregion.BuildMode;
 import com.bencvt.minecraft.client.buildregion.Controller;
 import com.bencvt.minecraft.client.buildregion.region.Axis;
+import com.bencvt.minecraft.client.buildregion.region.RegionBase;
+import com.bencvt.minecraft.client.buildregion.region.RegionFactory;
 import com.bencvt.minecraft.client.buildregion.region.RegionType;
 
 /**
@@ -51,6 +53,7 @@ public class GuiBuildRegion extends GuiScreen {
     private int windowYPosition;
     private int windowHeight;
     private int windowWidth;
+    private final RegionFactory regionFactory;
 
     public GuiBuildRegion(Controller controller, FontRenderer fr) {
         this.controller = controller;
@@ -91,17 +94,17 @@ public class GuiBuildRegion extends GuiScreen {
         controlsByRegionType.get(RegionType.CYLINDER).add(inputCylinderRadiusB);
 
         // Populate the controls' contents from the controller.
-        // TODO: use actual values
-        // TODO: maintain individual Region instances for each type
-        // TODO: coerce the active Region into instances for the other types with reasonable defaults
-        // TODO: make controller accept a Region as a live preview
+        regionFactory = new RegionFactory(controller.getPrototypeRegion());
         // TODO: remember the current active Region for the "Undo" button
-        // TODO: possibly allow the user to look around by holding right-click and moving around
-        // TODO: pressing B or Esc is the same as pressing the "OK" button
         inputBuildMode.setSelectedValue(controller.getBuildMode().getValue(), false);
-        inputRegionType.setSelectedValue(RegionType.PLANE, false);
-        inputPlaneAxis.setSelectedValue(Axis.X, false);
-        inputPlaneCoord.setValue(-4213.5);
+        if (controller.isRegionActive()) {
+            inputRegionType.setSelectedValue(controller.getPrototypeRegion().getRegionType(), false);
+        } else {
+            inputRegionType.setSelectedValue(RegionType.NONE, false);
+        }
+        inputPlaneAxis.setSelectedValue(regionFactory.getPlane().getAxis(), false);
+        inputPlaneCoord.setValue(regionFactory.getPlane().getCoord(regionFactory.getPlane().getAxis()));
+        // TODO: other region types
         inputCylinderOriginX.setValue(32.5);
         inputCylinderOriginY.setValue(75.0);
         inputCylinderOriginZ.setValue(-322.0);
@@ -109,6 +112,8 @@ public class GuiBuildRegion extends GuiScreen {
         inputCylinderHeight.setValue(3.0);
         inputCylinderRadiusA.setValue(8.0);
         inputCylinderRadiusB.setValue(8.0);
+
+        updateControlProperties();
 
         // Defer positioning and width adjustments until initGui().
     }
@@ -170,12 +175,12 @@ public class GuiBuildRegion extends GuiScreen {
             }
         }
 
+        // TODO: possibly allow the user to look around by holding right-click and moving around
+        // TODO: pressing B or Esc is the same as pressing the "OK" button
         // TODO: buttons to rotate the region around its origin (for planes, fill in using player coords)
         // TODO: eliminate click sounds
         // TODO: row mouseover tooltips
         // TODO: add footer with buttons ("OK", "Usage", "Undo" (gray out initially))
-
-        updateControlProperties();
     }
 
     public void updateControlProperties() {
@@ -259,13 +264,13 @@ public class GuiBuildRegion extends GuiScreen {
     protected void actionPerformed(GuiButton guiButton) {
         if (guiButton == inputBuildMode) {
             controller.cmdMode(inputBuildMode.getSelectedValue());
-            return;
-        }
-        if (guiButton == inputRegionType) {
-            if (inputRegionType.getSelectedValue() == null) {
+        } else {
+            RegionBase activeRegion = regionFactory.getRegionAs(inputRegionType.getSelectedValue());
+            if (activeRegion == null) {
                 controller.cmdClear();
+            } else {
+                controller.cmdSet(activeRegion);
             }
-            // TODO: interact with the controller to adjust region
         }
         updateControlProperties();
     }

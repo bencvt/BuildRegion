@@ -167,6 +167,20 @@ public class Controller {
         }
     }
 
+    public boolean isRegionActive() {
+        return curRegion != null;
+    }
+
+    public RegionBase getPrototypeRegion() {
+        if (curRegion != null) {
+            return curRegion;
+        }
+        if (prevRegion != null) {
+            return prevRegion;
+        }
+        throw new IllegalStateException("prevRegion should never be null");
+    }
+
     // ========
     // Internal helper methods
     // ========
@@ -185,15 +199,5 @@ public class Controller {
                     minecraft.thePlayer.rotationYaw,
                     minecraft.thePlayer.rotationPitch);
         }
-    }
-
-    private RegionBase getPrototypeRegion() {
-        if (curRegion != null) {
-            return curRegion;
-        }
-        if (prevRegion != null) {
-            return prevRegion;
-        }
-        throw new IllegalStateException("prevRegion should never be null");
     }
 }

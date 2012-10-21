@@ -21,6 +21,7 @@ public class RegionPlane extends RegionBase {
             throw new IllegalArgumentException();
         }
         this.axis = axis;
+        setCoord(axis, (int) getCoord(axis));
     }
 
     @Override
@@ -63,5 +64,9 @@ public class RegionPlane extends RegionBase {
                 buildMode.getColorHidden(),
                 axis,
                 getCoord(axis));
+    }
+
+    public Axis getAxis() {
+        return axis;
     }
 }
