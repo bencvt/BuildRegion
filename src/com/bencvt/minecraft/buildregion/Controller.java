@@ -60,10 +60,6 @@ public class Controller {
         messageManager.info("build region unlocked\n");
     }
 
-    public void cmdDenyClick() {
-        messageManager.info("misclick blocked by build region\n");
-    }
-
     public void cmdSet(RegionBase newRegion) {
         if (newRegion == null) {
             cmdClear();
@@ -106,7 +102,7 @@ public class Controller {
         }
 
         // Update region.
-        curRegion.shiftCoord(dir.axis, amount * dir.axisDirection);
+        curRegion.shiftCoord(dir.axis, dir.axisDirection * amount);
 
         // Update UI.
         shapeManager.updateRegion(curRegion);
@@ -124,7 +120,8 @@ public class Controller {
     }
 
     // ========
-    // Methods called from mod_BuildRegion to react to game events
+    // Methods called from mod_BuildRegion, InputManager, and GuiBuildRegion
+    // to react to game events
     // ========
 
     public void renderHUD() {
@@ -133,6 +130,14 @@ public class Controller {
 
     public void updatePlayerPosition(ReadonlyVector3 playerCoords) {
         shapeManager.updateObserverPosition(playerCoords);
+    }
+
+    public void notifyDenyClick() {
+        messageManager.info("misclick blocked by build region\n");
+    }
+
+    public void toggleGui(boolean isGuiScreenActive) {
+        shapeManager.setGuiScreenActive(isGuiScreenActive);
     }
 
     // ========

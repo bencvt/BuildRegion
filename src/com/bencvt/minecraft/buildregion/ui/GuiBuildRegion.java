@@ -174,12 +174,20 @@ public class GuiBuildRegion extends GuiScreen {
             }
         }
 
+        // Notify controller that the GUI is open.
+        controller.toggleGui(true);
+
         // TODO: possibly allow the user to look around by holding right-click and moving around
         // TODO: pressing B or Esc is the same as pressing the "OK" button
         // TODO: buttons to rotate the region around its origin (for planes, fill in using player coords)
         // TODO: eliminate click sounds
         // TODO: row mouseover tooltips
         // TODO: add footer with buttons ("OK", "Usage", "Undo" (gray out initially))
+    }
+
+    @Override
+    public void onGuiClosed() {
+        controller.toggleGui(false);
     }
 
     public void updateControlProperties() {

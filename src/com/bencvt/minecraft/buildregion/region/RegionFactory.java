@@ -1,12 +1,10 @@
 package com.bencvt.minecraft.buildregion.region;
 
-
 public class RegionFactory {
     private final RegionPlane plane;
     private final RegionCuboid cuboid;
     private final RegionCylinder cylinder;    
     private final RegionSphere sphere;    
-    // TODO: other types
 
     public RegionFactory(RegionBase proto) {
         if (proto == null) {

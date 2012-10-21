@@ -59,7 +59,7 @@ public class InputManager {
         ModLoader.registerKey(mod, KEYBIND_SHIFT_BACK, false);
         ModLoader.registerKey(mod, KEYBIND_SHIFT_FWD, false);
 
-        ModLoader.addLocalization(PROPNAME_MODE, "BuildRegion toggle mode");
+        ModLoader.addLocalization(PROPNAME_MODE, "BuildRegion mode");
         ModLoader.addLocalization(PROPNAME_SHIFT_BACK, "BuildRegion shift back");
         ModLoader.addLocalization(PROPNAME_SHIFT_FWD, "BuildRegion shift fwd");
     }
@@ -104,6 +104,7 @@ public class InputManager {
                 controller.cmdSetFacing();
             }
         }
+        // TODO: mod+mousewheel to shift region
     }
 
     private boolean isModKeyDown() {
@@ -137,7 +138,7 @@ public class InputManager {
         }
         boolean allow = controller.canBuild(blockX, blockY, blockZ);
         if (!allow) {
-            controller.cmdDenyClick();
+            controller.notifyDenyClick();
         }
         return allow;
     }

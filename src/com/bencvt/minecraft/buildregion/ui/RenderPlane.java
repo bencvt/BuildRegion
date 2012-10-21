@@ -3,6 +3,7 @@ package com.bencvt.minecraft.buildregion.ui;
 import libshapedraw.MinecraftAccess;
 import libshapedraw.primitive.ReadonlyColor;
 import libshapedraw.primitive.ReadonlyVector3;
+import libshapedraw.primitive.Vector3;
 
 import org.lwjgl.opengl.GL11;
 
@@ -34,22 +35,22 @@ public class RenderPlane extends RenderBase {
     private static double[][] alphaTable;
 
     private final Axis axis;
+    private final Vector3 observerPosition;
 
     // Internal arrays used by renderLines, persisted to the instance so we
     // don't keep pushing temporary objects to the heap every rendering frame.
     private final double[] baseCoords = {0.0, 0.0, 0.0};
     private final double[] curCoords = {0.0, 0.0, 0.0};
 
-    public RenderPlane(ReadonlyColor lineColorVisible, ReadonlyColor lineColorHidden, Axis axis, double coord) {
+    public RenderPlane(ReadonlyColor lineColorVisible, ReadonlyColor lineColorHidden, Axis axis, ReadonlyVector3 origin) {
         super(lineColorVisible, lineColorHidden);
-        shouldRenderOriginMarker = false;
         if (axis == null) {
             throw new NullPointerException();
         }
         this.axis = axis;
-        // Only one of these coords is relevant; the other two will be fixed
-        // later in updateObserverPosition.
-        getOrigin().set(coord, coord, coord);
+        observerPosition = new Vector3(); // only two of these coords are relevant
+        getOrigin().set(origin);
+        renderOriginMarkerNormally = false;
     }
 
     @Override
@@ -64,7 +65,7 @@ public class RenderPlane extends RenderBase {
         if (Math.pow(getCoord() - plane.getCoord(), 2.0) > SHIFT_MAX_SQUARED) {
             return false;
         }
-        shift(axis, plane.getCoord());
+        shift(plane.getOriginReadonly());
         return true;
     }
 
@@ -72,18 +73,21 @@ public class RenderPlane extends RenderBase {
     protected void renderLines(MinecraftAccess mc, ReadonlyColor lineColor) {
         double alphaLine = getAlphaBase();
 
-        curCoords[0] = baseCoords[0] = getOriginReadonly().getX();
-        curCoords[1] = baseCoords[1] = getOriginReadonly().getY();
-        curCoords[2] = baseCoords[2] = getOriginReadonly().getZ();
+        curCoords[0] = baseCoords[0] = observerPosition.getX();
+        curCoords[1] = baseCoords[1] = observerPosition.getY();
+        curCoords[2] = baseCoords[2] = observerPosition.getZ();
         final int dim0;
         final int dim1;
         if (axis == Axis.X) {
+            curCoords[0] = baseCoords[0] = getOriginReadonly().getX();
             dim0 = 1;
             dim1 = 2;
         } else if (axis == Axis.Y) {
+            curCoords[1] = baseCoords[1] = getOriginReadonly().getY();
             dim0 = 0;
             dim1 = 2;
         } else if (axis == Axis.Z) {
+            curCoords[2] = baseCoords[2] = getOriginReadonly().getZ();
             dim0 = 0;
             dim1 = 1;
         } else {
@@ -241,21 +245,7 @@ public class RenderPlane extends RenderBase {
      * Keep up with the player, moving the shape along the plane.
      */
     @Override
-    public void updateObserverPosition(ReadonlyVector3 playerCoords) {
-        if (axis == Axis.X) {
-            getOrigin().setY(playerCoords.getY()).setZ(playerCoords.getZ());
-        } else if (axis == Axis.Y) {
-            getOrigin().setX(playerCoords.getX()).setZ(playerCoords.getZ());
-        } else if (axis == Axis.Z) {
-            getOrigin().setX(playerCoords.getX()).setY(playerCoords.getY());
-        }
-    }
-
-    @Override
-    public void shift(Axis axis, double newCoord) {
-        if (axis != this.axis) {
-            throw new IllegalArgumentException("a plane can only shift along its axis");
-        }
-        super.shift(axis, newCoord);
+    public void updateObserverPosition(ReadonlyVector3 observerPosition) {
+        this.observerPosition.set(observerPosition);
     }
 }

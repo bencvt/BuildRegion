@@ -1,7 +1,5 @@
 package com.bencvt.minecraft.buildregion.ui;
 
-import java.util.HashMap;
-
 import libshapedraw.MinecraftAccess;
 import libshapedraw.animation.trident.Timeline;
 import libshapedraw.primitive.Color;
@@ -14,7 +12,6 @@ import libshapedraw.transform.ShapeScale;
 
 import org.lwjgl.opengl.GL11;
 
-import com.bencvt.minecraft.buildregion.region.Axis;
 import com.bencvt.minecraft.buildregion.region.RegionBase;
 
 /**
@@ -32,6 +29,7 @@ public abstract class RenderBase extends Shape {
     public static final float LINE_WIDTH = 2.0F;
     public static final Color ORIGIN_MARKER_COLOR_VISIBLE = Color.WHITE.copy().setAlpha(0.5);
     public static final Color ORIGIN_MARKER_COLOR_HIDDEN = Color.WHITE.copy().setAlpha(0.125);
+    public static final float ORIGIN_MARKER_RADIUS = 3.0F/16.0F;
     /** Shifting over too far a distance looks ugly; just fade out/in if over this distance. */
     public static final double SHIFT_MAX_SQUARED = Math.pow(32.0, 2.0);
 
@@ -41,8 +39,9 @@ public abstract class RenderBase extends Shape {
     private final ShapeScale shapeScale; // transform the entire shape
     private final Shape originMarker;
     private Timeline timelineFade;
-    private final HashMap<Axis, Timeline> timelineShift;
-    protected boolean shouldRenderOriginMarker = true;
+    private Timeline timelineShift;
+    private boolean renderOriginMarkerNow;
+    protected boolean renderOriginMarkerNormally = true;
 
     public RenderBase(ReadonlyColor lineColorVisible, ReadonlyColor lineColorHidden) {
         super(Vector3.ZEROS.copy());
@@ -56,8 +55,10 @@ public abstract class RenderBase extends Shape {
         setAlphaBase(1.0);
         shapeScale = new ShapeScale(1.0, 1.0, 1.0);
         addTransform(shapeScale);
-        originMarker = new GLUSphere(getOrigin(), ORIGIN_MARKER_COLOR_VISIBLE, ORIGIN_MARKER_COLOR_HIDDEN, 0.125F);
-        timelineShift = new HashMap<Axis, Timeline>();
+        originMarker = new GLUSphere(getOrigin(),
+                ORIGIN_MARKER_COLOR_VISIBLE,
+                ORIGIN_MARKER_COLOR_HIDDEN,
+                ORIGIN_MARKER_RADIUS);
     }
 
     public ReadonlyColor getLineColorVisible() {
@@ -84,7 +85,7 @@ public abstract class RenderBase extends Shape {
         if (alphaBase <= 0.0) {
             return;
         }
-        if (shouldRenderOriginMarker) {
+        if (renderOriginMarkerNormally || renderOriginMarkerNow) {
             originMarker.render(mc);
         }
         GL11.glLineWidth(LINE_WIDTH);
@@ -113,28 +114,22 @@ public abstract class RenderBase extends Shape {
         return shapeScale;
     }
 
-    public void updateObserverPosition(ReadonlyVector3 playerCoords) {
-        // do nothing
-    }
+    /**
+     * Adjust to the player moving around. For large or infinite shapes, this
+     * is the input to use to limit the number of lines rendered.
+     */
+    public abstract void updateObserverPosition(ReadonlyVector3 observerPosition);
 
-    public void shift(Axis axis, double newCoord) {
-        Timeline timeline = timelineShift.get(axis);
-        if (timeline != null && !timeline.isDone()) {
-            timeline.abort();
+    public void shift(ReadonlyVector3 newOrigin) {
+        if (timelineShift != null && !timelineShift.isDone()) {
+            timelineShift.abort();
         }
-        timeline = new Timeline(getOrigin());
-        if (axis == Axis.X) {
-            timeline.addPropertyToInterpolate("x", getOrigin().getX(), newCoord);
-        } else if (axis == Axis.Y) {
-            timeline.addPropertyToInterpolate("y", getOrigin().getY(), newCoord);
-        } else if (axis == Axis.Z) {
-            timeline.addPropertyToInterpolate("z", getOrigin().getZ(), newCoord);
-        } else {
-            throw new IllegalArgumentException();
-        }
-        timeline.setDuration(ANIM_DURATION);
-        timeline.play();
-        timelineShift.put(axis, timeline);
+        timelineShift = new Timeline(getOrigin());
+        timelineShift.addPropertyToInterpolate("x", getOrigin().getX(), newOrigin.getX());
+        timelineShift.addPropertyToInterpolate("y", getOrigin().getY(), newOrigin.getY());
+        timelineShift.addPropertyToInterpolate("z", getOrigin().getZ(), newOrigin.getZ());
+        timelineShift.setDuration(ANIM_DURATION);
+        timelineShift.play();
     }
 
     public void fadeIn() {
@@ -165,5 +160,12 @@ public abstract class RenderBase extends Shape {
                 .on(scaleVec).from(scaleVec.getZ()).to(toScale));
         timelineFade.setDuration(ANIM_DURATION);
         timelineFade.play();
+    }
+
+    public boolean isRenderOriginMarkerNow() {
+        return renderOriginMarkerNow;
+    }
+    public void setRenderOriginMarkerNow(boolean renderOriginMarkerNow) {
+        this.renderOriginMarkerNow = renderOriginMarkerNow;
     }
 }
