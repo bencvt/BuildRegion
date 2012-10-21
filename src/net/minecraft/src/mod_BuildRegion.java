@@ -8,9 +8,9 @@ import libshapedraw.event.LSDRespawnEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.PlayerControllerHooks.PlayerControllerEventListener;
 
-import com.bencvt.minecraft.client.buildregion.Controller;
-import com.bencvt.minecraft.client.buildregion.UpdateCheck;
-import com.bencvt.minecraft.client.buildregion.ui.InputManager;
+import com.bencvt.minecraft.buildregion.Controller;
+import com.bencvt.minecraft.buildregion.UpdateCheck;
+import com.bencvt.minecraft.buildregion.ui.InputManager;
 
 /**
  * Front-end class that handles events raised by various APIs:

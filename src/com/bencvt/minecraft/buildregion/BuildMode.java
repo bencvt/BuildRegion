@@ -1,4 +1,4 @@
-package com.bencvt.minecraft.client.buildregion;
+package com.bencvt.minecraft.buildregion;
 
 import libshapedraw.primitive.Color;
 import libshapedraw.primitive.ReadonlyColor;

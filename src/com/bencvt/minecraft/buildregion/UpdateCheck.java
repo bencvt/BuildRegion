@@ -1,4 +1,4 @@
-package com.bencvt.minecraft.client.buildregion;
+package com.bencvt.minecraft.buildregion;
 
 import java.io.BufferedReader;
 import java.io.IOException;

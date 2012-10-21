@@ -1,4 +1,4 @@
-package com.bencvt.minecraft.client.buildregion;
+package com.bencvt.minecraft.buildregion;
 
 import libshapedraw.LibShapeDraw;
 import libshapedraw.primitive.ReadonlyVector3;
@@ -6,13 +6,13 @@ import libshapedraw.primitive.Vector3;
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.mod_BuildRegion;
 
-import com.bencvt.minecraft.client.buildregion.region.Axis;
-import com.bencvt.minecraft.client.buildregion.region.Direction3D;
-import com.bencvt.minecraft.client.buildregion.region.RegionBase;
-import com.bencvt.minecraft.client.buildregion.region.RegionPlane;
-import com.bencvt.minecraft.client.buildregion.ui.InputManager;
-import com.bencvt.minecraft.client.buildregion.ui.MessageManager;
-import com.bencvt.minecraft.client.buildregion.ui.ShapeManager;
+import com.bencvt.minecraft.buildregion.region.Axis;
+import com.bencvt.minecraft.buildregion.region.Direction3D;
+import com.bencvt.minecraft.buildregion.region.RegionBase;
+import com.bencvt.minecraft.buildregion.region.RegionPlane;
+import com.bencvt.minecraft.buildregion.ui.InputManager;
+import com.bencvt.minecraft.buildregion.ui.MessageManager;
+import com.bencvt.minecraft.buildregion.ui.ShapeManager;
 
 /**
  * Primary class that ties everything together.

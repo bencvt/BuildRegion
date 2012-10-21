@@ -1,4 +1,4 @@
-package com.bencvt.minecraft.client.buildregion.ui;
+package com.bencvt.minecraft.buildregion.ui;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,12 +9,12 @@ import net.minecraft.src.FontRenderer;
 import net.minecraft.src.GuiButton;
 import net.minecraft.src.GuiScreen;
 
-import com.bencvt.minecraft.client.buildregion.BuildMode;
-import com.bencvt.minecraft.client.buildregion.Controller;
-import com.bencvt.minecraft.client.buildregion.region.Axis;
-import com.bencvt.minecraft.client.buildregion.region.RegionBase;
-import com.bencvt.minecraft.client.buildregion.region.RegionFactory;
-import com.bencvt.minecraft.client.buildregion.region.RegionType;
+import com.bencvt.minecraft.buildregion.BuildMode;
+import com.bencvt.minecraft.buildregion.Controller;
+import com.bencvt.minecraft.buildregion.region.Axis;
+import com.bencvt.minecraft.buildregion.region.RegionBase;
+import com.bencvt.minecraft.buildregion.region.RegionFactory;
+import com.bencvt.minecraft.buildregion.region.RegionType;
 
 /**
  * The main BuildRegion GUI.

@@ -1,10 +1,10 @@
-package com.bencvt.minecraft.client.buildregion.region;
+package com.bencvt.minecraft.buildregion.region;
 
 import libshapedraw.primitive.ReadonlyVector3;
 
-import com.bencvt.minecraft.client.buildregion.ReadonlyBuildModeValue;
-import com.bencvt.minecraft.client.buildregion.ui.RenderBase;
-import com.bencvt.minecraft.client.buildregion.ui.RenderPlane;
+import com.bencvt.minecraft.buildregion.ReadonlyBuildModeValue;
+import com.bencvt.minecraft.buildregion.ui.RenderBase;
+import com.bencvt.minecraft.buildregion.ui.RenderPlane;
 
 /**
  * Represent a plane, specified by an axis and an integer coordinate along

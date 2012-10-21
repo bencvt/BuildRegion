@@ -1,4 +1,4 @@
-package com.bencvt.minecraft.client.buildregion.region;
+package com.bencvt.minecraft.buildregion.region;
 
 /**
  * X/Y/Z

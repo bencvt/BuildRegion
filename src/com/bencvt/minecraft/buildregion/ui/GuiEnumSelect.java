@@ -1,4 +1,4 @@
-package com.bencvt.minecraft.client.buildregion.ui;
+package com.bencvt.minecraft.buildregion.ui;
 
 import java.util.LinkedHashMap;
 

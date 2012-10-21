@@ -1,10 +1,10 @@
-package com.bencvt.minecraft.client.buildregion.region;
+package com.bencvt.minecraft.buildregion.region;
 
 import libshapedraw.primitive.ReadonlyVector3;
 import libshapedraw.primitive.Vector3;
 
-import com.bencvt.minecraft.client.buildregion.ReadonlyBuildModeValue;
-import com.bencvt.minecraft.client.buildregion.ui.RenderBase;
+import com.bencvt.minecraft.buildregion.ReadonlyBuildModeValue;
+import com.bencvt.minecraft.buildregion.ui.RenderBase;
 
 /**
  * A geometric region in space.

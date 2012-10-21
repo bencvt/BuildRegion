@@ -1,4 +1,4 @@
-package com.bencvt.minecraft.client.buildregion.region;
+package com.bencvt.minecraft.buildregion.region;
 
 /**
  * Cardinal direction in 3 dimensions.

@@ -1,4 +1,4 @@
-package com.bencvt.minecraft.client.buildregion.ui;
+package com.bencvt.minecraft.buildregion.ui;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.BaseMod;
@@ -11,8 +11,8 @@ import net.minecraft.src.PlayerControllerHooks;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-import com.bencvt.minecraft.client.buildregion.Controller;
-import com.bencvt.minecraft.client.buildregion.region.Direction3D;
+import com.bencvt.minecraft.buildregion.Controller;
+import com.bencvt.minecraft.buildregion.region.Direction3D;
 
 /**
  * Handle user input (keyboard/mouse events).

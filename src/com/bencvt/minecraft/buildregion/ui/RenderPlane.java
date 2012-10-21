@@ -1,4 +1,4 @@
-package com.bencvt.minecraft.client.buildregion.ui;
+package com.bencvt.minecraft.buildregion.ui;
 
 import libshapedraw.MinecraftAccess;
 import libshapedraw.primitive.ReadonlyColor;
@@ -6,7 +6,7 @@ import libshapedraw.primitive.ReadonlyVector3;
 
 import org.lwjgl.opengl.GL11;
 
-import com.bencvt.minecraft.client.buildregion.region.Axis;
+import com.bencvt.minecraft.buildregion.region.Axis;
 
 /**
  * A LibShapeDraw Shape representing a plane. This is purely cosmetic; see

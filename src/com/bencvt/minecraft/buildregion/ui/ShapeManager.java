@@ -1,11 +1,11 @@
-package com.bencvt.minecraft.client.buildregion.ui;
+package com.bencvt.minecraft.buildregion.ui;
 
 import libshapedraw.LibShapeDraw;
 import libshapedraw.primitive.ReadonlyVector3;
 
-import com.bencvt.minecraft.client.buildregion.Controller;
-import com.bencvt.minecraft.client.buildregion.region.Axis;
-import com.bencvt.minecraft.client.buildregion.region.RegionBase;
+import com.bencvt.minecraft.buildregion.Controller;
+import com.bencvt.minecraft.buildregion.region.Axis;
+import com.bencvt.minecraft.buildregion.region.RegionBase;
 
 /**
  * Manage LibShapeDraw Shape objects and animations... i.e., the in-world GUI.

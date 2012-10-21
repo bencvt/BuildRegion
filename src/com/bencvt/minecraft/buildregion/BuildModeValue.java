@@ -1,4 +1,4 @@
-package com.bencvt.minecraft.client.buildregion;
+package com.bencvt.minecraft.buildregion;
 
 import libshapedraw.animation.trident.Timeline;
 import libshapedraw.primitive.Color;

@@ -1,6 +1,6 @@
-package com.bencvt.minecraft.client.buildregion.region;
+package com.bencvt.minecraft.buildregion.region;
 
-import com.bencvt.minecraft.client.buildregion.Controller;
+import com.bencvt.minecraft.buildregion.Controller;
 
 public class RegionFactory {
     private final RegionPlane plane;

@@ -1,4 +1,4 @@
-package com.bencvt.minecraft.client.buildregion.ui;
+package com.bencvt.minecraft.buildregion.ui;
 
 import java.util.HashMap;
 
@@ -14,7 +14,7 @@ import libshapedraw.transform.ShapeScale;
 
 import org.lwjgl.opengl.GL11;
 
-import com.bencvt.minecraft.client.buildregion.region.Axis;
+import com.bencvt.minecraft.buildregion.region.Axis;
 
 /**
  * A LibShapeDraw Shape representing a geometric region. This is purely
