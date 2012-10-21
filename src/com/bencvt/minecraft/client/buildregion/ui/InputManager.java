@@ -161,7 +161,6 @@ public class InputManager {
     }
 
     public void showUsage() {
-        StringBuilder line;
         final GuiNewChat chat = minecraft.ingameGUI.getChatGUI();
         chat.printChatMessage(controller.getModTitle() + " usage:");
 

@@ -30,9 +30,6 @@ public class Controller {
     private RegionBase prevRegion; // will never be null
 
     public Controller(LibShapeDraw libShapeDraw, mod_BuildRegion mod, Minecraft minecraft) {
-        if (!LibShapeDraw.isControllerInitialized()) { // TODO: replace with .verifyInitialized()
-            throw new RuntimeException("LibShapeDraw does not appear to be installed properly");
-        }
         this.minecraft = minecraft;
         inputManager = new InputManager(this, mod, minecraft);
         messageManager = new MessageManager(minecraft);

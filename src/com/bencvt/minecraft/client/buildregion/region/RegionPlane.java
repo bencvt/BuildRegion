@@ -21,7 +21,7 @@ public class RegionPlane extends RegionBase {
             throw new IllegalArgumentException();
         }
         this.axis = axis;
-        setCoord(axis, (int) getCoord(axis));
+        getOrigin().truncate();
     }
 
     @Override

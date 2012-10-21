@@ -42,7 +42,7 @@ public class mod_BuildRegion extends BaseMod implements LSDEventListener, Player
     @Override
     public void load() {
         controller = new Controller(
-                new LibShapeDraw().addEventListener(this),
+                new LibShapeDraw().addEventListener(this).verifyInitialized(),
                 this,
                 ModLoader.getMinecraftInstance());
         inputManager = controller.getInputManager();
