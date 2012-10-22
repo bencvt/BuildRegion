@@ -1,10 +1,14 @@
 package com.bencvt.minecraft.buildregion;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.src.Path;
 
 /**
  * Check the remote website for updates.
@@ -19,12 +23,18 @@ public class UpdateCheck {
 
     private String result;
 
-    public UpdateCheck(final String curVersion) {
+    public UpdateCheck(final String curVersion, File modDirectory) {
+        if (new File(modDirectory, "noupdatecheck.txt").exists()) {
+            return;
+        }
         new Thread(new Runnable() {
             @Override
             public void run() {
-                // TODO: check for a "noupdatecheck.txt" file
-                // TODO: sleep for a few seconds
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    return;
+                }
                 String response = getUrlContents(UPDATE_URL_PREFIX + curVersion);
                 if (response == null) {
                     return;

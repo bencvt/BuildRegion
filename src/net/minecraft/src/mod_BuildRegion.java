@@ -81,7 +81,7 @@ public class mod_BuildRegion extends BaseMod implements LSDEventListener, Player
         }
         PlayerControllerHooks.installHooks();
         if (updateCheck == null) {
-            updateCheck = new UpdateCheck(getModVersion());
+            updateCheck = new UpdateCheck(getModVersion(), controller.getModDirectory());
         }
     }
 

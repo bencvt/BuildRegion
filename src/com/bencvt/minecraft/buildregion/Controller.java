@@ -1,5 +1,7 @@
 package com.bencvt.minecraft.buildregion;
 
+import java.io.File;
+
 import libshapedraw.LibShapeDraw;
 import libshapedraw.primitive.ReadonlyVector3;
 import libshapedraw.primitive.Vector3;
@@ -26,6 +28,7 @@ public class Controller {
     private final MessageManager messageManager;
     private final ShapeManager shapeManager;
     private final String modTitle;
+    private final File modDirectory;
     private final BuildModeValue buildMode;
     private RegionBase curRegion;
     private RegionBase prevRegion; // will never be null
@@ -36,6 +39,7 @@ public class Controller {
         messageManager = new MessageManager(minecraft);
         shapeManager = new ShapeManager(this, libShapeDraw);
         modTitle = mod.getName() + " v" + mod.getModVersion();
+        modDirectory = new File(Minecraft.getMinecraftDir(), "mods" + File.separator + mod.getName());
         buildMode = new BuildModeValue(BuildMode.INSIDE);
         cmdReset();
     }
@@ -152,6 +156,10 @@ public class Controller {
 
     public String getModTitle() {
         return modTitle;
+    }
+
+    public File getModDirectory() {
+        return modDirectory;
     }
 
     public ReadonlyBuildModeValue getBuildMode() {
