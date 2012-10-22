@@ -134,14 +134,10 @@ public class RenderPlane extends RenderBase {
                             lineColor.getBlue(),
                             lineColor.getAlpha() * alphaScale * ALPHA_SIDE);
                     mc.startDrawing(GL11.GL_LINES);
-                    mc.addVertex(x0, y0, z0);
-                    mc.addVertex(x1, y0, z0);
-                    mc.addVertex(x0, y1, z0);
-                    mc.addVertex(x1, y1, z0);
-                    mc.addVertex(x0, y1, z1);
-                    mc.addVertex(x1, y1, z1);
-                    mc.addVertex(x0, y0, z1);
-                    mc.addVertex(x1, y0, z1);
+                    mc.addVertex(x0, y0, z0).addVertex(x1, y0, z0);
+                    mc.addVertex(x0, y1, z0).addVertex(x1, y1, z0);
+                    mc.addVertex(x0, y1, z1).addVertex(x1, y1, z1);
+                    mc.addVertex(x0, y0, z1).addVertex(x1, y0, z1);
                     mc.finishDrawing();
                 } else if (axis == Axis.Y) {
                     // bottom
@@ -165,14 +161,10 @@ public class RenderPlane extends RenderBase {
                             lineColor.getBlue(),
                             lineColor.getAlpha() * alphaScale * ALPHA_SIDE);
                     mc.startDrawing(GL11.GL_LINES);
-                    mc.addVertex(x0, y0, z0);
-                    mc.addVertex(x0, y1, z0);
-                    mc.addVertex(x1, y0, z0);
-                    mc.addVertex(x1, y1, z0);
-                    mc.addVertex(x1, y0, z1);
-                    mc.addVertex(x1, y1, z1);
-                    mc.addVertex(x0, y0, z1);
-                    mc.addVertex(x0, y1, z1);
+                    mc.addVertex(x0, y0, z0).addVertex(x0, y1, z0);
+                    mc.addVertex(x1, y0, z0).addVertex(x1, y1, z0);
+                    mc.addVertex(x1, y0, z1).addVertex(x1, y1, z1);
+                    mc.addVertex(x0, y0, z1).addVertex(x0, y1, z1);
                     mc.finishDrawing();
                 } else if (axis == Axis.Z) {
                     // north
@@ -196,14 +188,10 @@ public class RenderPlane extends RenderBase {
                             lineColor.getBlue(),
                             lineColor.getAlpha() * alphaScale * ALPHA_SIDE);
                     mc.startDrawing(GL11.GL_LINES);
-                    mc.addVertex(x0, y0, z0);
-                    mc.addVertex(x0, y0, z1);
-                    mc.addVertex(x1, y0, z0);
-                    mc.addVertex(x1, y0, z1);
-                    mc.addVertex(x1, y1, z0);
-                    mc.addVertex(x1, y1, z1);
-                    mc.addVertex(x0, y1, z0);
-                    mc.addVertex(x0, y1, z1);
+                    mc.addVertex(x0, y0, z0).addVertex(x0, y0, z1);
+                    mc.addVertex(x1, y0, z0).addVertex(x1, y0, z1);
+                    mc.addVertex(x1, y1, z0).addVertex(x1, y1, z1);
+                    mc.addVertex(x0, y1, z0).addVertex(x0, y1, z1);
                     mc.finishDrawing();
                 }
             }
