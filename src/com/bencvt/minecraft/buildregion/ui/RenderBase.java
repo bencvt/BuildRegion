@@ -29,10 +29,14 @@ import com.bencvt.minecraft.buildregion.region.RegionBase;
  */
 public abstract class RenderBase extends Shape {
     public static final long ANIM_DURATION = 500;
+    /**
+     * How small to shrink the shape when fading in/out.
+     */
     public static final double ANIM_SCALE_FADE = 1.0 - 1.0/16.0;
     /**
-     * Shifting over too far a distance looks ugly; just fade out/in if over
-     * this distance.
+     * Shifting over too far a distance looks bizarre because things move too
+     * quickly. If shapes are further away than this threshold, the animation
+     * should be a fade out/in instead of a shift.
      */
     public static final double SHIFT_MAX_SQUARED = Math.pow(32.0, 2.0);
     /**
@@ -46,9 +50,12 @@ public abstract class RenderBase extends Shape {
      */
     public static final double ALPHA_SIDE = 0.5;
     public static final float LINE_WIDTH = 2.0F;
-    public static final Color ORIGIN_MARKER_COLOR_VISIBLE = Color.WHITE.copy().setAlpha(0.5);
-    public static final Color ORIGIN_MARKER_COLOR_HIDDEN = Color.WHITE.copy().setAlpha(0.125);
-    public static final float ORIGIN_MARKER_RADIUS = 0.49F;
+    public static final Color MARKER_COLOR_VISIBLE = Color.WHITE.copy().setAlpha(0.5);
+    public static final Color MARKER_COLOR_HIDDEN = Color.WHITE.copy().setAlpha(0.25);
+    public static final double MARKER_MARGIN = 1.0/8.0;
+    /**
+     * Static helper transforms for rendering GLU shapes.
+     */
     protected static final ShapeTranslate CENTER_WITHIN_BLOCK = new ShapeTranslate(0.5, 0.5, 0.5);
     protected static final ShapeRotate SPHERE_UPRIGHT = new ShapeRotate(90.0, 1.0, 0.0, 0.0);
 
@@ -56,14 +63,13 @@ public abstract class RenderBase extends Shape {
     private final ReadonlyColor lineColorHidden;
     private double alphaBase; // [0.0, 1.0] alpha scaling factor to apply to all lines
     private final ShapeScale shapeScale; // transform the entire shape
-    private final GLUSphere originMarker;
-    private Timeline timelineFade;
+    private boolean renderMarkersNow;
+    private final boolean renderMarkersNormally;
     private Timeline timelineShift;
-    private boolean renderOriginMarkerNow;
-    private final boolean renderOriginMarkerNormally;
+    private Timeline timelineFade;
 
     protected RenderBase(ReadonlyColor lineColorVisible, ReadonlyColor lineColorHidden, boolean renderOriginMarkerNormally) {
-        super(Vector3.ZEROS.copy());
+        super(Vector3.ZEROS.copy()); // child class responsible for setting origin
         setRelativeToOrigin(false);
         if (lineColorVisible == null || lineColorHidden == null ||
                 lineColorVisible == lineColorHidden) {
@@ -74,20 +80,7 @@ public abstract class RenderBase extends Shape {
         setAlphaBase(1.0);
         shapeScale = new ShapeScale(1.0, 1.0, 1.0);
         addTransform(shapeScale);
-        originMarker = createOriginMarker();
-        this.renderOriginMarkerNormally = renderOriginMarkerNormally;
-    }
-
-    private GLUSphere createOriginMarker() {
-        // TODO: also create a tick marker that's rendered every 10 blocks along the axes, so long as it's inside the shape
-        // TODO: setting... markers: off origin ticks
-        GLUSphere marker = new GLUSphere(getOrigin(),
-                ORIGIN_MARKER_COLOR_VISIBLE,
-                ORIGIN_MARKER_COLOR_HIDDEN,
-                ORIGIN_MARKER_RADIUS);
-        marker.setSlices(16).setStacks(16).getGLUQuadric().setDrawStyle(GLU.GLU_LINE);
-        marker.addTransform(CENTER_WITHIN_BLOCK).addTransform(SPHERE_UPRIGHT);
-        return marker;
+        this.renderMarkersNormally = renderOriginMarkerNormally;
     }
 
     public ReadonlyColor getLineColorVisible() {
@@ -112,45 +105,103 @@ public abstract class RenderBase extends Shape {
         if (alphaBase <= 0.0) {
             return;
         }
-        if (renderOriginMarkerNormally || renderOriginMarkerNow) {
-            originMarker.render(mc);
-        }
         renderShell(mc);
         GL11.glLineWidth(LINE_WIDTH);
         GL11.glDepthFunc(GL11.GL_LEQUAL);
-        // renderLines is responsible for setting the line color
+        // The rendering methods are responsible for setting the line color
+        renderMarkers(mc, MARKER_COLOR_VISIBLE);
         renderLines(mc, getLineColorVisible());
         if (getLineColorHidden() != null) {
             GL11.glDepthFunc(GL11.GL_GREATER);
+            renderMarkers(mc, MARKER_COLOR_HIDDEN);
             renderLines(mc, getLineColorHidden());
         }
     }
 
+    /**
+     * If a shell surrounding the region is appropriate for the region type,
+     * the child class can override this method.
+     */
     protected void renderShell(MinecraftAccess mc) {
         // do nothing
     }
 
-    protected abstract void renderLines(MinecraftAccess mc, ReadonlyColor lineColor);
-
-    public double getAlphaBase() {
-        return alphaBase;
-    }
-    public void setAlphaBase(double alphaBase) {
-        if (alphaBase < 0.0 || alphaBase > 1.0) {
-            throw new IllegalArgumentException();
+    /**
+     * Render a marker at the region's origin.
+     * <p>
+     * TODO: Also render markers every 10 blocks along the axes, so long as
+     *       it's inside the shape. This will be a handy way to measure
+     *       distances.
+     * TODO: Replace the renderMarkersNormally/renderMarkersNow flags with a
+     *       user preference for markers: {off, origin, ticks}
+     */
+    protected void renderMarkers(MinecraftAccess mc, ReadonlyColor lineColor) {
+        if (!renderMarkersNormally && !renderMarkersNow) {
+            return;
         }
-        this.alphaBase = alphaBase;
+        GL11.glColor4d(
+                lineColor.getRed(),
+                lineColor.getGreen(),
+                lineColor.getBlue(),
+                lineColor.getAlpha() * alphaBase);
+        final double x0 = getOriginReadonly().getX() + MARKER_MARGIN;
+        final double x1 = getOriginReadonly().getX() + 1 - MARKER_MARGIN;
+        final double y0 = getOriginReadonly().getY() + MARKER_MARGIN;
+        final double y1 = getOriginReadonly().getY() + 1 - MARKER_MARGIN;
+        final double z0 = getOriginReadonly().getZ() + MARKER_MARGIN;
+        final double z1 = getOriginReadonly().getZ() + 1 - MARKER_MARGIN;
+        // bottom
+        mc.startDrawing(GL11.GL_LINE_LOOP);
+        mc.addVertex(x0, y0, z0);
+        mc.addVertex(x1, y0, z0);
+        mc.addVertex(x1, y0, z1);
+        mc.addVertex(x0, y0, z1);
+        mc.finishDrawing();
+        // top
+        mc.startDrawing(GL11.GL_LINE_LOOP);
+        mc.addVertex(x0, y1, z0);
+        mc.addVertex(x1, y1, z0);
+        mc.addVertex(x1, y1, z1);
+        mc.addVertex(x0, y1, z1);
+        mc.finishDrawing();
+        // sides
+        mc.startDrawing(GL11.GL_LINES);
+        mc.addVertex(x0, y0, z0).addVertex(x0, y1, z0);
+        mc.addVertex(x1, y0, z0).addVertex(x1, y1, z0);
+        mc.addVertex(x1, y0, z1).addVertex(x1, y1, z1);
+        mc.addVertex(x0, y0, z1).addVertex(x0, y1, z1);
+        mc.finishDrawing();
     }
 
-    public ShapeScale getShapeScale() {
-        return shapeScale;
-    }
+    /**
+     * Render a grid of lines inside blocks that are inside the region.
+     */
+    protected abstract void renderLines(MinecraftAccess mc, ReadonlyColor lineColor);
 
     /**
      * Adjust to the player moving around. For large or infinite shapes, this
      * is the input to use to limit the number of lines rendered.
      */
     public abstract void updateObserverPosition(ReadonlyVector3 observerPosition);
+
+    public boolean isRenderMarkersNow() {
+        return renderMarkersNow;
+    }
+    public void setRenderMarkersNow(boolean renderMarkersNow) {
+        this.renderMarkersNow = renderMarkersNow;
+    }
+
+    // ========
+    // Animation
+    // ========
+
+    // Public getter/setter required for property interpolation (animation).
+    public double getAlphaBase() {
+        return alphaBase;
+    }
+    public void setAlphaBase(double alphaBase) {
+        this.alphaBase = Math.max(0.0, Math.min(alphaBase, 1.0));
+    }
 
     public void shift(ReadonlyVector3 newOrigin) {
         if (timelineShift != null && !timelineShift.isDone()) {
@@ -192,12 +243,5 @@ public abstract class RenderBase extends Shape {
                 .on(scaleVec).from(scaleVec.getZ()).to(toScale));
         timelineFade.setDuration(ANIM_DURATION);
         timelineFade.play();
-    }
-
-    public boolean isRenderOriginMarkerNow() {
-        return renderOriginMarkerNow;
-    }
-    public void setRenderOriginMarkerNow(boolean renderOriginMarkerNow) {
-        this.renderOriginMarkerNow = renderOriginMarkerNow;
     }
 }

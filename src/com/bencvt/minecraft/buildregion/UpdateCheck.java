@@ -12,6 +12,9 @@ import net.minecraft.src.Path;
 
 /**
  * Check the remote website for updates.
+ * <p>
+ * The server-side part of this is dead simple: a static text file hosted on a
+ * web server.
  * 
  * @author bencvt
  */

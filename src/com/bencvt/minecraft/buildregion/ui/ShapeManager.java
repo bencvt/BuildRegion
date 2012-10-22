@@ -50,7 +50,7 @@ public class ShapeManager {
         }
         removeShape();
         mainShape = createShape(region);
-        mainShape.setRenderOriginMarkerNow(guiScreenActive);
+        mainShape.setRenderMarkersNow(guiScreenActive);
         libShapeDraw.addShape(mainShape);
         mainShape.fadeIn();
     }
@@ -107,10 +107,10 @@ public class ShapeManager {
     public void setGuiScreenActive(boolean guiScreenActive) {
         this.guiScreenActive = guiScreenActive;
         if (mainShape != null) {
-            mainShape.setRenderOriginMarkerNow(guiScreenActive);
+            mainShape.setRenderMarkersNow(guiScreenActive);
         }
         if (prevShape != null) {
-            prevShape.setRenderOriginMarkerNow(guiScreenActive);
+            prevShape.setRenderMarkersNow(guiScreenActive);
         }
     }
 }

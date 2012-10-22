@@ -1,11 +1,14 @@
-## 1.1; in the process of implementing; not yet released
-- updated for Minecraft 1.4
-- added update check; can be disabled by creating a file named
-  `(minecraft dir)/mods/BuildRegion/noupdatecheck.txt`
+## partially implemented features to be released in 1.2
 - added new region types: cuboid, cylinder, spheroid
 - added a GUI screen to set region parameters, accessible by pressing `B`
 - changed the build mode keybind to `shift-B` (was: `B`)
 - removed the usage keybind (was: `shift-B`); now accessible via the GUI
+
+## 1.1
+- updated for Minecraft 1.4
+- added update check; can be disabled by creating a file named
+  `(minecraft dir)/mods/BuildRegion/noupdatecheck.txt`
+- ambiguous direction detection even less picky: only used when shifting regions
 
 ## 1.0.3
 - adjusted the ambiguous direction detection method to make it less picky
