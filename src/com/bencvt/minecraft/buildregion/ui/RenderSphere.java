@@ -56,11 +56,7 @@ public class RenderSphere extends RenderBase {
 
     @Override
     protected void renderLines(MinecraftAccess mc, ReadonlyColor lineColor) {
-        GL11.glColor4d(
-                lineColor.getRed(),
-                lineColor.getGreen(),
-                lineColor.getBlue(),
-                lineColor.getAlpha());
+        lineColor.glApply(getAlphaBase());
         final double x0 = lower.getX() + CUBE_MARGIN;
         final double x1 = upper.getX() + 1 - CUBE_MARGIN;
         final double y0 = lower.getY() + CUBE_MARGIN;

@@ -105,11 +105,7 @@ public class RenderPlane extends RenderBase {
                 final double y1 = curCoords[1] + 1 - CUBE_MARGIN;
                 final double z0 = curCoords[2] + CUBE_MARGIN;
                 final double z1 = curCoords[2] + 1 - CUBE_MARGIN;
-                GL11.glColor4d(
-                        lineColor.getRed(),
-                        lineColor.getGreen(),
-                        lineColor.getBlue(),
-                        lineColor.getAlpha() * alphaScale);
+                lineColor.glApply(alphaScale);
                 // Because sides are rendered with a different transparency we
                 // need to check the axis again.
                 if (axis == Axis.X) {
@@ -128,11 +124,7 @@ public class RenderPlane extends RenderBase {
                     mc.addVertex(x1, y0, z1);
                     mc.finishDrawing();
                     // sides
-                    GL11.glColor4d(
-                            lineColor.getRed(),
-                            lineColor.getGreen(),
-                            lineColor.getBlue(),
-                            lineColor.getAlpha() * alphaScale * ALPHA_SIDE);
+                    lineColor.glApply(alphaScale * ALPHA_SIDE);
                     mc.startDrawing(GL11.GL_LINES);
                     mc.addVertex(x0, y0, z0).addVertex(x1, y0, z0);
                     mc.addVertex(x0, y1, z0).addVertex(x1, y1, z0);
@@ -155,11 +147,7 @@ public class RenderPlane extends RenderBase {
                     mc.addVertex(x0, y1, z1);
                     mc.finishDrawing();
                     // sides
-                    GL11.glColor4d(
-                            lineColor.getRed(),
-                            lineColor.getGreen(),
-                            lineColor.getBlue(),
-                            lineColor.getAlpha() * alphaScale * ALPHA_SIDE);
+                    lineColor.glApply(alphaScale * ALPHA_SIDE);
                     mc.startDrawing(GL11.GL_LINES);
                     mc.addVertex(x0, y0, z0).addVertex(x0, y1, z0);
                     mc.addVertex(x1, y0, z0).addVertex(x1, y1, z0);
@@ -182,11 +170,7 @@ public class RenderPlane extends RenderBase {
                     mc.addVertex(x0, y1, z1);
                     mc.finishDrawing();
                     // sides
-                    GL11.glColor4d(
-                            lineColor.getRed(),
-                            lineColor.getGreen(),
-                            lineColor.getBlue(),
-                            lineColor.getAlpha() * alphaScale * ALPHA_SIDE);
+                    lineColor.glApply(alphaScale * ALPHA_SIDE);
                     mc.startDrawing(GL11.GL_LINES);
                     mc.addVertex(x0, y0, z0).addVertex(x0, y0, z1);
                     mc.addVertex(x1, y0, z0).addVertex(x1, y0, z1);

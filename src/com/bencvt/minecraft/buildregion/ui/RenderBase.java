@@ -139,11 +139,7 @@ public abstract class RenderBase extends Shape {
         if (!renderMarkersNormally && !renderMarkersNow) {
             return;
         }
-        GL11.glColor4d(
-                lineColor.getRed(),
-                lineColor.getGreen(),
-                lineColor.getBlue(),
-                lineColor.getAlpha() * alphaBase);
+        lineColor.glApply(alphaBase);
         final double x0 = getOriginReadonly().getX() + MARKER_MARGIN;
         final double x1 = getOriginReadonly().getX() + 1 - MARKER_MARGIN;
         final double y0 = getOriginReadonly().getY() + MARKER_MARGIN;
