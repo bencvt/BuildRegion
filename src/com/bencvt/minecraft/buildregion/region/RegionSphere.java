@@ -40,7 +40,7 @@ public class RegionSphere extends RegionBase {
         return    Math.pow(((int) x) - getOrigin().getX(), 2.0) / Math.pow(radii.getX(), 2.0)
                 + Math.pow(((int) y) - getOrigin().getY(), 2.0) / Math.pow(radii.getY(), 2.0)
                 + Math.pow(((int) z) - getOrigin().getZ(), 2.0) / Math.pow(radii.getZ(), 2.0)
-                <= 1.0;
+                < 1.0;
     }
 
     @Override

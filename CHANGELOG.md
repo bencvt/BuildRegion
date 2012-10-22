@@ -1,8 +1,8 @@
 ## 1.1; in the process of implementing; not yet released
 - updated for Minecraft 1.4
-- added update check
+- added update check; can be disabled by creating a file named
+  `(minecraft dir)/mods/BuildRegion/noupdatecheck.txt`
 - added new region types: cuboid, cylinder, spheroid
-- added keybinds to shift region up/down/left/right
 - added a GUI screen to set region parameters, accessible by pressing `B`
 - changed the build mode keybind to `shift-B` (was: `B`)
 - removed the usage keybind (was: `shift-B`); now accessible via the GUI
