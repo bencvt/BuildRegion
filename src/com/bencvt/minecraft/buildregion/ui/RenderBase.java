@@ -2,7 +2,6 @@ package com.bencvt.minecraft.buildregion.ui;
 
 import libshapedraw.MinecraftAccess;
 import libshapedraw.animation.trident.Timeline;
-import libshapedraw.animation.trident.Timeline$RepeatBehavior;
 import libshapedraw.primitive.Color;
 import libshapedraw.primitive.ReadonlyColor;
 import libshapedraw.primitive.ReadonlyVector3;
