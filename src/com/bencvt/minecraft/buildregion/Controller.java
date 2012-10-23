@@ -118,7 +118,7 @@ public class Controller {
     }
 
     public void cmdModeNext() {
-        buildMode.setValue(buildMode.getValue().getNextMode());
+        cmdMode(buildMode.getValue().getNextMode());
     }
 
     // ========
