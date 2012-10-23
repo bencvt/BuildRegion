@@ -1,5 +1,5 @@
 ## partially implemented features to be released in 1.2
-- added new region types: cuboid, cylinder, spheroid
+- added new region types: cuboid, cylinder, sphere
 - added a GUI screen to set region parameters, accessible by pressing `B`
 - changed the build mode keybind to `shift-B` (was: `B`)
 - removed the usage keybind (was: `shift-B`); now accessible via the GUI
