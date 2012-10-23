@@ -4,7 +4,7 @@
   "name": "BuildRegion",
   "description": "In Minecraft, having to go back and fix blocks that you accidentally placed or destroyed is time-consuming and annoying. BuildRegion is a user interface enhancement mod, designed to help you avoid these little accidents.",
   "logoFile": "",
-  "version": "1.1",
+  "version": "1.1-SNAPSHOT",
   "credits": "",
   "authors": [ "bencvt" ],
   "url": "http://bit.ly/BuildRegion",
