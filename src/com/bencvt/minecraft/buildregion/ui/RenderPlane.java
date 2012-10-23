@@ -36,7 +36,7 @@ public class RenderPlane extends RenderBase {
     private final double[] curCoords = {0.0, 0.0, 0.0};
 
     public RenderPlane(ReadonlyColor lineColorVisible, ReadonlyColor lineColorHidden, RegionPlane region) {
-        super(lineColorVisible, lineColorHidden, true);//XXXfalse);
+        super(lineColorVisible, lineColorHidden, false);
         getOrigin().set(region.getOriginReadonly());
         axis = region.getAxis();
         observerPosition = new Vector3(); // only two of these coords are relevant
@@ -44,7 +44,7 @@ public class RenderPlane extends RenderBase {
 
     @Override
     public boolean updateIfPossible(RegionBase region) {
-        if (!(region instanceof RegionPlane)) {
+        if (!region.isRegionType(RegionPlane.class)) {
             return false;
         }
         RegionPlane plane = (RegionPlane) region;

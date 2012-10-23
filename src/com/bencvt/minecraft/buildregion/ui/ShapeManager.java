@@ -30,13 +30,8 @@ public class ShapeManager {
     }
 
     public void reset() {
-        if (mainShape == null) {
-            libShapeDraw.getShapes().remove(mainShape);
-        }
+        libShapeDraw.getShapes().clear();
         mainShape = null;
-        if (prevShape != null) {
-            libShapeDraw.getShapes().remove(prevShape);
-        }
         prevShape = null;
     }
 

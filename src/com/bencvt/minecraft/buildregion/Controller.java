@@ -8,11 +8,8 @@ import libshapedraw.primitive.Vector3;
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.mod_BuildRegion;
 
-import com.bencvt.minecraft.buildregion.region.Axis;
 import com.bencvt.minecraft.buildregion.region.Direction3D;
 import com.bencvt.minecraft.buildregion.region.RegionBase;
-import com.bencvt.minecraft.buildregion.region.RegionPlane;
-import com.bencvt.minecraft.buildregion.region.RegionSphere;
 import com.bencvt.minecraft.buildregion.ui.InputManager;
 import com.bencvt.minecraft.buildregion.ui.MessageManager;
 import com.bencvt.minecraft.buildregion.ui.ShapeManager;
@@ -51,8 +48,7 @@ public class Controller {
     public void cmdReset() {
         buildMode.setValueNoAnimation(BuildMode.INSIDE);
         curRegion = null;
-        //prevRegion = new RegionPlane(new Vector3(0, 63, 0), Axis.Y);
-        prevRegion = new RegionSphere(new Vector3(0, 7, 0), new Vector3(7,7,7));//XXX
+        prevRegion = RegionBase.DEFAULT_REGION;
         shapeManager.reset();
     }
 

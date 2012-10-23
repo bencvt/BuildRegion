@@ -9,6 +9,8 @@ import libshapedraw.primitive.Vector3;
  * @author bencvt
  */
 public abstract class RegionBase {
+    public static final RegionBase DEFAULT_REGION = new RegionPlane(Vector3.ZEROS, Axis.X);
+
     private final Vector3 origin;
 
     protected RegionBase(ReadonlyVector3 origin) {
@@ -59,6 +61,10 @@ public abstract class RegionBase {
     // ========
     // Accessors and mutators
     // ========
+
+    public boolean isRegionType(Class<? extends RegionBase> type) {
+        return this != DEFAULT_REGION && type.isInstance(this);
+    }
 
     public final ReadonlyVector3 getOriginReadonly() {
         return origin;

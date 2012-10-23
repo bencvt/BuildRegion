@@ -1,8 +1,5 @@
 package com.bencvt.minecraft.buildregion.ui;
 
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.glu.GLU;
-
 import libshapedraw.MinecraftAccess;
 import libshapedraw.animation.trident.Timeline;
 import libshapedraw.primitive.Color;
@@ -10,11 +7,11 @@ import libshapedraw.primitive.ReadonlyColor;
 import libshapedraw.primitive.ReadonlyVector3;
 import libshapedraw.primitive.Vector3;
 import libshapedraw.shape.GLUSphere;
-import libshapedraw.transform.ShapeRotate;
 import libshapedraw.transform.ShapeScale;
 
+import org.lwjgl.util.glu.GLU;
+
 import com.bencvt.minecraft.buildregion.region.RegionBase;
-import com.bencvt.minecraft.buildregion.region.RegionPlane;
 import com.bencvt.minecraft.buildregion.region.RegionSphere;
 
 /**
@@ -56,6 +53,7 @@ public class RenderSphere extends RenderBase {
 
     @Override
     protected void renderLines(MinecraftAccess mc, ReadonlyColor lineColor) {
+        /* XXX
         lineColor.glApply(getAlphaBase());
         final double x0 = lower.getX() + CUBE_MARGIN;
         final double x1 = upper.getX() + 1 - CUBE_MARGIN;
@@ -105,11 +103,12 @@ public class RenderSphere extends RenderBase {
             mc.addVertex(x0, yA, z1).addVertex(x1, yA, z1);
         }
         mc.finishDrawing();
+        */
     }
 
     @Override
     public boolean updateIfPossible(RegionBase region) {
-        if (!(region instanceof RegionSphere)) {
+        if (!region.isRegionType(RegionSphere.class)) {
             return false;
         }
         if (getOriginReadonly().distanceSquared(region.getOriginReadonly()) > SHIFT_MAX_SQUARED) {
