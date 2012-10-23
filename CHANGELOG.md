@@ -8,6 +8,7 @@
 - updated for Minecraft 1.4
 - added update check; can be disabled by creating a file named
   `(minecraft dir)/mods/BuildRegion/noupdatecheck.txt`
+- no longer auto-clear when the player gets too far from from the region
 - ambiguous direction detection even less picky: only used when shifting regions
 
 ## 1.0.3
