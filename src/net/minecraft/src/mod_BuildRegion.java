@@ -31,7 +31,7 @@ public class mod_BuildRegion extends BaseMod implements LSDEventListener, Player
     }
 
     public String getModVersion() {
-        return "1.1.1";
+        return "1.1.1-SNAPSHOT";
     }
 
     @Override
