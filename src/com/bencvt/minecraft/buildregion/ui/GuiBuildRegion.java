@@ -244,7 +244,7 @@ public class GuiBuildRegion extends GuiScreen {
         final int yBottom = windowYPosition + windowHeight;
 
         // Draw header above the window.
-        mc.fontRenderer.drawString(controller.getModTitle(),
+        mc.fontRenderer.drawStringWithShadow(controller.getModTitle(),
                 xLeft + (windowWidth - mc.fontRenderer.getStringWidth(controller.getModTitle())) / 2,
                 yTop - mc.fontRenderer.FONT_HEIGHT - PAD,
                 HEADER_ARGB);
