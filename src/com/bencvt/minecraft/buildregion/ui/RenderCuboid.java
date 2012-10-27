@@ -21,7 +21,7 @@ public class RenderCuboid extends RenderBase {
 
     protected RenderCuboid(ReadonlyColor lineColorVisible, ReadonlyColor lineColorHidden, RegionCuboid region) {
         super(lineColorVisible, lineColorHidden, true);
-        getOrigin().set(region.getOriginReadonly());
+        onUpdateOrigin(getOrigin().set(region.getOriginReadonly()));
         lower = new Vector3();
         upper = new Vector3();
         region.getAABB(lower, upper);

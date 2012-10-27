@@ -53,8 +53,9 @@ public abstract class RenderBase extends Shape {
      * For shapes that are aligned to an axis, the sides of grid cubes (i.e.,
      * the lines parallel to the shape's axis) are rendered more subtly.
      */
-    public static final double ALPHA_SIDE = 0.5;
-    public static final double ALPHA_SHELL = 0.25;
+    public static final double ALPHA_SIDE = 1.0/2.0;
+    public static final double ALPHA_SHELL = 1.0/4.0;
+    public static final double ALPHA_MARKER_SPLIT = 5.0/16.0;
     public static final float LINE_WIDTH = 2.0F;
     public static final Color MARKER_COLOR_VISIBLE = Color.WHITE.copy().setAlpha(0.5);
     public static final Color MARKER_COLOR_HIDDEN = Color.WHITE.copy().setAlpha(0.25);
@@ -71,6 +72,7 @@ public abstract class RenderBase extends Shape {
     private final ShapeScale shapeScale; // transform the entire shape
     private boolean renderMarkersNow;
     private final boolean renderMarkersNormally;
+    private final Vector3 actualOrigin;
     private Timeline timelineShiftOrigin;
     private Timeline timelineFade;
 
@@ -87,6 +89,16 @@ public abstract class RenderBase extends Shape {
         shapeScale = new ShapeScale(1.0, 1.0, 1.0);
         addTransform(shapeScale);
         this.renderMarkersNormally = renderOriginMarkerNormally;
+        actualOrigin = getOriginReadonly().copy();
+    }
+
+    /**
+     * To keep the origin marker rendering consistent, this method must be
+     * called whenever the origin is being updated, either directly or via a
+     * Timeline.
+     */
+    public final void onUpdateOrigin(ReadonlyVector3 newOrigin) {
+        actualOrigin.set(newOrigin);
     }
 
     public ReadonlyColor getLineColorVisible() {
@@ -146,14 +158,14 @@ public abstract class RenderBase extends Shape {
         double x1 = x + 1 - MARKER_MARGIN;
         double y1 = y + 1 - MARKER_MARGIN;
         double z1 = z + 1 - MARKER_MARGIN;
-        boolean splitX = x != (int) x && x*2.0 == (int) (x*2.0);
-        boolean splitY = y != (int) y && y*2.0 == (int) (y*2.0);
-        boolean splitZ = z != (int) z && z*2.0 == (int) (z*2.0);
+        boolean splitX = actualOrigin.getX() != (int) actualOrigin.getX();
+        boolean splitY = actualOrigin.getY() != (int) actualOrigin.getY();
+        boolean splitZ = actualOrigin.getZ() != (int) actualOrigin.getZ();
 
         // When the origin marker evenly straddles 2 (or 4, or 8) blocks, draw
         // pairs of squares to split the marker.
         if (splitX || splitY || splitZ) {
-            lineColor.glApply(alphaBase * ALPHA_SIDE);
+            lineColor.glApply(alphaBase * ALPHA_MARKER_SPLIT);
             if (splitX) {
                 x += 0.5 - MINI_MARGIN;
                 mc.startDrawing(GL11.GL_LINE_LOOP);
@@ -272,6 +284,7 @@ public abstract class RenderBase extends Shape {
     }
 
     protected void animateShiftOrigin(ReadonlyVector3 newOrigin) {
+        onUpdateOrigin(newOrigin);
         if (timelineShiftOrigin != null && !timelineShiftOrigin.isDone()) {
             timelineShiftOrigin.abort();
         }

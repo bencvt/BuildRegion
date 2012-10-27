@@ -109,7 +109,8 @@ public class Controller {
 
         // Update UI.
         shapeManager.updateRegion(curRegion);
-        messageManager.info("build region moved:\n" + curRegion);
+        messageManager.info("build region moved " +
+                relDir.toString().toLowerCase() + ":\n" + curRegion);
     }
 
     public void cmdMode(BuildMode newMode) {
@@ -209,6 +210,7 @@ public class Controller {
                     minecraft.thePlayer.rotationPitch);
             if (dir == null) {
                 messageManager.error("ambiguous direction\nface north, south, east, west, up, or down");
+                return null;
             }
             return dir.getRelative(relDir);
         } else {

@@ -82,7 +82,16 @@ public class RegionCuboid extends RegionBase {
     @Override
     public String toString() {
         normalize();
-        return "cuboid"; // TODO
+        return new StringBuilder().append("cuboid ")
+                .append(strXYZ(lowerCorner)).append(" to ")
+                .append(strXYZ(upperCorner)).append('\n')
+                .append((int) (upperCorner.getX() - lowerCorner.getX()) + 1)
+                .append('\u00d7')
+                .append((int) (upperCorner.getY() - lowerCorner.getY()) + 1)
+                .append('\u00d7')
+                .append((int) (upperCorner.getZ() - lowerCorner.getZ()) + 1)
+                .append(" = ").append((int) size()).append(" blocks")
+                .toString();
     }
 
     private void normalize() {

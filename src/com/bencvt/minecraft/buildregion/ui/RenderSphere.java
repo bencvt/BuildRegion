@@ -35,7 +35,7 @@ public class RenderSphere extends RenderBase {
 
     public RenderSphere(ReadonlyColor lineColorVisible, ReadonlyColor lineColorHidden, RegionSphere region) {
         super(lineColorVisible, lineColorHidden, true);
-        getOrigin().set(region.getOriginReadonly());
+        onUpdateOrigin(getOrigin().set(region.getOriginReadonly()));
         radii = region.getRadiiReadonly().copy();
         shell = new GLUSphere(getOrigin(), SHELL_COLOR, null, 1.0F);
         shell.getGLUQuadric().setDrawStyle(GLU.GLU_LINE);

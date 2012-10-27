@@ -37,7 +37,7 @@ public class RenderPlane extends RenderBase {
 
     public RenderPlane(ReadonlyColor lineColorVisible, ReadonlyColor lineColorHidden, RegionPlane region) {
         super(lineColorVisible, lineColorHidden, true);//XXX
-        getOrigin().set(region.getOriginReadonly());
+        onUpdateOrigin(getOrigin().set(region.getOriginReadonly()));
         axis = region.getAxis();
         observerPosition = new Vector3(); // only two of these coords are relevant
     }
