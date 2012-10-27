@@ -33,8 +33,11 @@ public class RegionCylinder extends RegionBase {
 
     @Override
     public RegionBase copyUsing(ReadonlyVector3 newOrigin, Axis newAxis) {
-        // TODO Auto-generated method stub
-        return null;
+        if (axis == newAxis) {
+            return new RegionCylinder(newOrigin, newAxis, getHeight(), getRadiusA(), getRadiusB());
+        } else {
+            return new RegionCylinder(newOrigin, newAxis, getHeight(), getRadiusB(), getRadiusA());
+        }
     }
 
     @Override
@@ -71,8 +74,13 @@ public class RegionCylinder extends RegionBase {
 
     @Override
     public boolean expand(Axis axis, double amount) {
-        // TODO: adjust radius A/B or height depending on axis
-        return false;
+        if (axis == this.axis) {
+            amount *= 0.5;
+            // TODO: adjust origin too
+        }
+        double prev = axis.getVectorComponent(halfHeightAndRadii);
+        Units.HALF.clampAtom(axis.addVectorComponent(halfHeightAndRadii, amount));
+        return axis.getVectorComponent(halfHeightAndRadii) != prev;
     }
 
     @Override
@@ -85,7 +93,8 @@ public class RegionCylinder extends RegionBase {
             b.append(Units.HALF.v2s(getOriginReadonly()));
             b.append("\nradius ").append(getRadiusAxisA().toString().toLowerCase());
             b.append('/').append(getRadiusAxisB().toString().toLowerCase());
-            b.append('=').append(radiusA);
+            b.append('=');
+            b.append(Units.HALF.d2s(radiusA));
         } else {
             b.append("cylindroid @ ");
             b.append(Units.HALF.v2s(getOriginReadonly()));

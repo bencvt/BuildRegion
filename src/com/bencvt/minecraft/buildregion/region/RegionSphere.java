@@ -64,8 +64,9 @@ public class RegionSphere extends RegionBase {
 
     @Override
     public boolean expand(Axis axis, double amount) {
-        // TODO: adjust radius depending on axis
-        return false;
+        double prev = axis.getVectorComponent(radii);
+        Units.HALF.clampAtom(axis.addVectorComponent(radii, amount));
+        return axis.getVectorComponent(radii) != prev;
     }
 
     @Override

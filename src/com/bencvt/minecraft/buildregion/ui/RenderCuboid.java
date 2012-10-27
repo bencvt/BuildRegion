@@ -14,8 +14,6 @@ import com.bencvt.minecraft.buildregion.region.RegionCuboid;
 public class RenderCuboid extends RenderBase {
     /** Somewhat arbitrary limit for the number of grid lines. */
     public static final int MAX_GRID_SIZE = 100;
-    public static final double CORNER_MARKER_OFFSET = -1.0/16.0;
-    public static final double CORNER_MARKER_SIZE = 1.0/4.0;
 
     private final Vector3 lower;
     private final Vector3 upper;
@@ -27,6 +25,11 @@ public class RenderCuboid extends RenderBase {
         lower = new Vector3();
         upper = new Vector3();
         region.getAABB(lower, upper);
+    }
+
+    @Override
+    protected ReadonlyVector3 getCornerReadonly() {
+        return lower;
     }
 
     @Override
@@ -158,29 +161,6 @@ public class RenderCuboid extends RenderBase {
                 mc.addVertex(x0G, y1G, zA).addVertex(x1G, y1G, zA);
             }
         }
-        mc.finishDrawing();
-
-        // lower corner mini-marker
-        if (lineColor == getLineColorVisible()) {
-            MARKER_COLOR_VISIBLE.glApply(getAlphaBase());
-        } else {
-            MARKER_COLOR_HIDDEN.glApply(getAlphaBase());
-        }
-        x0 += CORNER_MARKER_OFFSET;
-        x1 = x0 + CORNER_MARKER_SIZE;
-        y0 += CORNER_MARKER_OFFSET;
-        y1 = y0 + CORNER_MARKER_SIZE;
-        z0 += CORNER_MARKER_OFFSET;
-        z1 = z0 + CORNER_MARKER_SIZE;
-        mc.startDrawing(GL11.GL_LINE_LOOP);
-        mc.addVertex(x0, y0, z0);
-        mc.addVertex(x1, y0, z0);
-        mc.addVertex(x0, y0, z1);
-        mc.finishDrawing();
-        mc.startDrawing(GL11.GL_LINES);
-        mc.addVertex(x0, y0, z0).addVertex(x0, y1, z0);
-        mc.addVertex(x1, y0, z0).addVertex(x0, y1, z0);
-        mc.addVertex(x0, y0, z1).addVertex(x0, y1, z0);
         mc.finishDrawing();
     }
 

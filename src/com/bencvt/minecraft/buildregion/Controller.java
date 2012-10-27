@@ -107,8 +107,8 @@ public class Controller {
         }
 
         // Update region.
+        // TODO: lock radii for sphere/cylinder
         double amount = dir.axisDirection * curRegion.getUnits(dir.axis).atom;
-        System.out.println("expand="+expand+" dir="+dir+" amount="+amount);//XXX
         if (expand) {
             if (!curRegion.expand(dir.axis, amount)) {
                 return;

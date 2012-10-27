@@ -7,9 +7,12 @@ import libshapedraw.primitive.ReadonlyColor;
 import libshapedraw.primitive.ReadonlyVector3;
 import libshapedraw.primitive.Vector3;
 import libshapedraw.shape.GLUSphere;
+import libshapedraw.transform.ShapeRotate;
 import libshapedraw.transform.ShapeScale;
 
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
+import org.lwjgl.util.glu.Sphere;
 
 import com.bencvt.minecraft.buildregion.region.RegionBase;
 import com.bencvt.minecraft.buildregion.region.RegionSphere;
@@ -24,31 +27,46 @@ import com.bencvt.minecraft.buildregion.region.RegionSphere;
  * @author bencvt
  */
 public class RenderSphere extends RenderBase {
-    private static final Color SHELL_COLOR = Color.PALE_GOLDENROD.copy().scaleAlpha(1.0/4.0);
-
-    private final Vector3 lower; // cached AABB for rendering
-    private final Vector3 upper; // cached AABB for rendering
     private final Vector3 radii;
-    private final GLUSphere shell;
-    private final ShapeScale shellScale;
+    private final Sphere shell;
     private Timeline timelineResize;
 
     public RenderSphere(ReadonlyColor lineColorVisible, ReadonlyColor lineColorHidden, RegionSphere region) {
         super(lineColorVisible, lineColorHidden, true);
         onUpdateOrigin(getOrigin().set(region.getOriginReadonly()));
         radii = region.getRadiiReadonly().copy();
-        shell = new GLUSphere(getOrigin(), SHELL_COLOR, null, 1.0F);
-        shell.getGLUQuadric().setDrawStyle(GLU.GLU_LINE);
-        shellScale = new ShapeScale(radii);
-        shell.addTransform(CENTER_WITHIN_BLOCK).addTransform(SPHERE_UPRIGHT).addTransform(shellScale);
-        lower = new Vector3();
-        upper = new Vector3();
-        region.getAABB(lower, upper);
+        shell = new Sphere();
+    }
+
+    @Override
+    protected ReadonlyVector3 getCornerReadonly() {
+        return getOriginReadonly();
     }
 
     @Override
     protected void renderShell(MinecraftAccess mc) {
-        shell.render(mc);
+        GL11.glPushMatrix();
+        GL11.glTranslated(
+                getOriginReadonly().getX() + 0.5,
+                getOriginReadonly().getY() + 0.5,
+                getOriginReadonly().getZ() + 0.5);
+        GL11.glRotatef(90.0F, 1.0F, 0.0F, 0.0F);
+        GL11.glScaled(radii.getX(), radii.getZ(), radii.getY());
+
+        GL11.glLineWidth(1.0F);
+        getLineColorVisible().glApply(getAlphaBase());
+        shell.setDrawStyle(GLU.GLU_LINE);
+        shell.draw(1.0F, 24, 24);
+        GL11.glLineWidth(LINE_WIDTH);
+
+        getLineColorVisible().glApply(getAlphaBase() * ALPHA_SHELL);
+        shell.setDrawStyle(GLU.GLU_FILL);
+        shell.setOrientation(GLU.GLU_INSIDE);
+        shell.draw(1.0F, 24, 24);
+        shell.setOrientation(GLU.GLU_OUTSIDE);
+        shell.draw(1.0F, 24, 24);
+
+        GL11.glPopMatrix();
     }
 
     @Override

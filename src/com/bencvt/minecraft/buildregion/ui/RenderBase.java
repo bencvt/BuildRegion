@@ -6,14 +6,11 @@ import libshapedraw.primitive.Color;
 import libshapedraw.primitive.ReadonlyColor;
 import libshapedraw.primitive.ReadonlyVector3;
 import libshapedraw.primitive.Vector3;
-import libshapedraw.shape.GLUSphere;
 import libshapedraw.shape.Shape;
-import libshapedraw.transform.ShapeRotate;
 import libshapedraw.transform.ShapeScale;
 import libshapedraw.transform.ShapeTranslate;
 
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.glu.GLU;
 
 import com.bencvt.minecraft.buildregion.region.RegionBase;
 
@@ -53,6 +50,8 @@ public abstract class RenderBase extends Shape {
      * For shapes that are aligned to an axis, the sides of grid cubes (i.e.,
      * the lines parallel to the shape's axis) are rendered more subtly.
      */
+    public static final double CORNER_MARKER_OFFSET = -1.0/16.0;
+    public static final double CORNER_MARKER_SIZE = 1.0/4.0;
     public static final double ALPHA_SIDE = 1.0/2.0;
     public static final double ALPHA_SHELL = 1.0/4.0;
     public static final double ALPHA_MARKER_SPLIT = 5.0/16.0;
@@ -60,11 +59,6 @@ public abstract class RenderBase extends Shape {
     public static final Color MARKER_COLOR_VISIBLE = Color.WHITE.copy().setAlpha(0.5);
     public static final Color MARKER_COLOR_HIDDEN = Color.WHITE.copy().setAlpha(0.25);
     public static final double MARKER_MARGIN = 1.0/8.0;
-    /**
-     * Static helper transforms for rendering GLU shapes.
-     */
-    protected static final ShapeTranslate CENTER_WITHIN_BLOCK = new ShapeTranslate(0.5, 0.5, 0.5);
-    protected static final ShapeRotate SPHERE_UPRIGHT = new ShapeRotate(90.0, 1.0, 0.0, 0.0);
 
     private final ReadonlyColor lineColorVisible;
     private final ReadonlyColor lineColorHidden;
@@ -99,6 +93,10 @@ public abstract class RenderBase extends Shape {
      */
     public final void onUpdateOrigin(ReadonlyVector3 newOrigin) {
         actualOrigin.set(newOrigin);
+    }
+
+    protected ReadonlyVector3 getCornerReadonly() {
+        return null;
     }
 
     public ReadonlyColor getLineColorVisible() {
@@ -218,6 +216,26 @@ public abstract class RenderBase extends Shape {
 
         lineColor.glApply(alphaBase);
         renderBox(mc, x0, x1, y0, y1, z0, z1);
+
+        // lower corner mini-marker
+        if (getCornerReadonly() != null) {
+            x0 = getCornerReadonly().getX() + CORNER_MARKER_OFFSET;
+            x1 = x0 + CORNER_MARKER_SIZE;
+            y0 = getCornerReadonly().getY() + CORNER_MARKER_OFFSET;
+            y1 = y0 + CORNER_MARKER_SIZE;
+            z0 = getCornerReadonly().getZ() + CORNER_MARKER_OFFSET;
+            z1 = z0 + CORNER_MARKER_SIZE;
+            mc.startDrawing(GL11.GL_LINE_LOOP);
+            mc.addVertex(x0, y0, z0);
+            mc.addVertex(x1, y0, z0);
+            mc.addVertex(x0, y0, z1);
+            mc.finishDrawing();
+            mc.startDrawing(GL11.GL_LINES);
+            mc.addVertex(x0, y0, z0).addVertex(x0, y1, z0);
+            mc.addVertex(x1, y0, z0).addVertex(x0, y1, z0);
+            mc.addVertex(x0, y0, z1).addVertex(x0, y1, z0);
+            mc.finishDrawing();
+        }
     }
 
     protected void renderBox(MinecraftAccess mc, double x0, double x1, double y0, double y1, double z0, double z1) {
