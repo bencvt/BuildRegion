@@ -12,6 +12,9 @@ public class RegionFactory {
         if (proto == null) {
             throw new IllegalArgumentException();
         }
+        if (proto == RegionBase.DEFAULT_REGION) {
+            // TODO: reposition in front of player
+        }
         // TODO: coerce the active Region into instances for the other types with reasonable defaults
         plane = (proto instanceof RegionPlane) ? (RegionPlane) proto : new RegionPlane(new Vector3(34,67,-32), Axis.Z);
         cuboid = (proto instanceof RegionCuboid) ? (RegionCuboid) proto : new RegionCuboid(new Vector3(8,83,321),new Vector3(10,7,5));

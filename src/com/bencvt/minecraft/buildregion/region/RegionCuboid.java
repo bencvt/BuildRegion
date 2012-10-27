@@ -100,6 +100,7 @@ public class RegionCuboid extends RegionBase {
     @Override
     public boolean expand(Axis axis, double amount) {
         if (amount >= 0.0 || axis.getVectorComponent(upperCorner) > axis.getVectorComponent(lowerCorner)) {
+            axis.addVectorComponent(upperCorner, amount);
             normalize();
             return true;
         }

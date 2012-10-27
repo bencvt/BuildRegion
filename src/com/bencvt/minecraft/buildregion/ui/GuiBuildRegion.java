@@ -212,6 +212,7 @@ public class GuiBuildRegion extends GuiScreen {
         controller.toggleGui(true);
 
         // TODO: possibly allow the user to look around by holding right-click and moving around
+        // TODO: allow the keybinds to move regions around to still work
         // TODO: pressing B or Esc is the same as pressing the "OK" button
         // TODO: buttons to rotate the region around its origin (for planes, fill in using player coords)
         // TODO: eliminate click sounds

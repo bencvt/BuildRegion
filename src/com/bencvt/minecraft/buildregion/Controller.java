@@ -11,6 +11,7 @@ import net.minecraft.src.mod_BuildRegion;
 import com.bencvt.minecraft.buildregion.region.Direction3D;
 import com.bencvt.minecraft.buildregion.region.RegionBase;
 import com.bencvt.minecraft.buildregion.region.RelativeDirection3D;
+import com.bencvt.minecraft.buildregion.ui.GuiBuildRegion;
 import com.bencvt.minecraft.buildregion.ui.InputManager;
 import com.bencvt.minecraft.buildregion.ui.MessageManager;
 import com.bencvt.minecraft.buildregion.ui.ShapeManager;
@@ -107,6 +108,7 @@ public class Controller {
 
         // Update region.
         double amount = dir.axisDirection * curRegion.getUnits(dir.axis).atom;
+        System.out.println("expand="+expand+" dir="+dir+" amount="+amount);//XXX
         if (expand) {
             if (!curRegion.expand(dir.axis, amount)) {
                 return;
@@ -136,6 +138,10 @@ public class Controller {
 
     public void cmdModeNext() {
         cmdMode(buildMode.getValue().getNextMode());
+    }
+
+    public void cmdOpenGui() {
+        minecraft.displayGuiScreen(new GuiBuildRegion(this, minecraft.fontRenderer));
     }
 
     // ========

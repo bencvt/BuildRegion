@@ -98,8 +98,8 @@ public class InputManager {
             return;
         }
         if (key == KEYBIND_MODE) {
-            if (isShiftOrControlKeyDown()) {
-                minecraft.displayGuiScreen(new GuiBuildRegion(controller, minecraft.fontRenderer));
+            if (isShiftOrControlKeyDown() || !controller.isRegionActive()) {
+                controller.cmdOpenGui();
             } else {
                 controller.cmdModeNext();
             }
