@@ -17,11 +17,50 @@ public enum Direction3D {
     public final int value;
     public final Axis axis;
     public final int axisDirection;
+    private Direction3D back;
+    private Direction3D left;
+    private Direction3D right;
+    static {
+        DOWN.back = UP;
+        DOWN.left = DOWN;
+        DOWN.right = DOWN;
+        UP.back = DOWN;
+        UP.left = UP;
+        UP.right = UP;
+        NORTH.back = SOUTH;
+        NORTH.left = WEST;
+        NORTH.right = EAST;
+        SOUTH.back = NORTH;
+        SOUTH.left = EAST;
+        SOUTH.right = WEST;
+        WEST.back = EAST;
+        WEST.left = SOUTH;
+        WEST.right = NORTH;
+        EAST.back = WEST;
+        EAST.left = NORTH;
+        EAST.right = SOUTH;
+    }
 
     private Direction3D(int value, Axis axis, int axisDirection) {
         this.value = value;
         this.axis = axis;
         this.axisDirection = axisDirection;
+    }
+
+    public Direction3D getRelative(RelativeDirection3D relDir) {
+        if (relDir == RelativeDirection3D.UP) {
+            return UP;
+        } else if (relDir == RelativeDirection3D.DOWN) {
+            return DOWN;
+        } else if (relDir == RelativeDirection3D.BACK) {
+            return back;
+        } else if (relDir == RelativeDirection3D.LEFT) {
+            return left;
+        } else if (relDir == RelativeDirection3D.RIGHT) {
+            return right;
+        } else {
+            return this;
+        }
     }
 
     public int getNeighborX(int x) {

@@ -10,6 +10,7 @@ import net.minecraft.src.mod_BuildRegion;
 
 import com.bencvt.minecraft.buildregion.region.Direction3D;
 import com.bencvt.minecraft.buildregion.region.RegionBase;
+import com.bencvt.minecraft.buildregion.region.RelativeDirection3D;
 import com.bencvt.minecraft.buildregion.ui.InputManager;
 import com.bencvt.minecraft.buildregion.ui.MessageManager;
 import com.bencvt.minecraft.buildregion.ui.ShapeManager;
@@ -76,9 +77,9 @@ public class Controller {
         messageManager.info("build region locked:\n" + curRegion);
     }
 
-    public void cmdSetFacing() {
+    public void cmdSetFacing(RelativeDirection3D relDir) {
         RegionBase protoRegion = getPrototypeRegion();
-        Direction3D dir = getFacingDirection(false);
+        Direction3D dir = getFacingDirection(relDir, false);
         if (dir == null) {
             return;
         }
@@ -93,28 +94,31 @@ public class Controller {
         cmdSet(newRegion);
     }
 
-    public void cmdShiftFacing(int amount) {
-        Direction3D dir = getFacingDirection(true);
+    public void cmdMoveFacing(RelativeDirection3D relDir) {
+        Direction3D dir = getFacingDirection(relDir, true);
         if (dir == null) {
             return;
         }
         if (curRegion == null || !curRegion.canShiftAlongAxis(dir.axis)) {
-            cmdSetFacing();
+            cmdSetFacing(relDir);
             return;
         }
 
         // Update region.
-        curRegion.shiftOriginCoord(dir.axis, dir.axisDirection * amount);
+        curRegion.shiftOriginCoord(dir.axis, dir.axisDirection);
 
         // Update UI.
         shapeManager.updateRegion(curRegion);
-        messageManager.info("build region shifted:\n" + curRegion);
+        messageManager.info("build region moved:\n" + curRegion);
     }
 
     public void cmdMode(BuildMode newMode) {
         buildMode.setValue(newMode);
         messageManager.info("build region mode: " +
-                newMode.toString().toLowerCase()); // TODO: "\npress shift-<bind> for advanced options"
+                newMode.toString().toLowerCase() +
+                "\npress shift-" +
+                inputManager.getUserBinding(InputManager.PROPNAME_MODE) +
+                " for more options");
     }
 
     public void cmdModeNext() {
@@ -192,7 +196,13 @@ public class Controller {
     // Internal helper methods
     // ========
 
-    private Direction3D getFacingDirection(boolean unambiguously) {
+    private Direction3D getFacingDirection(RelativeDirection3D relDir, boolean unambiguously) {
+        if (relDir == RelativeDirection3D.UP) {
+            return Direction3D.UP;
+        }
+        if (relDir == RelativeDirection3D.DOWN) {
+            return Direction3D.DOWN;
+        }
         if (unambiguously) {
             Direction3D dir = Direction3D.fromYawPitchUnambiguously(
                     minecraft.thePlayer.rotationYaw,
@@ -200,11 +210,11 @@ public class Controller {
             if (dir == null) {
                 messageManager.error("ambiguous direction\nface north, south, east, west, up, or down");
             }
-            return dir;
+            return dir.getRelative(relDir);
         } else {
             return Direction3D.fromYawPitch(
                     minecraft.thePlayer.rotationYaw,
-                    minecraft.thePlayer.rotationPitch);
+                    minecraft.thePlayer.rotationPitch).getRelative(relDir);
         }
     }
 }
