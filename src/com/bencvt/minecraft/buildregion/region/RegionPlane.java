@@ -12,7 +12,7 @@ import libshapedraw.primitive.Vector3;
 public class RegionPlane extends RegionBase {
     private Axis axis;
 
-    public RegionPlane(ReadonlyVector3 origin, Axis axis) {
+    protected RegionPlane(ReadonlyVector3 origin, Axis axis) {
         super(origin);
         if (axis == null) {
             throw new IllegalArgumentException();

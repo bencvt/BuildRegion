@@ -89,7 +89,6 @@ public class ShapeManager {
                     controller.getBuildMode().getColorHidden(),
                     (RegionSphere) region);
         }
-        if(true)return new RenderPlane(controller.getBuildMode().getColorVisible(),controller.getBuildMode().getColorHidden(),new RegionPlane(Vector3.ZEROS, Axis.Z));//XXX
         throw new IllegalStateException();
     }
 

@@ -19,7 +19,7 @@ public class RegionCylinder extends RegionBase {
     private double radiusA;
     private double radiusB;
 
-    public RegionCylinder(ReadonlyVector3 origin, Axis axis, double height, double radiusA, double radiusB) {
+    protected RegionCylinder(ReadonlyVector3 origin, Axis axis, double height, double radiusA, double radiusB) {
         super(origin);
         this.axis = axis;
         this.height = height;

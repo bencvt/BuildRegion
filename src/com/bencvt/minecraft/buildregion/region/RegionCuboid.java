@@ -14,7 +14,7 @@ public class RegionCuboid extends RegionBase {
     private final Vector3 lowerCorner;
     private final Vector3 upperCorner;
 
-    public RegionCuboid(ReadonlyVector3 lowerCorner, ReadonlyVector3 upperCorner) {
+    protected RegionCuboid(ReadonlyVector3 lowerCorner, ReadonlyVector3 upperCorner) {
         super(lowerCorner.copy().midpoint(upperCorner));
         this.lowerCorner = lowerCorner.copy();
         this.upperCorner = upperCorner.copy();

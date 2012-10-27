@@ -11,7 +11,6 @@ import com.bencvt.minecraft.buildregion.region.RegionBase;
 import com.bencvt.minecraft.buildregion.region.RegionCuboid;
 
 public class RenderCuboid extends RenderBase {
-
     private final Vector3 lower;
     private final Vector3 upper;
 
@@ -55,19 +54,19 @@ public class RenderCuboid extends RenderBase {
         mc.finishDrawing();
 
         mc.startDrawing(GL11.GL_LINES);
-        for (double xA = x0; xA < x1; xA += 1.0) {
+        for (double xA = x0 - CUBE_MARGIN; xA < x1; xA += 1.0) {
             mc.addVertex(xA, y0, z0).addVertex(xA, y0, z1);
             mc.addVertex(xA, y1, z0).addVertex(xA, y1, z1);
             mc.addVertex(xA, y0, z0).addVertex(xA, y1, z0);
             mc.addVertex(xA, y0, z1).addVertex(xA, y1, z1);
         }
-        for (double zA = z0; zA < z1; zA += 1.0) {
+        for (double zA = z0 - CUBE_MARGIN; zA < z1; zA += 1.0) {
             mc.addVertex(x0, y0, zA).addVertex(x0, y1, zA);
             mc.addVertex(x1, y0, zA).addVertex(x1, y1, zA);
             mc.addVertex(x0, y0, zA).addVertex(x1, y0, zA);
             mc.addVertex(x0, y1, zA).addVertex(x1, y1, zA);
         }
-        for (double yA = y0; yA < y1; yA += 1.0) {
+        for (double yA = y0 - CUBE_MARGIN; yA < y1; yA += 1.0) {
             mc.addVertex(x0, yA, z0).addVertex(x0, yA, z1);
             mc.addVertex(x1, yA, z0).addVertex(x1, yA, z1);
             mc.addVertex(x0, yA, z0).addVertex(x1, yA, z0);

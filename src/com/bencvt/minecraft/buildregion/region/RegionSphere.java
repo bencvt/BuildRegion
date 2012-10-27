@@ -13,7 +13,7 @@ import libshapedraw.primitive.Vector3;
 public class RegionSphere extends RegionBase {
     private final Vector3 radii;
 
-    public RegionSphere(ReadonlyVector3 origin, ReadonlyVector3 radii) {
+    protected RegionSphere(ReadonlyVector3 origin, ReadonlyVector3 radii) {
         super(origin);
         this.radii = radii.copy().absolute();
         enforceHalfUnits(this.radii);

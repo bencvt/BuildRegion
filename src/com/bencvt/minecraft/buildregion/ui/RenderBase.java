@@ -52,6 +52,7 @@ public abstract class RenderBase extends Shape {
     public static final Color MARKER_COLOR_VISIBLE = Color.WHITE.copy().setAlpha(0.5);
     public static final Color MARKER_COLOR_HIDDEN = Color.WHITE.copy().setAlpha(0.25);
     public static final double MARKER_MARGIN = 1.0/8.0;
+    public static final double MARKER_SPLIT_PAD = 1.0/128.0;
     /**
      * Static helper transforms for rendering GLU shapes.
      */
@@ -129,13 +130,79 @@ public abstract class RenderBase extends Shape {
         if (!renderMarkersNormally && !renderMarkersNow) {
             return;
         }
+
+        double x = getOriginReadonly().getX();
+        double y = getOriginReadonly().getY();
+        double z = getOriginReadonly().getZ();
+        double x0 = x + MARKER_MARGIN;
+        double y0 = y + MARKER_MARGIN;
+        double z0 = z + MARKER_MARGIN;
+        double x1 = x + 1 - MARKER_MARGIN;
+        double y1 = y + 1 - MARKER_MARGIN;
+        double z1 = z + 1 - MARKER_MARGIN;
+        boolean splitX = x != (int) x && x*2.0 == (int) (x*2.0);
+        boolean splitY = y != (int) y && y*2.0 == (int) (y*2.0);
+        boolean splitZ = z != (int) z && z*2.0 == (int) (z*2.0);
+
+        // When the origin marker evenly straddles 2 (or 4, or 8) blocks, draw
+        // pairs of squares to split the marker.
+        if (splitX || splitY || splitZ) {
+            lineColor.glApply(alphaBase * ALPHA_SIDE);
+            if (splitX) {
+                x += 0.5 - MARKER_SPLIT_PAD;
+                mc.startDrawing(GL11.GL_LINE_LOOP);
+                mc.addVertex(x, y0, z0);
+                mc.addVertex(x, y1, z0);
+                mc.addVertex(x, y1, z1);
+                mc.addVertex(x, y0, z1);
+                mc.finishDrawing();
+                x += MARKER_SPLIT_PAD + MARKER_SPLIT_PAD;
+                mc.startDrawing(GL11.GL_LINE_LOOP);
+                mc.addVertex(x, y0, z0);
+                mc.addVertex(x, y1, z0);
+                mc.addVertex(x, y1, z1);
+                mc.addVertex(x, y0, z1);
+                mc.finishDrawing();
+            }
+            if (splitY) {
+                y += 0.5 - MARKER_SPLIT_PAD;
+                mc.startDrawing(GL11.GL_LINE_LOOP);
+                mc.addVertex(x0, y, z0);
+                mc.addVertex(x1, y, z0);
+                mc.addVertex(x1, y, z1);
+                mc.addVertex(x0, y, z1);
+                mc.finishDrawing();
+                y += MARKER_SPLIT_PAD + MARKER_SPLIT_PAD;
+                mc.startDrawing(GL11.GL_LINE_LOOP);
+                mc.addVertex(x0, y, z0);
+                mc.addVertex(x1, y, z0);
+                mc.addVertex(x1, y, z1);
+                mc.addVertex(x0, y, z1);
+                mc.finishDrawing();
+            }
+            if (splitZ) {
+                z += 0.5 - MARKER_SPLIT_PAD;
+                mc.startDrawing(GL11.GL_LINE_LOOP);
+                mc.addVertex(x0, y0, z);
+                mc.addVertex(x1, y0, z);
+                mc.addVertex(x1, y1, z);
+                mc.addVertex(x0, y1, z);
+                mc.finishDrawing();
+                z += MARKER_SPLIT_PAD + MARKER_SPLIT_PAD;
+                mc.startDrawing(GL11.GL_LINE_LOOP);
+                mc.addVertex(x0, y0, z);
+                mc.addVertex(x1, y0, z);
+                mc.addVertex(x1, y1, z);
+                mc.addVertex(x0, y1, z);
+                mc.finishDrawing();
+            }
+        }
+
         lineColor.glApply(alphaBase);
-        final double x0 = getOriginReadonly().getX() + MARKER_MARGIN;
-        final double x1 = getOriginReadonly().getX() + 1 - MARKER_MARGIN;
-        final double y0 = getOriginReadonly().getY() + MARKER_MARGIN;
-        final double y1 = getOriginReadonly().getY() + 1 - MARKER_MARGIN;
-        final double z0 = getOriginReadonly().getZ() + MARKER_MARGIN;
-        final double z1 = getOriginReadonly().getZ() + 1 - MARKER_MARGIN;
+        renderBox(mc, x0, x1, y0, y1, z0, z1);
+    }
+
+    protected void renderBox(MinecraftAccess mc, double x0, double x1, double y0, double y1, double z0, double z1) {
         // bottom
         mc.startDrawing(GL11.GL_LINE_LOOP);
         mc.addVertex(x0, y0, z0);
