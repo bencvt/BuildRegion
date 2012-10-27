@@ -71,12 +71,12 @@ public class ShapeManager {
                     controller.getBuildMode().getColorVisible(),
                     controller.getBuildMode().getColorHidden(),
                     (RegionPlane) region);
-        /* TODO:
         case CUBOID:
             return new RenderCuboid(
                     controller.getBuildMode().getColorVisible(),
                     controller.getBuildMode().getColorHidden(),
                     (RegionCuboid) region);
+            /* TODO:
         case CYLINDER:
             return new RenderCylinder(
                     controller.getBuildMode().getColorVisible(),

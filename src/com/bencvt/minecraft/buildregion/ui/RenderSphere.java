@@ -53,57 +53,7 @@ public class RenderSphere extends RenderBase {
 
     @Override
     protected void renderLines(MinecraftAccess mc, ReadonlyColor lineColor) {
-        /* XXX
-        lineColor.glApply(getAlphaBase());
-        final double x0 = lower.getX() + CUBE_MARGIN;
-        final double x1 = upper.getX() + 1 - CUBE_MARGIN;
-        final double y0 = lower.getY() + CUBE_MARGIN;
-        final double y1 = upper.getY() + 1 - CUBE_MARGIN;
-        final double z0 = lower.getZ() + CUBE_MARGIN;
-        final double z1 = upper.getZ() + 1 - CUBE_MARGIN;
-        // bottom
-        mc.startDrawing(GL11.GL_LINE_LOOP);
-        mc.addVertex(x0, y0, z0);
-        mc.addVertex(x1, y0, z0);
-        mc.addVertex(x1, y0, z1);
-        mc.addVertex(x0, y0, z1);
-        mc.finishDrawing();
-        // top
-        mc.startDrawing(GL11.GL_LINE_LOOP);
-        mc.addVertex(x0, y1, z0);
-        mc.addVertex(x1, y1, z0);
-        mc.addVertex(x1, y1, z1);
-        mc.addVertex(x0, y1, z1);
-        mc.finishDrawing();
-        // sides
-        mc.startDrawing(GL11.GL_LINES);
-        mc.addVertex(x0, y0, z0).addVertex(x0, y1, z0);
-        mc.addVertex(x1, y0, z0).addVertex(x1, y1, z0);
-        mc.addVertex(x1, y0, z1).addVertex(x1, y1, z1);
-        mc.addVertex(x0, y0, z1).addVertex(x0, y1, z1);
-        mc.finishDrawing();
-
-        mc.startDrawing(GL11.GL_LINES);
-        for (double xA = x0; xA < x1; xA += 1.0) {
-            mc.addVertex(xA, y0, z0).addVertex(xA, y0, z1);
-            mc.addVertex(xA, y1, z0).addVertex(xA, y1, z1);
-            mc.addVertex(xA, y0, z0).addVertex(xA, y1, z0);
-            mc.addVertex(xA, y0, z1).addVertex(xA, y1, z1);
-        }
-        for (double zA = z0; zA < z1; zA += 1.0) {
-            mc.addVertex(x0, y0, zA).addVertex(x0, y1, zA);
-            mc.addVertex(x1, y0, zA).addVertex(x1, y1, zA);
-            mc.addVertex(x0, y0, zA).addVertex(x1, y0, zA);
-            mc.addVertex(x0, y1, zA).addVertex(x1, y1, zA);
-        }
-        for (double yA = y0; yA < y1; yA += 1.0) {
-            mc.addVertex(x0, yA, z0).addVertex(x0, yA, z1);
-            mc.addVertex(x1, yA, z0).addVertex(x1, yA, z1);
-            mc.addVertex(x0, yA, z0).addVertex(x1, yA, z0);
-            mc.addVertex(x0, yA, z1).addVertex(x1, yA, z1);
-        }
-        mc.finishDrawing();
-        */
+        // TODO
     }
 
     @Override

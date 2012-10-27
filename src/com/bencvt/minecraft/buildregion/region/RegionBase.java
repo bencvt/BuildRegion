@@ -9,7 +9,8 @@ import libshapedraw.primitive.Vector3;
  * @author bencvt
  */
 public abstract class RegionBase {
-    public static final RegionBase DEFAULT_REGION = new RegionPlane(Vector3.ZEROS, Axis.X);
+    //XXX: public static final RegionBase DEFAULT_REGION = new RegionPlane(Vector3.ZEROS, Axis.X);
+    public static final RegionBase DEFAULT_REGION = new RegionCuboid(new Vector3(0, 10, 0), new Vector3(5, 13, 12));
 
     private final Vector3 origin;
 
@@ -28,7 +29,7 @@ public abstract class RegionBase {
      * Deep copy this region but use a different origin. The axis parameter
      * may be used too, though it isn't applicable to all region types.
      */
-    public abstract RegionBase copyUsing(ReadonlyVector3 origin, Axis axis);
+    public abstract RegionBase copyUsing(ReadonlyVector3 newOrigin, Axis newAxis);
 
     /**
      * Called whenever one of the origin's components is modified; this is the
@@ -62,7 +63,7 @@ public abstract class RegionBase {
     // Accessors and mutators
     // ========
 
-    public boolean isRegionType(Class<? extends RegionBase> type) {
+    public final boolean isRegionType(Class<? extends RegionBase> type) {
         return this != DEFAULT_REGION && type.isInstance(this);
     }
 
@@ -74,7 +75,7 @@ public abstract class RegionBase {
         return origin;
     }
 
-    public final double getCoord(Axis axis) {
+    public final double getOriginCoord(Axis axis) {
         if (axis == Axis.X) {
             return getOrigin().getX();
         } else if (axis == Axis.Y) {
@@ -86,7 +87,7 @@ public abstract class RegionBase {
         }
     }
 
-    public final void setCoord(Axis axis, double value) {
+    public final void setOriginCoord(Axis axis, double value) {
         if (axis == Axis.X) {
             getOrigin().setX(value);
         } else if (axis == Axis.Y) {
@@ -99,8 +100,8 @@ public abstract class RegionBase {
         onOriginUpdate();
     }
 
-    public final void shiftCoord(Axis axis, double amount) {
-        setCoord(axis, getCoord(axis) + amount);
+    public final void shiftOriginCoord(Axis axis, double amount) {
+        setOriginCoord(axis, getOriginCoord(axis) + amount);
     }
 
     // ========
@@ -115,12 +116,16 @@ public abstract class RegionBase {
         return enforceWholeUnits(d * 2.0) * 0.5;
     }
 
-    protected static final void encforceWholeUnits(Vector3 v) {
+    protected static final void enforceWholeUnits(Vector3 v) {
         v.floor();
     }
 
     protected static final double enforceWholeUnits(double d) {
         return Math.floor(d);
+    }
+
+    protected static final boolean isWholeUnit(double d) {
+        return d == (int) d;
     }
 
     protected static final String strXYZ(Vector3 v) {

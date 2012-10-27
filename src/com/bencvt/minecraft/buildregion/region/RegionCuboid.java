@@ -4,24 +4,21 @@ import libshapedraw.primitive.ReadonlyVector3;
 import libshapedraw.primitive.Vector3;
 
 /**
- * Represent a cuboid, specified by an origin 3-tuple and a radii 3-tuple.
- * The components of each tuple are reduced to half units. Radii are
- * non-negative and >=0.5.
- * <p>
- * It's more intuitive to define a cuboid in terms of two corner 3-tuples, so
- * accessors and mutators are provided for this. The two pseudo 3-tuples are
- * reduced to whole units; the internal origin and radii may or may not be half
- * units but their sum will be whole units.
+ * Represent a cuboid, specified by an AABB: two 3-tuples, one for the lower
+ * corner and one for the upper. The components of each tuple are reduced to
+ * whole units.
  * 
  * @author bencvt
  */
 public class RegionCuboid extends RegionBase {
-    private final Vector3 radii;
+    private final Vector3 lowerCorner;
+    private final Vector3 upperCorner;
 
-    public RegionCuboid(ReadonlyVector3 origin, ReadonlyVector3 radii) {
-        super(origin);
-        this.radii = radii.copy().absolute();
-        enforceHalfUnits(this.radii);
+    public RegionCuboid(ReadonlyVector3 lowerCorner, ReadonlyVector3 upperCorner) {
+        super(lowerCorner.copy().midpoint(upperCorner));
+        this.lowerCorner = lowerCorner.copy();
+        this.upperCorner = upperCorner.copy();
+        normalize();
     }
 
     @Override
@@ -30,36 +27,74 @@ public class RegionCuboid extends RegionBase {
     }
 
     @Override
-    public RegionBase copyUsing(ReadonlyVector3 origin, Axis axis) {
+    public RegionBase copyUsing(ReadonlyVector3 newOrigin, Axis newAxis) {
         // ignore axis
-        return new RegionCuboid(origin.copy(), radii);
+        RegionCuboid result = new RegionCuboid(lowerCorner, upperCorner);
+        result.getOrigin().set(newOrigin);
+        result.onOriginUpdate();
+        return result;
     }
 
     @Override
     protected void onOriginUpdate() {
         enforceHalfUnits(getOrigin());
+        if (lowerCorner == null) {
+            // we were called by constructor
+            return;
+        }
+        Vector3 offset = getOriginReadonly().copy();
+        normalize();
+        offset.subtract(getOriginReadonly());
+        if (!offset.isZero()) {
+            lowerCorner.add(offset);
+            upperCorner.add(offset);
+            normalize();
+        }
     }
 
     @Override
     public boolean isInsideRegion(double x, double y, double z) {
-        // TODO Auto-generated method stub
-        return false;
+        normalize();
+        x = Math.floor(x);
+        y = Math.floor(y);
+        z = Math.floor(z);
+        return (x >= lowerCorner.getX() && x <= upperCorner.getX() &&
+                y >= lowerCorner.getY() && y <= upperCorner.getY() &&
+                z >= lowerCorner.getZ() && z <= upperCorner.getZ());
     }
 
     @Override
     public double size() {
-        return 8.0 * radii.getX() * radii.getY() * radii.getZ();
+        normalize();
+        return ((upperCorner.getX() - lowerCorner.getX() + 1.0) *
+                (upperCorner.getY() - lowerCorner.getY() + 1.0) *
+                (upperCorner.getZ() - lowerCorner.getZ() + 1.0));
     }
 
     @Override
     public boolean getAABB(Vector3 lower, Vector3 upper) {
-        lower.set(getOriginReadonly()).subtract(radii);
-        upper.set(getOriginReadonly()).add(radii);
+        normalize();
+        lower.set(lowerCorner);
+        upper.set(upperCorner);
         return true;
     }
 
     @Override
     public String toString() {
+        normalize();
         return "cuboid"; // TODO
+    }
+
+    private void normalize() {
+        enforceWholeUnits(lowerCorner);
+        enforceWholeUnits(upperCorner);
+        if (lowerCorner.getX() > upperCorner.getX() ||
+                lowerCorner.getY() > upperCorner.getY() ||
+                lowerCorner.getZ() > upperCorner.getZ()) {
+            Vector3 tmp = lowerCorner.copy();
+            lowerCorner.setMinimum(tmp, upperCorner);
+            upperCorner.setMaximum(tmp, upperCorner);
+        }
+        getOrigin().set(lowerCorner).midpoint(upperCorner);
     }
 }

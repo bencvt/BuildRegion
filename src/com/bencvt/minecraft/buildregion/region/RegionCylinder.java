@@ -34,7 +34,7 @@ public class RegionCylinder extends RegionBase {
     }
 
     @Override
-    public RegionBase copyUsing(ReadonlyVector3 origin, Axis axis) {
+    public RegionBase copyUsing(ReadonlyVector3 newOrigin, Axis newAxis) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -43,7 +43,7 @@ public class RegionCylinder extends RegionBase {
     protected void onOriginUpdate() {
         enforceHalfUnits(getOrigin());
         if (axis != null) { // can be null during the constructor
-            setCoord(axis, enforceWholeUnits(getCoord(axis)));
+            setOriginCoord(axis, enforceWholeUnits(getOriginCoord(axis)));
         }
     }
 

@@ -26,13 +26,13 @@ public class RegionPlane extends RegionBase {
     }
 
     @Override
-    public RegionBase copyUsing(ReadonlyVector3 origin, Axis axis) {
-        return new RegionPlane(origin.copy(), axis);
+    public RegionBase copyUsing(ReadonlyVector3 newOrigin, Axis newAxis) {
+        return new RegionPlane(newOrigin.copy(), newAxis);
     }
 
     @Override
     protected void onOriginUpdate() {
-        encforceWholeUnits(getOrigin());
+        enforceWholeUnits(getOrigin());
     }
 
     @Override
@@ -79,9 +79,9 @@ public class RegionPlane extends RegionBase {
     }
 
     public double getCoord() {
-        return getCoord(axis);
+        return getOriginCoord(axis);
     }
     public void setCoord(double value) {
-        setCoord(axis, value);
+        setOriginCoord(axis, value);
     }
 }

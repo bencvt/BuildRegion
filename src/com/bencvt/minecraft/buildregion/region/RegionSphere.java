@@ -25,9 +25,9 @@ public class RegionSphere extends RegionBase {
     }
 
     @Override
-    public RegionBase copyUsing(ReadonlyVector3 origin, Axis axis) {
+    public RegionBase copyUsing(ReadonlyVector3 newOrigin, Axis newAxis) {
         // ignore axis
-        return new RegionSphere(origin, radii);
+        return new RegionSphere(newOrigin, radii);
     }
 
     @Override

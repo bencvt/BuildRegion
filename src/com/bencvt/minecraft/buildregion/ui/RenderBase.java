@@ -90,15 +90,6 @@ public abstract class RenderBase extends Shape {
         return lineColorHidden;
     }
 
-    /**
-     * Attempt to update this instance to match the specified region,
-     * animating the change as appropriate.
-     * 
-     * @return false if the ShapeManager should just fade this instance out
-     *         and create a new RenderBase instance instead.
-     */
-    public abstract boolean updateIfPossible(RegionBase region);
-
     @Override
     protected final void renderShape(MinecraftAccess mc) {
         if (alphaBase <= 0.0) {
@@ -172,6 +163,15 @@ public abstract class RenderBase extends Shape {
      * Render a grid of lines inside blocks that are inside the region.
      */
     protected abstract void renderLines(MinecraftAccess mc, ReadonlyColor lineColor);
+
+    /**
+     * Attempt to update this instance to match the specified region,
+     * animating the change as appropriate.
+     * 
+     * @return false if the ShapeManager should just fade this instance out
+     *         and create a new RenderBase instance instead.
+     */
+    public abstract boolean updateIfPossible(RegionBase region);
 
     /**
      * Adjust to the player moving around. For large or infinite shapes, this

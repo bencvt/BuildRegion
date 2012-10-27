@@ -88,7 +88,7 @@ public class Controller {
                 minecraft.thePlayer.posZ).floor();
         RegionBase newRegion = protoRegion.copyUsing(origin, dir.axis);
         // Move the origin so it's in front of the player.
-        newRegion.shiftCoord(dir.axis, dir.axisDirection * 2);
+        newRegion.shiftOriginCoord(dir.axis, dir.axisDirection * 2);
 
         cmdSet(newRegion);
     }
@@ -104,7 +104,7 @@ public class Controller {
         }
 
         // Update region.
-        curRegion.shiftCoord(dir.axis, dir.axisDirection * amount);
+        curRegion.shiftOriginCoord(dir.axis, dir.axisDirection * amount);
 
         // Update UI.
         shapeManager.updateRegion(curRegion);
