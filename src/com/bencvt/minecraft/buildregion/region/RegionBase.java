@@ -10,7 +10,7 @@ import libshapedraw.primitive.Vector3;
  */
 public abstract class RegionBase {
     //XXX: public static final RegionBase DEFAULT_REGION = new RegionPlane(Vector3.ZEROS, Axis.X);
-    public static final RegionBase DEFAULT_REGION = new RegionCuboid(new Vector3(0, 10, 0), new Vector3(5, 13, 6));
+    public static final RegionBase DEFAULT_REGION = new RegionCuboid(new Vector3(0, 0, 0), new Vector3(1, 6, 6));
 
     private final Vector3 origin;
 

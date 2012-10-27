@@ -47,7 +47,7 @@ public class ShapeManager {
         mainShape = createShape(region);
         mainShape.setRenderMarkersNow(guiScreenActive);
         libShapeDraw.addShape(mainShape);
-        mainShape.fadeIn();
+        mainShape.animateFadeIn();
     }
 
     private void removeShape() {
@@ -59,7 +59,7 @@ public class ShapeManager {
         }
         prevShape = mainShape;
         mainShape = null;
-        prevShape.fadeOut();
+        prevShape.animateFadeOut();
     }
 
     private RenderBase createShape(RegionBase region) {

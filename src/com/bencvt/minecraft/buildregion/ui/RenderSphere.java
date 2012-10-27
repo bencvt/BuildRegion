@@ -65,7 +65,7 @@ public class RenderSphere extends RenderBase {
             return false;
         }
         RegionSphere sphere = (RegionSphere) region;
-        shift(sphere.getOriginReadonly());
+        animateShiftOrigin(sphere.getOriginReadonly());
         if (timelineResize != null && !timelineResize.isDone()) {
             timelineResize.abort();
         }

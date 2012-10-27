@@ -54,7 +54,7 @@ public class RenderPlane extends RenderBase {
         if (Math.pow(getCoord() - plane.getCoord(), 2.0) > SHIFT_MAX_SQUARED) {
             return false;
         }
-        shift(plane.getOriginReadonly());
+        animateShiftOrigin(plane.getOriginReadonly());
         return true;
     }
 

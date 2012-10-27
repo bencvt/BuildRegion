@@ -97,4 +97,12 @@ public class RegionCuboid extends RegionBase {
         }
         getOrigin().set(lowerCorner).midpoint(upperCorner);
     }
+
+    public ReadonlyVector3 getLowerCornerReadonly() {
+        return lowerCorner;
+    }
+
+    public ReadonlyVector3 getUpperCornerReadonly() {
+        return upperCorner;
+    }
 }

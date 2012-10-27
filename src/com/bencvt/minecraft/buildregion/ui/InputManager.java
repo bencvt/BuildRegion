@@ -70,10 +70,10 @@ public class InputManager {
         }
         if (key == KEYBIND_MODE) {
             if (isShiftKeyDown()) {
-                controller.cmdModeNext();
+                minecraft.displayGuiScreen(new GuiBuildRegion(controller, minecraft.fontRenderer));
                 showUsage(); // TODO: move to gui
             } else {
-                minecraft.displayGuiScreen(new GuiBuildRegion(controller, minecraft.fontRenderer));
+                controller.cmdModeNext();
             }
         } else if (key == KEYBIND_SHIFT_BACK) {
             if (isShiftKeyDown()) {

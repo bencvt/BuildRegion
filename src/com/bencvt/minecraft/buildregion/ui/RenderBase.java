@@ -44,15 +44,21 @@ public abstract class RenderBase extends Shape {
      */
     public static final double CUBE_MARGIN = 1.0/32.0;
     /**
+     * Even smaller offset for when the elements being separated should in
+     * theory be drawn on top of each other, but aren't, again to avoid ugly
+     * intersections.
+     */
+    public static final double MINI_MARGIN = 1.0/128.0;
+    /**
      * For shapes that are aligned to an axis, the sides of grid cubes (i.e.,
      * the lines parallel to the shape's axis) are rendered more subtly.
      */
     public static final double ALPHA_SIDE = 0.5;
+    public static final double ALPHA_SHELL = 0.25;
     public static final float LINE_WIDTH = 2.0F;
     public static final Color MARKER_COLOR_VISIBLE = Color.WHITE.copy().setAlpha(0.5);
     public static final Color MARKER_COLOR_HIDDEN = Color.WHITE.copy().setAlpha(0.25);
     public static final double MARKER_MARGIN = 1.0/8.0;
-    public static final double MARKER_SPLIT_PAD = 1.0/128.0;
     /**
      * Static helper transforms for rendering GLU shapes.
      */
@@ -65,7 +71,7 @@ public abstract class RenderBase extends Shape {
     private final ShapeScale shapeScale; // transform the entire shape
     private boolean renderMarkersNow;
     private final boolean renderMarkersNormally;
-    private Timeline timelineShift;
+    private Timeline timelineShiftOrigin;
     private Timeline timelineFade;
 
     protected RenderBase(ReadonlyColor lineColorVisible, ReadonlyColor lineColorHidden, boolean renderOriginMarkerNormally) {
@@ -149,14 +155,14 @@ public abstract class RenderBase extends Shape {
         if (splitX || splitY || splitZ) {
             lineColor.glApply(alphaBase * ALPHA_SIDE);
             if (splitX) {
-                x += 0.5 - MARKER_SPLIT_PAD;
+                x += 0.5 - MINI_MARGIN;
                 mc.startDrawing(GL11.GL_LINE_LOOP);
                 mc.addVertex(x, y0, z0);
                 mc.addVertex(x, y1, z0);
                 mc.addVertex(x, y1, z1);
                 mc.addVertex(x, y0, z1);
                 mc.finishDrawing();
-                x += MARKER_SPLIT_PAD + MARKER_SPLIT_PAD;
+                x += MINI_MARGIN + MINI_MARGIN;
                 mc.startDrawing(GL11.GL_LINE_LOOP);
                 mc.addVertex(x, y0, z0);
                 mc.addVertex(x, y1, z0);
@@ -165,14 +171,14 @@ public abstract class RenderBase extends Shape {
                 mc.finishDrawing();
             }
             if (splitY) {
-                y += 0.5 - MARKER_SPLIT_PAD;
+                y += 0.5 - MINI_MARGIN;
                 mc.startDrawing(GL11.GL_LINE_LOOP);
                 mc.addVertex(x0, y, z0);
                 mc.addVertex(x1, y, z0);
                 mc.addVertex(x1, y, z1);
                 mc.addVertex(x0, y, z1);
                 mc.finishDrawing();
-                y += MARKER_SPLIT_PAD + MARKER_SPLIT_PAD;
+                y += MINI_MARGIN + MINI_MARGIN;
                 mc.startDrawing(GL11.GL_LINE_LOOP);
                 mc.addVertex(x0, y, z0);
                 mc.addVertex(x1, y, z0);
@@ -181,14 +187,14 @@ public abstract class RenderBase extends Shape {
                 mc.finishDrawing();
             }
             if (splitZ) {
-                z += 0.5 - MARKER_SPLIT_PAD;
+                z += 0.5 - MINI_MARGIN;
                 mc.startDrawing(GL11.GL_LINE_LOOP);
                 mc.addVertex(x0, y0, z);
                 mc.addVertex(x1, y0, z);
                 mc.addVertex(x1, y1, z);
                 mc.addVertex(x0, y1, z);
                 mc.finishDrawing();
-                z += MARKER_SPLIT_PAD + MARKER_SPLIT_PAD;
+                z += MINI_MARGIN + MINI_MARGIN;
                 mc.startDrawing(GL11.GL_LINE_LOOP);
                 mc.addVertex(x0, y0, z);
                 mc.addVertex(x1, y0, z);
@@ -265,35 +271,35 @@ public abstract class RenderBase extends Shape {
         this.alphaBase = Math.max(0.0, Math.min(alphaBase, 1.0));
     }
 
-    public void shift(ReadonlyVector3 newOrigin) {
-        if (timelineShift != null && !timelineShift.isDone()) {
-            timelineShift.abort();
+    protected void animateShiftOrigin(ReadonlyVector3 newOrigin) {
+        if (timelineShiftOrigin != null && !timelineShiftOrigin.isDone()) {
+            timelineShiftOrigin.abort();
         }
-        timelineShift = new Timeline(getOrigin());
-        timelineShift.addPropertyToInterpolate("x", getOrigin().getX(), newOrigin.getX());
-        timelineShift.addPropertyToInterpolate("y", getOrigin().getY(), newOrigin.getY());
-        timelineShift.addPropertyToInterpolate("z", getOrigin().getZ(), newOrigin.getZ());
-        timelineShift.setDuration(ANIM_DURATION);
-        timelineShift.play();
+        timelineShiftOrigin = new Timeline(getOrigin());
+        timelineShiftOrigin.addPropertyToInterpolate("x", getOrigin().getX(), newOrigin.getX());
+        timelineShiftOrigin.addPropertyToInterpolate("y", getOrigin().getY(), newOrigin.getY());
+        timelineShiftOrigin.addPropertyToInterpolate("z", getOrigin().getZ(), newOrigin.getZ());
+        timelineShiftOrigin.setDuration(ANIM_DURATION);
+        timelineShiftOrigin.play();
     }
 
-    public void fadeIn() {
-        fadeStop();
+    public void animateFadeIn() {
+        animateFadeStop();
         setAlphaBase(0.0);
         shapeScale.getScaleXYZ().set(ANIM_SCALE_FADE, ANIM_SCALE_FADE, ANIM_SCALE_FADE);
-        fadeStart(1.0, 1.0);
+        animateFadeStart(1.0, 1.0);
     }
-    public void fadeOut() {
-        fadeStop();
-        fadeStart(0.0, ANIM_SCALE_FADE);
+    public void animateFadeOut() {
+        animateFadeStop();
+        animateFadeStart(0.0, ANIM_SCALE_FADE);
     }
-    private void fadeStop() {
+    private void animateFadeStop() {
         if (timelineFade != null && !timelineFade.isDone()) {
             timelineFade.abort();
         }
         timelineFade = null;
     }
-    private void fadeStart(double toAlphaBase, double toScale) {
+    private void animateFadeStart(double toAlphaBase, double toScale) {
         timelineFade = new Timeline(this);
         timelineFade.addPropertyToInterpolate("alphaBase", getAlphaBase(), toAlphaBase);
         Vector3 scaleVec = shapeScale.getScaleXYZ();
