@@ -60,12 +60,12 @@ public class InputManager {
     // Control-left-click on Mac OS X is right-click, so use command instead.
     // The fancy command symbol is "\u2318" but it looks weird (undersized) in
     // Minecraft's default font.
-    public static final String MOD_KEY_NAME = IS_MAC ? "cmd-" : "ctrl-";
-    public static final int MOD_KEY_L = IS_MAC ? Keyboard.KEY_LMETA : Keyboard.KEY_LCONTROL;
-    public static final int MOD_KEY_R = IS_MAC ? Keyboard.KEY_RMETA : Keyboard.KEY_RCONTROL;
+    public static final String MOUSE_MOD_KEY_NAME = IS_MAC ? "cmd-" : "ctrl-";
+    public static final int MOUSE_MOD_KEY_L = IS_MAC ? Keyboard.KEY_LMETA : Keyboard.KEY_LCONTROL;
+    public static final int MOUSE_MOD_KEY_R = IS_MAC ? Keyboard.KEY_RMETA : Keyboard.KEY_RCONTROL;
 
-    public static final boolean MOD_LEFT_CLICK_CLEARS = true;
-    public static final boolean MOD_RIGHT_CLICK_SETS = true;
+    public static final boolean MOUSE_MOD_LEFT_CLICK_CLEARS = true;
+    public static final boolean MOUSE_MOD_RIGHT_CLICK_SETS = true;
     public static final long MOUSE_EVENT_INTERVAL = 200;
 
     private final Controller controller;
@@ -98,65 +98,59 @@ public class InputManager {
             return;
         }
         if (key == KEYBIND_MODE) {
-            if (isShiftKeyDown()) {
+            if (isShiftOrControlKeyDown()) {
                 minecraft.displayGuiScreen(new GuiBuildRegion(controller, minecraft.fontRenderer));
-                showUsage(); // TODO: move to gui
             } else {
                 controller.cmdModeNext();
             }
         } else if (key == KEYBIND_SHIFT_BACK) {
-            if (isShiftKeyDown()) {
-                controller.cmdClear(); // TODO: cmdExpand
-            } else {
-                controller.cmdMoveFacing(RelativeDirection3D.BACK);
-            }
+            controller.cmdAdjustFacing(isShiftOrControlKeyDown(), RelativeDirection3D.BACK);
         } else if (key == KEYBIND_SHIFT_FWD) {
-            if (isShiftKeyDown()) {
-                controller.cmdSetFacing(RelativeDirection3D.FORWARD); // TODO: cmdExpand
-            } else {
-                controller.cmdMoveFacing(RelativeDirection3D.FORWARD);
-            }
+            controller.cmdAdjustFacing(isShiftOrControlKeyDown(), RelativeDirection3D.FORWARD);
         } else if (key == KEYBIND_SHIFT_UP) {
-            controller.cmdMoveFacing(RelativeDirection3D.UP);
+            controller.cmdAdjustFacing(isShiftOrControlKeyDown(), RelativeDirection3D.UP);
         } else if (key == KEYBIND_SHIFT_DOWN) {
-            controller.cmdMoveFacing(RelativeDirection3D.DOWN);
+            controller.cmdAdjustFacing(isShiftOrControlKeyDown(), RelativeDirection3D.DOWN);
         } else if (key == KEYBIND_SHIFT_LEFT) {
-            controller.cmdMoveFacing(RelativeDirection3D.LEFT);
+            controller.cmdAdjustFacing(isShiftOrControlKeyDown(), RelativeDirection3D.LEFT);
         } else if (key == KEYBIND_SHIFT_RIGHT) {
-            controller.cmdMoveFacing(RelativeDirection3D.RIGHT);
+            controller.cmdAdjustFacing(isShiftOrControlKeyDown(), RelativeDirection3D.RIGHT);
         }
     }
 
     public void checkForMouseEvent() {
-        if (MOD_LEFT_CLICK_CLEARS && Mouse.isButtonDown(0) && isModKeyDown()) {
+        if (MOUSE_MOD_LEFT_CLICK_CLEARS && Mouse.isButtonDown(0) && isMouseModKeyDown()) {
             long now = System.currentTimeMillis();
             if (now > lastMouseEvent + MOUSE_EVENT_INTERVAL) {
                 lastMouseEvent = now;
                 controller.cmdClear();
             }
-        } else if (MOD_RIGHT_CLICK_SETS && Mouse.isButtonDown(1) && isModKeyDown()) {
+        } else if (MOUSE_MOD_RIGHT_CLICK_SETS && Mouse.isButtonDown(1) && isMouseModKeyDown()) {
             long now = System.currentTimeMillis();
             if (now > lastMouseEvent + MOUSE_EVENT_INTERVAL) {
                 lastMouseEvent = now;
                 controller.cmdSetFacing(RelativeDirection3D.FORWARD);
             }
         }
-        // TODO: mod+mousewheel to shift region
+        // TODO: mod+mousewheel to shift region forward/back
     }
 
-    private boolean isModKeyDown() {
-        return Keyboard.isKeyDown(MOD_KEY_L) || Keyboard.isKeyDown(MOD_KEY_R);
+    private boolean isMouseModKeyDown() {
+        return Keyboard.isKeyDown(MOUSE_MOD_KEY_L) || Keyboard.isKeyDown(MOUSE_MOD_KEY_R);
     }
 
-    private boolean isShiftKeyDown() {
-        return Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
+    private boolean isShiftOrControlKeyDown() {
+        return (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) ||
+                Keyboard.isKeyDown(Keyboard.KEY_RSHIFT) ||
+                Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) ||
+                Keyboard.isKeyDown(Keyboard.KEY_RCONTROL));
     }
 
     public boolean shouldConsumeClick(boolean isLeftClick) {
-        if (isLeftClick && MOD_LEFT_CLICK_CLEARS && isModKeyDown()) {
+        if (isLeftClick && MOUSE_MOD_LEFT_CLICK_CLEARS && isMouseModKeyDown()) {
             return true;
         }
-        if (!isLeftClick && MOD_RIGHT_CLICK_SETS && isModKeyDown()) {
+        if (!isLeftClick && MOUSE_MOD_RIGHT_CLICK_SETS && isMouseModKeyDown()) {
             return true;
         }
         return false;
@@ -203,6 +197,7 @@ public class InputManager {
         chat.printChatMessage(controller.getModTitle() + " usage:");
 
         final String pre = "  \u00a7c";
+        final String shiftOrCtrl = "shift-\u00a7r or \u00a7cctrl-";
         final String sep = "\u00a7r and \u00a7c";
         final String mid = "\u00a7r \u2014 ";
         final String rarr = "\u27f6";
@@ -214,14 +209,20 @@ public class InputManager {
         final String keyLeft  = getUserBinding(PROPNAME_SHIFT_LEFT);
         final String keyRight = getUserBinding(PROPNAME_SHIFT_RIGHT);
 
-        chat.printChatMessage(pre + MOD_KEY_NAME + "left-click" + mid + "clear");
-        chat.printChatMessage(pre + MOD_KEY_NAME + "right-click" + mid + "set");
+        // TODO: probably better to make a GuiUsageScreen for this instead
+        chat.printChatMessage(pre + MOUSE_MOD_KEY_NAME + "left-click" + mid + "clear");
+        chat.printChatMessage(pre + MOUSE_MOD_KEY_NAME + "right-click" + mid + "set");
         chat.printChatMessage(pre + keyMode + mid + "toggle mode");
-        chat.printChatMessage(pre + "shift-" + keyMode + mid + "open gui");
+        chat.printChatMessage(pre + shiftOrCtrl + keyMode + mid + "open gui");
         chat.printChatMessage(pre + keyBack + sep + keyFwd   + mid + "move region back/forward");
         chat.printChatMessage(pre + keyUp   + sep + keyDown  + mid + "move region up/down");
         chat.printChatMessage(pre + keyLeft + sep + keyRight + mid + "move region left/right");
-        chat.printChatMessage("To adjust key binding: Esc " + rarr +
+        chat.printChatMessage(pre + shiftOrCtrl + "\u00a7rmovement key" + mid + "expand region");
+        chat.printChatMessage("To adjust key bindings: Esc " + rarr +
                 " Options... " + rarr + " Controls...");
+    }
+
+    public String getGuiKeybind() {
+        return "shift- or ctrl-" + getUserBinding(PROPNAME_MODE);
     }
 }

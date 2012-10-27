@@ -36,8 +36,8 @@ public class RegionPlane extends RegionBase {
     }
 
     @Override
-    public boolean canShiftAlongAxis(Axis axis) {
-        return axis == this.axis;
+    public boolean canAdjustAlongAxis(boolean expand, Axis axis) {
+        return !expand && axis == this.axis;
     }
 
     @Override
@@ -60,6 +60,16 @@ public class RegionPlane extends RegionBase {
 
     @Override
     public boolean getAABB(Vector3 lower, Vector3 upper) {
+        return false;
+    }
+
+    @Override
+    public double shiftUnit() {
+        return 1.0;
+    }
+
+    @Override
+    public boolean expand(Axis axis, double amount) {
         return false;
     }
 

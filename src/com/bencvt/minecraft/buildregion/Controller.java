@@ -94,32 +94,43 @@ public class Controller {
         cmdSet(newRegion);
     }
 
-    public void cmdMoveFacing(RelativeDirection3D relDir) {
+    public void cmdAdjustFacing(boolean expand, RelativeDirection3D relDir) {
         Direction3D dir = getFacingDirection(relDir, true);
         if (dir == null) {
             return;
         }
-        if (curRegion == null || !curRegion.canShiftAlongAxis(dir.axis)) {
+        if (curRegion == null || !curRegion.canAdjustAlongAxis(expand, dir.axis)) {
             cmdSetFacing(relDir);
             return;
         }
 
         // Update region.
-        curRegion.shiftOriginCoord(dir.axis, dir.axisDirection);
+        double amount = dir.axisDirection * curRegion.shiftUnit();
+        if (expand) {
+            if (!curRegion.expand(dir.axis, amount)) {
+                return;
+            }
+        } else {
+            curRegion.shiftOriginCoord(dir.axis, amount);
+        }
 
         // Update UI.
         shapeManager.updateRegion(curRegion);
-        messageManager.info("build region moved " +
-                relDir.toString().toLowerCase() + ":\n" + curRegion);
+        if (expand) {
+            messageManager.info("build region " +
+                    (amount > 0.0 ? "expanded:\n" : "contracted:\n") +
+                    curRegion);
+        } else {
+            messageManager.info("build region moved " +
+                    dir.toString().toLowerCase() + ":\n" + curRegion);
+        }
     }
 
     public void cmdMode(BuildMode newMode) {
         buildMode.setValue(newMode);
         messageManager.info("build region mode: " +
                 newMode.toString().toLowerCase() +
-                "\npress shift-" +
-                inputManager.getUserBinding(InputManager.PROPNAME_MODE) +
-                " for more options");
+                "\npress " + inputManager.getGuiKeybind() + " for more options");
     }
 
     public void cmdModeNext() {

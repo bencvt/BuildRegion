@@ -9,6 +9,7 @@ import libshapedraw.primitive.Vector3;
  * @author bencvt
  */
 public abstract class RegionBase {
+    // TODO: remember the type (but not the dimensions) of the last region used by the player between sessions
     //XXX: public static final RegionBase DEFAULT_REGION = new RegionPlane(Vector3.ZEROS, Axis.X);
     public static final RegionBase DEFAULT_REGION = new RegionCuboid(new Vector3(0, 0, 0), new Vector3(1, 6, 6));
 
@@ -38,11 +39,11 @@ public abstract class RegionBase {
     protected abstract void onOriginUpdate();
 
     /**
-     * @return true if it makes sense to shift the region along the specified
-     *         axis. Will only ever be false if the region is infinite in one
-     *         or more directions.
+     * @return true if it makes sense to move/expand the region along the
+     *         specified axis. Will only ever be false if the region is
+     *         infinite in one or more directions.
      */
-    public boolean canShiftAlongAxis(Axis axis) {
+    public boolean canAdjustAlongAxis(boolean expand, Axis axis) {
         return axis != null;
     }
 
@@ -58,6 +59,11 @@ public abstract class RegionBase {
      * @return true if bounds were set, false if this region is infinite
      */
     public abstract boolean getAABB(Vector3 lower, Vector3 upper);
+
+    /** @return 0.5 or 1.0 */
+    public abstract double shiftUnit();
+
+    public abstract boolean expand(Axis axis, double amount);
 
     // ========
     // Accessors and mutators
@@ -128,10 +134,16 @@ public abstract class RegionBase {
         return d == (int) d;
     }
 
-    protected static final String strXYZ(Vector3 v) {
+    protected static final String strXYZ(ReadonlyVector3 v) {
         return "x=" + strFloorIfPossible(v.getX()) +
                 ", y=" + strFloorIfPossible(v.getY()) +
                 ", z=" + strFloorIfPossible(v.getZ());
+    }
+
+    protected static final String strXYZCompact(ReadonlyVector3 v) {
+        return strFloorIfPossible(v.getX()) +
+                "," + strFloorIfPossible(v.getY()) +
+                "," + strFloorIfPossible(v.getZ());
     }
 
     protected static final String strFloorIfPossible(double d) {

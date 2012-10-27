@@ -80,18 +80,54 @@ public class RegionCuboid extends RegionBase {
     }
 
     @Override
+    public double shiftUnit() {
+        return 1.0;
+    }
+
+    @Override
+    public boolean expand(Axis axis, double amount) {
+        boolean result = false;
+        if (axis == Axis.X) {
+            if (amount >= 0.0 || upperCorner.getX() > lowerCorner.getX()) {
+                upperCorner.addX(amount);
+                result = true;
+            }
+        } else if (axis == Axis.Y) {
+            if (amount >= 0.0 || upperCorner.getY() > lowerCorner.getY()) {
+                upperCorner.addY(amount);
+                result = true;
+            }
+        } else if (axis == Axis.Z) {
+            if (amount >= 0.0 || upperCorner.getZ() > lowerCorner.getZ()) {
+                upperCorner.addZ(amount);
+                result = true;
+            }
+        } else {
+            throw new IllegalArgumentException();
+        }
+        normalize();
+        return result;
+    }
+
+    @Override
     public String toString() {
         normalize();
-        return new StringBuilder().append("cuboid ")
-                .append(strXYZ(lowerCorner)).append(" to ")
-                .append(strXYZ(upperCorner)).append('\n')
+        StringBuilder b = new StringBuilder().append("cuboid ")
+                .append(strXYZCompact(lowerCorner)).append(" to ")
+                .append(strXYZCompact(upperCorner)).append('\n')
                 .append((int) (upperCorner.getX() - lowerCorner.getX()) + 1)
                 .append('\u00d7')
                 .append((int) (upperCorner.getY() - lowerCorner.getY()) + 1)
                 .append('\u00d7')
                 .append((int) (upperCorner.getZ() - lowerCorner.getZ()) + 1)
-                .append(" = ").append((int) size()).append(" blocks")
-                .toString();
+                .append(" = ");
+        int size = (int) size();
+        if (size == 1) {
+            b.append("1 block");
+        } else {
+            b.append(size).append(" blocks");
+        }
+        return b.toString();
     }
 
     private void normalize() {

@@ -76,6 +76,17 @@ public class RegionCylinder extends RegionBase {
     }
 
     @Override
+    public double shiftUnit() {
+        return 0.5;
+    }
+
+    @Override
+    public boolean expand(Axis axis, double amount) {
+        // TODO: adjust radius A/B or height depending on axis
+        return false;
+    }
+
+    @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
         if (radiusA == radiusB) {

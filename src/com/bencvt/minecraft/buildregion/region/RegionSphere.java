@@ -56,6 +56,17 @@ public class RegionSphere extends RegionBase {
     }
 
     @Override
+    public double shiftUnit() {
+        return 0.5;
+    }
+
+    @Override
+    public boolean expand(Axis axis, double amount) {
+        // TODO: adjust radius depending on axis
+        return false;
+    }
+
+    @Override
     public String toString() {
         double r = radii.getX();
         if (r == radii.getY() && r == radii.getZ()) {
