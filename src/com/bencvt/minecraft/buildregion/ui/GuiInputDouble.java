@@ -1,26 +1,23 @@
 package com.bencvt.minecraft.buildregion.ui;
 
+import com.bencvt.minecraft.buildregion.region.Units;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.FontRenderer;
 
 public class GuiInputDouble extends GuiLabeledControl {
-    public static enum ValueRestriction {
-        HALF_UNITS,
-        WHOLE_UNITS;
-    }
-
     public static final int PAD_TOP = 2;
     public static final int PAD_BOTTOM = 1;
 
-    private final ValueRestriction valueRestriction;
-    private final double valueMin;
+    private final Units units;
+    private final boolean positive;
     private final int valueRenderWidth;
     private double value;
 
-    public GuiInputDouble(String displayString, FontRenderer fontRenderer, ValueRestriction valueRestriction, double valueMin) {
+    public GuiInputDouble(String displayString, FontRenderer fontRenderer, Units units, boolean positive) {
         super(displayString, fontRenderer);
-        this.valueRestriction = valueRestriction;
-        this.valueMin = valueMin;
+        this.units = units;
+        this.positive = positive;
         valueRenderWidth = fontRenderer.getStringWidth("-99999.5");
         setControlWidth(valueRenderWidth); // also sets width
         height = PAD_TOP + fontRenderer.FONT_HEIGHT + PAD_BOTTOM;
@@ -30,7 +27,7 @@ public class GuiInputDouble extends GuiLabeledControl {
         return value;
     }
     public void setValue(double value) {
-        this.value = value;
+        this.value = units.clamp(value);
     }
 
     @Override
@@ -42,7 +39,7 @@ public class GuiInputDouble extends GuiLabeledControl {
     protected void drawControl(int xMouse, int yMouse) {
         int xOffset = getControlXOffset();
 
-        String valueString = Double.toString(getValue());
+        String valueString = units.d2s(getValue());
         fontRenderer.drawString(
                 valueString,
                 xOffset + valueRenderWidth - fontRenderer.getStringWidth(valueString),

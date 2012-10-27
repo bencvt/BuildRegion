@@ -30,14 +30,14 @@ public class RegionCuboid extends RegionBase {
     public RegionBase copyUsing(ReadonlyVector3 newOrigin, Axis newAxis) {
         // ignore axis
         RegionCuboid result = new RegionCuboid(lowerCorner, upperCorner);
-        result.getOrigin().set(newOrigin);
+        result.getOriginMutable().set(newOrigin);
         result.onOriginUpdate();
         return result;
     }
 
     @Override
     protected void onOriginUpdate() {
-        Units.HALF.clamp(getOrigin());
+        Units.HALF.clamp(getOriginMutable());
         if (lowerCorner == null) {
             // we were called by constructor
             return;
@@ -62,7 +62,7 @@ public class RegionCuboid extends RegionBase {
             lowerCorner.setMinimum(tmp, upperCorner);
             upperCorner.setMaximum(tmp, upperCorner);
         }
-        getOrigin().set(lowerCorner).midpoint(upperCorner);
+        getOriginMutable().set(lowerCorner).midpoint(upperCorner);
     }
 
     @Override
@@ -93,42 +93,26 @@ public class RegionCuboid extends RegionBase {
     }
 
     @Override
-    public double shiftUnit() {
-        return 1.0;
+    public Units getUnits(Axis axis) {
+        return Units.WHOLE;
     }
 
     @Override
     public boolean expand(Axis axis, double amount) {
-        boolean result = false;
-        if (axis == Axis.X) {
-            if (amount >= 0.0 || upperCorner.getX() > lowerCorner.getX()) {
-                upperCorner.addX(amount);
-                result = true;
-            }
-        } else if (axis == Axis.Y) {
-            if (amount >= 0.0 || upperCorner.getY() > lowerCorner.getY()) {
-                upperCorner.addY(amount);
-                result = true;
-            }
-        } else if (axis == Axis.Z) {
-            if (amount >= 0.0 || upperCorner.getZ() > lowerCorner.getZ()) {
-                upperCorner.addZ(amount);
-                result = true;
-            }
-        } else {
-            throw new IllegalArgumentException();
+        if (amount >= 0.0 || axis.getVectorComponent(upperCorner) > axis.getVectorComponent(lowerCorner)) {
+            normalize();
+            return true;
         }
-        normalize();
-        return result;
+        return false;
     }
 
     @Override
     public String toString() {
         normalize();
         StringBuilder b = new StringBuilder().append("cuboid ")
-                .append(Units.WHOLE.vectorToStringCompact(lowerCorner))
+                .append(Units.WHOLE.v2sCompact(lowerCorner))
                 .append(" to ")
-                .append(Units.WHOLE.vectorToStringCompact(upperCorner))
+                .append(Units.WHOLE.v2sCompact(upperCorner))
                 .append('\n')
                 .append((int) (upperCorner.getX() - lowerCorner.getX()) + 1)
                 .append('\u00d7')

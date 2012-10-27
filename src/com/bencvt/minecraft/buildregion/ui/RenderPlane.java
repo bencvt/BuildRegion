@@ -58,6 +58,18 @@ public class RenderPlane extends RenderBase {
         return true;
     }
 
+    private double getCoord() {
+        if (axis == Axis.X) {
+            return getOriginReadonly().getX();
+        } else if (axis == Axis.Y) {
+            return getOriginReadonly().getY();
+        } else if (axis == Axis.Z) {
+            return getOriginReadonly().getZ();
+        } else {
+            throw new IllegalStateException();
+        }
+    }
+
     @Override
     public void updateObserverPosition(ReadonlyVector3 observerPosition) {
         // Keep up with the player, moving the shape along the plane.
@@ -194,17 +206,5 @@ public class RenderPlane extends RenderBase {
             }
         }
         return alphaTable[Math.abs(off0)][Math.abs(off1)];
-    }
-
-    private double getCoord() {
-        if (axis == Axis.X) {
-            return getOriginReadonly().getX();
-        } else if (axis == Axis.Y) {
-            return getOriginReadonly().getY();
-        } else if (axis == Axis.Z) {
-            return getOriginReadonly().getZ();
-        } else {
-            throw new IllegalStateException();
-        }
     }
 }

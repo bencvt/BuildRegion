@@ -15,13 +15,12 @@ import libshapedraw.primitive.Vector3;
  */
 public class RegionCylinder extends RegionBase {
     private Axis axis;
-    private double height;
-    private double radiusA;
-    private double radiusB;
+    private final Vector3 halfHeightAndRadii;
 
     protected RegionCylinder(ReadonlyVector3 origin, Axis axis, double height, double radiusA, double radiusB) {
         super(origin);
         setAxis(axis);
+        halfHeightAndRadii = new Vector3();
         setHeight(height);
         setRadiusA(radiusA);
         setRadiusB(radiusB);
@@ -40,15 +39,10 @@ public class RegionCylinder extends RegionBase {
 
     @Override
     protected void onOriginUpdate() {
-        Units.HALF.clamp(getOrigin());
-        if (axis == Axis.X) {
-            getOrigin().setX(Units.WHOLE.clamp(getOriginReadonly().getX()));
-        } else if (axis == Axis.Y) {
-            getOrigin().setY(Units.WHOLE.clamp(getOriginReadonly().getY()));
-        } else if (axis == Axis.Z) {
-            getOrigin().setZ(Units.WHOLE.clamp(getOriginReadonly().getZ()));
-        } else {
+        Units.HALF.clamp(getOriginMutable());
+        if (axis != null) {
             // axis can be null during the constructor
+            axis.setVectorComponent(getOriginMutable(), Units.WHOLE.clamp(axis.getVectorComponent(getOriginReadonly())));
         }
     }
 
@@ -60,29 +54,19 @@ public class RegionCylinder extends RegionBase {
 
     @Override
     public double getSize() {
-        return Math.PI * radiusA * radiusB * height;
+        return Math.PI * 2.0 * halfHeightAndRadii.getX() * halfHeightAndRadii.getY() * halfHeightAndRadii.getZ();
     }
 
     @Override
     public boolean getAABB(Vector3 lower, Vector3 upper) {
-        Vector3 radii;
-        if (axis == Axis.X) {
-            radii = new Vector3(height/2.0, radiusA, radiusB);
-        } else if (axis == Axis.Y) {
-            radii = new Vector3(radiusA, height/2.0, radiusB);
-        } else if (axis == Axis.Z) {
-            radii = new Vector3(radiusA, radiusB, height/2.0);
-        } else {
-            throw new IllegalStateException();
-        }
-        lower.set(getOriginReadonly()).subtract(radii);
-        upper.set(getOriginReadonly()).add(radii);
+        lower.set(getOriginReadonly()).subtract(halfHeightAndRadii);
+        upper.set(getOriginReadonly()).add(halfHeightAndRadii);
         return true;
     }
 
     @Override
-    public double shiftUnit() {
-        return 0.5;
+    public Units getUnits(Axis axis) {
+        return axis == this.axis ? Units.WHOLE : Units.HALF;
     }
 
     @Override
@@ -94,25 +78,27 @@ public class RegionCylinder extends RegionBase {
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
+        double radiusA = getRadiusA();
+        double radiusB = getRadiusB();
         if (radiusA == radiusB) {
             b.append("cylinder @ ");
-            b.append(Units.HALF.vectorToString(getOrigin()));
+            b.append(Units.HALF.v2s(getOriginReadonly()));
             b.append("\nradius ").append(getRadiusAxisA().toString().toLowerCase());
             b.append('/').append(getRadiusAxisB().toString().toLowerCase());
             b.append('=').append(radiusA);
         } else {
             b.append("cylindroid @ ");
-            b.append(Units.HALF.vectorToString(getOrigin()));
+            b.append(Units.HALF.v2s(getOriginReadonly()));
             b.append("\nradius ").append(getRadiusAxisA().toString().toLowerCase());
             b.append('=');
-            b.append(Units.HALF.doubleToString(radiusA));
+            b.append(Units.HALF.d2s(radiusA));
             b.append(", ").append(getRadiusAxisB().toString().toLowerCase());
             b.append('=');
-            b.append(Units.HALF.doubleToString(radiusB));
+            b.append(Units.HALF.d2s(radiusB));
         }
         b.append(" height ").append(axis.toString().toLowerCase());
         b.append('=');
-        b.append(Units.WHOLE.doubleToString(height));
+        b.append(Units.WHOLE.d2s(getHeight()));
         return b.toString();
     }
 
@@ -128,59 +114,35 @@ public class RegionCylinder extends RegionBase {
     }
 
     public double getHeight() {
-        return height;
+        return axis.getVectorComponent(halfHeightAndRadii) * 2.0;
     }
     public void setHeight(double height) {
-        this.height = Math.max(1.0, Units.WHOLE.clamp(height));
+        axis.setVectorComponent(halfHeightAndRadii, Units.HALF.clampAtom(height * 0.5));
     }
 
     public double getRadiusA() {
-        return radiusA;
+        return axis.next().getVectorComponent(halfHeightAndRadii);
     }
     public void setRadiusA(double radiusA) {
-        this.radiusA = Math.max(0.5, Units.HALF.clamp(radiusA));
+        axis.next().setVectorComponent(halfHeightAndRadii, Units.HALF.clampAtom(radiusA));
     }
 
     public double getRadiusB() {
-        return radiusB;
+        return axis.next().next().getVectorComponent(halfHeightAndRadii);
     }
     public void setRadiusB(double radiusB) {
-        this.radiusB = Math.max(0.5, Units.HALF.clamp(radiusB));
+        axis.next().next().setVectorComponent(halfHeightAndRadii, Units.HALF.clampAtom(radiusB));
     }
 
     public Axis getRadiusAxisA() {
-        if (axis == Axis.X) {
-            return Axis.Y;
-        } else if (axis == Axis.Y) {
-            return Axis.X;
-        } else if (axis == Axis.Z) {
-            return Axis.X;
-        } else {
-            throw new IllegalStateException();
-        }
+        return axis.next();
     }
 
     public Axis getRadiusAxisB() {
-        if (axis == Axis.X) {
-            return Axis.Z;
-        } else if (axis == Axis.Y) {
-            return Axis.Z;
-        } else if (axis == Axis.Z) {
-            return Axis.Y;
-        } else {
-            throw new IllegalStateException();
-        }
+        return axis.next().next();
     }
 
-    public static Axis getRadiusAxisA(Axis axis) {
-        if (axis == Axis.X) {
-            return Axis.Y;
-        } else if (axis == Axis.Y) {
-            return Axis.X;
-        } else if (axis == Axis.Z) {
-            return Axis.X;
-        } else {
-            throw new IllegalStateException();
-        }
+    public ReadonlyVector3 getHalfHeightAndRadiiReadonly() {
+        return halfHeightAndRadii;
     }
 }

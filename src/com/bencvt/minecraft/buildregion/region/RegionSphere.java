@@ -34,14 +34,14 @@ public class RegionSphere extends RegionBase {
 
     @Override
     protected void onOriginUpdate() {
-        Units.HALF.clamp(getOrigin());
+        Units.HALF.clamp(getOriginMutable());
     }
 
     @Override
     public boolean isInsideRegion(double x, double y, double z) {
-        return    Math.pow(((int) x) - getOrigin().getX(), 2.0) / Math.pow(radii.getX(), 2.0)
-                + Math.pow(((int) y) - getOrigin().getY(), 2.0) / Math.pow(radii.getY(), 2.0)
-                + Math.pow(((int) z) - getOrigin().getZ(), 2.0) / Math.pow(radii.getZ(), 2.0)
+        return    Math.pow(((int) x) - getOriginReadonly().getX(), 2.0) / Math.pow(radii.getX(), 2.0)
+                + Math.pow(((int) y) - getOriginReadonly().getY(), 2.0) / Math.pow(radii.getY(), 2.0)
+                + Math.pow(((int) z) - getOriginReadonly().getZ(), 2.0) / Math.pow(radii.getZ(), 2.0)
                 < 1.0;
     }
 
@@ -58,8 +58,8 @@ public class RegionSphere extends RegionBase {
     }
 
     @Override
-    public double shiftUnit() {
-        return 0.5;
+    public Units getUnits(Axis axis) {
+        return Units.HALF;
     }
 
     @Override
@@ -72,11 +72,11 @@ public class RegionSphere extends RegionBase {
     public String toString() {
         double r = radii.getX();
         if (r == radii.getY() && r == radii.getZ()) {
-            return "sphere @ " + Units.HALF.vectorToString(getOrigin()) +
+            return "sphere @ " + Units.HALF.v2s(getOriginReadonly()) +
                     "\nradius " + r;
         } else {
-            return "ellipsoid @ " + Units.HALF.vectorToString(getOrigin()) +
-                    "\nradius " + Units.HALF.vectorToString(radii);
+            return "ellipsoid @ " + Units.HALF.v2s(getOriginReadonly()) +
+                    "\nradius " + Units.HALF.v2s(radii);
         }
     }
 

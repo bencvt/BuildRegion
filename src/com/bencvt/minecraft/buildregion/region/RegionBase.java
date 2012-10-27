@@ -60,8 +60,10 @@ public abstract class RegionBase {
      */
     public abstract boolean getAABB(Vector3 lower, Vector3 upper);
 
-    /** @return 0.5 or 1.0 */
-    public abstract double shiftUnit();
+    /**
+     * @return the unit restriction applied to the specified axis.
+     */
+    public abstract Units getUnits(Axis axis);
 
     public abstract boolean expand(Axis axis, double amount);
 
@@ -77,36 +79,17 @@ public abstract class RegionBase {
         return origin;
     }
 
-    protected final Vector3 getOrigin() {
+    protected final Vector3 getOriginMutable() {
         return origin;
     }
 
-    public final double getOriginCoord(Axis axis) {
-        if (axis == Axis.X) {
-            return getOrigin().getX();
-        } else if (axis == Axis.Y) {
-            return getOrigin().getY();
-        } else if (axis == Axis.Z) {
-            return getOrigin().getZ();
-        } else {
-            throw new IllegalArgumentException();
-        }
-    }
-
     public final void setOriginCoord(Axis axis, double value) {
-        if (axis == Axis.X) {
-            getOrigin().setX(value);
-        } else if (axis == Axis.Y) {
-            getOrigin().setY(value);
-        } else if (axis == Axis.Z) {
-            getOrigin().setZ(value);
-        } else {
-            throw new IllegalArgumentException();
-        }
+        axis.setVectorComponent(origin, value);
         onOriginUpdate();
     }
 
-    public final void shiftOriginCoord(Axis axis, double amount) {
-        setOriginCoord(axis, getOriginCoord(axis) + amount);
+    public final void addOriginCoord(Axis axis, double amount) {
+        axis.addVectorComponent(origin, amount);
+        onOriginUpdate();
     }
 }

@@ -32,7 +32,7 @@ public class RegionPlane extends RegionBase {
 
     @Override
     protected void onOriginUpdate() {
-        Units.WHOLE.clamp(getOrigin());
+        Units.WHOLE.clamp(getOriginMutable());
     }
 
     @Override
@@ -43,11 +43,11 @@ public class RegionPlane extends RegionBase {
     @Override
     public boolean isInsideRegion(double x, double y, double z) {
         if (axis == Axis.X) {
-            return (int) getOrigin().getX() == (int) x;
+            return (int) getOriginReadonly().getX() == (int) x;
         } else if (axis == Axis.Y) {
-            return (int) getOrigin().getY() == (int) y;
+            return (int) getOriginReadonly().getY() == (int) y;
         } else if (axis == Axis.Z) {
-            return (int) getOrigin().getZ() == (int) z;
+            return (int) getOriginReadonly().getZ() == (int) z;
         } else {
             throw new IllegalStateException();
         }
@@ -64,8 +64,8 @@ public class RegionPlane extends RegionBase {
     }
 
     @Override
-    public double shiftUnit() {
-        return 1.0;
+    public Units getUnits(Axis axis) {
+        return Units.WHOLE;
     }
 
     @Override
@@ -89,7 +89,7 @@ public class RegionPlane extends RegionBase {
     }
 
     public double getCoord() {
-        return getOriginCoord(axis);
+        return axis.getVectorComponent(getOriginReadonly());
     }
     public void setCoord(double value) {
         setOriginCoord(axis, value);
