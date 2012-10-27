@@ -37,7 +37,7 @@ public class RegionCuboid extends RegionBase {
 
     @Override
     protected void onOriginUpdate() {
-        enforceHalfUnits(getOrigin());
+        Units.HALF.clamp(getOrigin());
         if (lowerCorner == null) {
             // we were called by constructor
             return;
@@ -52,6 +52,19 @@ public class RegionCuboid extends RegionBase {
         }
     }
 
+    private void normalize() {
+        Units.WHOLE.clamp(lowerCorner);
+        Units.WHOLE.clamp(upperCorner);
+        if (lowerCorner.getX() > upperCorner.getX() ||
+                lowerCorner.getY() > upperCorner.getY() ||
+                lowerCorner.getZ() > upperCorner.getZ()) {
+            Vector3 tmp = lowerCorner.copy();
+            lowerCorner.setMinimum(tmp, upperCorner);
+            upperCorner.setMaximum(tmp, upperCorner);
+        }
+        getOrigin().set(lowerCorner).midpoint(upperCorner);
+    }
+
     @Override
     public boolean isInsideRegion(double x, double y, double z) {
         normalize();
@@ -64,7 +77,7 @@ public class RegionCuboid extends RegionBase {
     }
 
     @Override
-    public double size() {
+    public double getSize() {
         normalize();
         return ((upperCorner.getX() - lowerCorner.getX() + 1.0) *
                 (upperCorner.getY() - lowerCorner.getY() + 1.0) *
@@ -113,15 +126,17 @@ public class RegionCuboid extends RegionBase {
     public String toString() {
         normalize();
         StringBuilder b = new StringBuilder().append("cuboid ")
-                .append(strXYZCompact(lowerCorner)).append(" to ")
-                .append(strXYZCompact(upperCorner)).append('\n')
+                .append(Units.WHOLE.vectorToStringCompact(lowerCorner))
+                .append(" to ")
+                .append(Units.WHOLE.vectorToStringCompact(upperCorner))
+                .append('\n')
                 .append((int) (upperCorner.getX() - lowerCorner.getX()) + 1)
                 .append('\u00d7')
                 .append((int) (upperCorner.getY() - lowerCorner.getY()) + 1)
                 .append('\u00d7')
                 .append((int) (upperCorner.getZ() - lowerCorner.getZ()) + 1)
                 .append(" = ");
-        int size = (int) size();
+        int size = (int) getSize();
         if (size == 1) {
             b.append("1 block");
         } else {
@@ -130,24 +145,30 @@ public class RegionCuboid extends RegionBase {
         return b.toString();
     }
 
-    private void normalize() {
-        enforceWholeUnits(lowerCorner);
-        enforceWholeUnits(upperCorner);
-        if (lowerCorner.getX() > upperCorner.getX() ||
-                lowerCorner.getY() > upperCorner.getY() ||
-                lowerCorner.getZ() > upperCorner.getZ()) {
-            Vector3 tmp = lowerCorner.copy();
-            lowerCorner.setMinimum(tmp, upperCorner);
-            upperCorner.setMaximum(tmp, upperCorner);
-        }
-        getOrigin().set(lowerCorner).midpoint(upperCorner);
-    }
-
     public ReadonlyVector3 getLowerCornerReadonly() {
         return lowerCorner;
     }
 
     public ReadonlyVector3 getUpperCornerReadonly() {
         return upperCorner;
+    }
+
+    public double getSizeX() {
+        return upperCorner.getX() - lowerCorner.getX() + 1;
+    }
+    public double getSizeY() {
+        return upperCorner.getY() - lowerCorner.getY() + 1;
+    }
+    public double getSizeZ() {
+        return upperCorner.getZ() - lowerCorner.getZ() + 1;
+    }
+
+    public void setFromCornerSize(double cornerX, double cornerY, double cornerZ, double sizeX, double sizeY, double sizeZ) {
+        Units.WHOLE.clamp(lowerCorner.set(cornerX, cornerY, cornerZ));
+        upperCorner.set(
+                lowerCorner.getX() - 1.0 + Math.max(1.0, Units.WHOLE.clamp(sizeX)),
+                lowerCorner.getY() - 1.0 + Math.max(1.0, Units.WHOLE.clamp(sizeY)),
+                lowerCorner.getZ() - 1.0 + Math.max(1.0, Units.WHOLE.clamp(sizeZ)));
+        normalize();
     }
 }

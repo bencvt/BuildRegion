@@ -15,8 +15,10 @@ public class RegionSphere extends RegionBase {
 
     protected RegionSphere(ReadonlyVector3 origin, ReadonlyVector3 radii) {
         super(origin);
-        this.radii = radii.copy().absolute();
-        enforceHalfUnits(this.radii);
+        this.radii = new Vector3();
+        setRadiusX(radii.getX());
+        setRadiusY(radii.getY());
+        setRadiusZ(radii.getZ());
     }
 
     @Override
@@ -32,7 +34,7 @@ public class RegionSphere extends RegionBase {
 
     @Override
     protected void onOriginUpdate() {
-        enforceHalfUnits(getOrigin());
+        Units.HALF.clamp(getOrigin());
     }
 
     @Override
@@ -44,7 +46,7 @@ public class RegionSphere extends RegionBase {
     }
 
     @Override
-    public double size() {
+    public double getSize() {
         return 4.0 / 3.0 * Math.PI * radii.getX() * radii.getY() * radii.getZ();
     }
 
@@ -70,9 +72,11 @@ public class RegionSphere extends RegionBase {
     public String toString() {
         double r = radii.getX();
         if (r == radii.getY() && r == radii.getZ()) {
-            return "sphere @ " + strXYZ(getOrigin()) + "\nradius " + r;
+            return "sphere @ " + Units.HALF.vectorToString(getOrigin()) +
+                    "\nradius " + r;
         } else {
-            return "ellipsoid @ " + strXYZ(getOrigin()) + "\nradius " + strXYZ(radii);
+            return "ellipsoid @ " + Units.HALF.vectorToString(getOrigin()) +
+                    "\nradius " + Units.HALF.vectorToString(radii);
         }
     }
 
@@ -84,20 +88,20 @@ public class RegionSphere extends RegionBase {
         return radii.getX();
     }
     public void setRadiusX(double radiusX) {
-        enforceHalfUnits(radii.setX(Math.max(0.5, Math.abs(radiusX))));
+        radii.setX(Math.max(0.5, Units.HALF.clamp(radiusX)));
     }
 
     public double getRadiusY() {
         return radii.getY();
     }
     public void setRadiusY(double radiusY) {
-        enforceHalfUnits(radii.setY(Math.max(0.5, Math.abs(radiusY))));
+        radii.setY(Math.max(0.5, Units.HALF.clamp(radiusY)));
     }
 
     public double getRadiusZ() {
         return radii.getZ();
     }
     public void setRadiusZ(double radiusZ) {
-        enforceHalfUnits(radii.setZ(Math.max(0.5, Math.abs(radiusZ))));
+        radii.setZ(Math.max(0.5, Units.HALF.clamp(radiusZ)));
     }
 }

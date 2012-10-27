@@ -32,7 +32,7 @@ public class RegionPlane extends RegionBase {
 
     @Override
     protected void onOriginUpdate() {
-        enforceWholeUnits(getOrigin());
+        Units.WHOLE.clamp(getOrigin());
     }
 
     @Override
@@ -54,7 +54,7 @@ public class RegionPlane extends RegionBase {
     }
 
     @Override
-    public double size() {
+    public double getSize() {
         return Double.POSITIVE_INFINITY;
     }
 

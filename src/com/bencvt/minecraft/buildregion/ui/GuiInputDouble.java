@@ -4,16 +4,25 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.src.FontRenderer;
 
 public class GuiInputDouble extends GuiLabeledControl {
+    public static enum ValueRestriction {
+        HALF_UNITS,
+        WHOLE_UNITS;
+    }
+
     public static final int PAD_TOP = 2;
     public static final int PAD_BOTTOM = 1;
 
-    private int valueWidth;
+    private final ValueRestriction valueRestriction;
+    private final double valueMin;
+    private final int valueRenderWidth;
     private double value;
 
-    public GuiInputDouble(String displayString, FontRenderer fontRenderer) {
+    public GuiInputDouble(String displayString, FontRenderer fontRenderer, ValueRestriction valueRestriction, double valueMin) {
         super(displayString, fontRenderer);
-        valueWidth = fontRenderer.getStringWidth("-99999.5");
-        setControlWidth(valueWidth); // also sets width
+        this.valueRestriction = valueRestriction;
+        this.valueMin = valueMin;
+        valueRenderWidth = fontRenderer.getStringWidth("-99999.5");
+        setControlWidth(valueRenderWidth); // also sets width
         height = PAD_TOP + fontRenderer.FONT_HEIGHT + PAD_BOTTOM;
     }
 
@@ -36,7 +45,7 @@ public class GuiInputDouble extends GuiLabeledControl {
         String valueString = Double.toString(getValue());
         fontRenderer.drawString(
                 valueString,
-                xOffset + valueWidth - fontRenderer.getStringWidth(valueString),
+                xOffset + valueRenderWidth - fontRenderer.getStringWidth(valueString),
                 yPosition + PAD_TOP,
                 CONTROL_NORMAL_ARGB);
     }

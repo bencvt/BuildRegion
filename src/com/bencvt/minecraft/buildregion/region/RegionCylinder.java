@@ -21,11 +21,10 @@ public class RegionCylinder extends RegionBase {
 
     protected RegionCylinder(ReadonlyVector3 origin, Axis axis, double height, double radiusA, double radiusB) {
         super(origin);
-        this.axis = axis;
-        this.height = height;
-        this.radiusA = radiusA;
-        this.radiusB = radiusB;
-        // TODO reduce values
+        setAxis(axis);
+        setHeight(height);
+        setRadiusA(radiusA);
+        setRadiusB(radiusB);
     }
 
     @Override
@@ -41,9 +40,15 @@ public class RegionCylinder extends RegionBase {
 
     @Override
     protected void onOriginUpdate() {
-        enforceHalfUnits(getOrigin());
-        if (axis != null) { // can be null during the constructor
-            setOriginCoord(axis, enforceWholeUnits(getOriginCoord(axis)));
+        Units.HALF.clamp(getOrigin());
+        if (axis == Axis.X) {
+            getOrigin().setX(Units.WHOLE.clamp(getOriginReadonly().getX()));
+        } else if (axis == Axis.Y) {
+            getOrigin().setY(Units.WHOLE.clamp(getOriginReadonly().getY()));
+        } else if (axis == Axis.Z) {
+            getOrigin().setZ(Units.WHOLE.clamp(getOriginReadonly().getZ()));
+        } else {
+            // axis can be null during the constructor
         }
     }
 
@@ -54,7 +59,7 @@ public class RegionCylinder extends RegionBase {
     }
 
     @Override
-    public double size() {
+    public double getSize() {
         return Math.PI * radiusA * radiusB * height;
     }
 
@@ -90,19 +95,24 @@ public class RegionCylinder extends RegionBase {
     public String toString() {
         StringBuilder b = new StringBuilder();
         if (radiusA == radiusB) {
-            b.append("cylinder @ ").append(strXYZ(getOrigin()));
+            b.append("cylinder @ ");
+            b.append(Units.HALF.vectorToString(getOrigin()));
             b.append("\nradius ").append(getRadiusAxisA().toString().toLowerCase());
             b.append('/').append(getRadiusAxisB().toString().toLowerCase());
             b.append('=').append(radiusA);
         } else {
-            b.append("cylindroid @ ").append(strXYZ(getOrigin()));
+            b.append("cylindroid @ ");
+            b.append(Units.HALF.vectorToString(getOrigin()));
             b.append("\nradius ").append(getRadiusAxisA().toString().toLowerCase());
-            b.append('=').append(radiusA);
+            b.append('=');
+            b.append(Units.HALF.doubleToString(radiusA));
             b.append(", ").append(getRadiusAxisB().toString().toLowerCase());
-            b.append('=').append(radiusB);
+            b.append('=');
+            b.append(Units.HALF.doubleToString(radiusB));
         }
         b.append(" height ").append(axis.toString().toLowerCase());
-        b.append('=').append(height);
+        b.append('=');
+        b.append(Units.WHOLE.doubleToString(height));
         return b.toString();
     }
 
@@ -110,28 +120,32 @@ public class RegionCylinder extends RegionBase {
         return axis;
     }
     public void setAxis(Axis axis) {
+        if (axis == null) {
+            throw new IllegalArgumentException();
+        }
         this.axis = axis;
+        onOriginUpdate();
     }
 
     public double getHeight() {
         return height;
     }
     public void setHeight(double height) {
-        this.height = height;
+        this.height = Math.max(1.0, Units.WHOLE.clamp(height));
     }
 
     public double getRadiusA() {
         return radiusA;
     }
     public void setRadiusA(double radiusA) {
-        this.radiusA = radiusA;
+        this.radiusA = Math.max(0.5, Units.HALF.clamp(radiusA));
     }
 
     public double getRadiusB() {
         return radiusB;
     }
     public void setRadiusB(double radiusB) {
-        this.radiusB = radiusB;
+        this.radiusB = Math.max(0.5, Units.HALF.clamp(radiusB));
     }
 
     public Axis getRadiusAxisA() {

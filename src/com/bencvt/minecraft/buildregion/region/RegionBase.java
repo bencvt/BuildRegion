@@ -52,7 +52,7 @@ public abstract class RegionBase {
      */
     public abstract boolean isInsideRegion(double x, double y, double z);
 
-    public abstract double size();
+    public abstract double getSize();
 
     /**
      * Get the axis-aligned minimum bounding box around this region.
@@ -108,46 +108,5 @@ public abstract class RegionBase {
 
     public final void shiftOriginCoord(Axis axis, double amount) {
         setOriginCoord(axis, getOriginCoord(axis) + amount);
-    }
-
-    // ========
-    // Utility methods
-    // ========
-
-    protected static final void enforceHalfUnits(Vector3 v) {
-        v.scale(2.0).floor().scale(0.5);
-    }
-
-    protected static final double enforceHalfUnits(double d) {
-        return enforceWholeUnits(d * 2.0) * 0.5;
-    }
-
-    protected static final void enforceWholeUnits(Vector3 v) {
-        v.floor();
-    }
-
-    protected static final double enforceWholeUnits(double d) {
-        return Math.floor(d);
-    }
-
-    protected static final boolean isWholeUnit(double d) {
-        return d == (int) d;
-    }
-
-    protected static final String strXYZ(ReadonlyVector3 v) {
-        return "x=" + strFloorIfPossible(v.getX()) +
-                ", y=" + strFloorIfPossible(v.getY()) +
-                ", z=" + strFloorIfPossible(v.getZ());
-    }
-
-    protected static final String strXYZCompact(ReadonlyVector3 v) {
-        return strFloorIfPossible(v.getX()) +
-                "," + strFloorIfPossible(v.getY()) +
-                "," + strFloorIfPossible(v.getZ());
-    }
-
-    protected static final String strFloorIfPossible(double d) {
-        int i = (int) Math.floor(d);
-        return d == i ? Integer.toString(i) : Double.toString(d);
     }
 }

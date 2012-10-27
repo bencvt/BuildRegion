@@ -14,6 +14,7 @@ import com.bencvt.minecraft.buildregion.Controller;
 import com.bencvt.minecraft.buildregion.region.Axis;
 import com.bencvt.minecraft.buildregion.region.RegionFactory;
 import com.bencvt.minecraft.buildregion.region.RegionType;
+import com.bencvt.minecraft.buildregion.ui.GuiInputDouble.ValueRestriction;
 
 /**
  * The main BuildRegion GUI.
@@ -40,6 +41,12 @@ public class GuiBuildRegion extends GuiScreen {
     private final GuiHLine                    hLine;
     private final GuiEnumSelect<Axis>         inputPlaneAxis;
     private final GuiInputDouble              inputPlaneCoord;
+    private final GuiInputDouble              inputCuboidLowerCornerX;
+    private final GuiInputDouble              inputCuboidLowerCornerY;
+    private final GuiInputDouble              inputCuboidLowerCornerZ;
+    private final GuiInputDouble              inputCuboidSizeX;
+    private final GuiInputDouble              inputCuboidSizeY;
+    private final GuiInputDouble              inputCuboidSizeZ;
     private final GuiInputDouble              inputCylinderOriginX;
     private final GuiInputDouble              inputCylinderOriginY;
     private final GuiInputDouble              inputCylinderOriginZ;
@@ -73,21 +80,27 @@ public class GuiBuildRegion extends GuiScreen {
         inputRegionType = new GuiEnumSelect<RegionType>("region type:", fr, RegionType.values(), SELECT_COLOR);
         hLine = new GuiHLine(fr, BORDER_THICKNESS, BORDER_COLOR);
         inputPlaneAxis = new GuiEnumSelect<Axis>("axis:", fr, Axis.values(), SELECT_COLOR);
-        inputPlaneCoord = new GuiInputDouble("x coordinate:", fr);
-        // TODO: cuboid inputs
-        inputCylinderOriginX = new GuiInputDouble("origin x:", fr);
-        inputCylinderOriginY = new GuiInputDouble("origin y:", fr);
-        inputCylinderOriginZ = new GuiInputDouble("origin z:", fr);
+        inputPlaneCoord = new GuiInputDouble("? coordinate:", fr, ValueRestriction.WHOLE_UNITS, Double.NEGATIVE_INFINITY);
+        inputCuboidLowerCornerX = new GuiInputDouble("corner x:", fr, ValueRestriction.WHOLE_UNITS, Double.NEGATIVE_INFINITY);
+        inputCuboidLowerCornerY = new GuiInputDouble("corner y:", fr, ValueRestriction.WHOLE_UNITS, Double.NEGATIVE_INFINITY);
+        inputCuboidLowerCornerZ = new GuiInputDouble("corner z:", fr, ValueRestriction.WHOLE_UNITS, Double.NEGATIVE_INFINITY);
+        inputCuboidSizeX = new GuiInputDouble("width (x):", fr, ValueRestriction.WHOLE_UNITS, 1.0);
+        inputCuboidSizeY = new GuiInputDouble("height (y):", fr, ValueRestriction.WHOLE_UNITS, 1.0);
+        inputCuboidSizeZ = new GuiInputDouble("length (z):", fr, ValueRestriction.WHOLE_UNITS, 1.0);
+        // TODO: special ValueRestriction... origin matching cylinder axis must be whole units; other two can be half units
+        inputCylinderOriginX = new GuiInputDouble("origin x:", fr, ValueRestriction.WHOLE_UNITS, Double.NEGATIVE_INFINITY);
+        inputCylinderOriginY = new GuiInputDouble("origin y:", fr, ValueRestriction.WHOLE_UNITS, Double.NEGATIVE_INFINITY);
+        inputCylinderOriginZ = new GuiInputDouble("origin z:", fr, ValueRestriction.WHOLE_UNITS, Double.NEGATIVE_INFINITY);
         inputCylinderAxis = new GuiEnumSelect<Axis>("axis:", fr, Axis.values(), SELECT_COLOR);
-        inputCylinderHeight = new GuiInputDouble("height:", fr);
-        inputCylinderRadiusA = new GuiInputDouble("x radius:", fr);
-        inputCylinderRadiusB = new GuiInputDouble("y radius:", fr);
-        inputSphereOriginX = new GuiInputDouble("origin x:", fr);
-        inputSphereOriginY = new GuiInputDouble("origin y:", fr);
-        inputSphereOriginZ = new GuiInputDouble("origin z:", fr);
-        inputSphereRadiusX = new GuiInputDouble("x radius:", fr);
-        inputSphereRadiusY = new GuiInputDouble("y radius:", fr);
-        inputSphereRadiusZ = new GuiInputDouble("z radius:", fr);
+        inputCylinderHeight = new GuiInputDouble("height:", fr, ValueRestriction.WHOLE_UNITS, 1.0);
+        inputCylinderRadiusA = new GuiInputDouble("? radius:", fr, ValueRestriction.HALF_UNITS, 0.5);
+        inputCylinderRadiusB = new GuiInputDouble("? radius:", fr, ValueRestriction.WHOLE_UNITS, 0.5);
+        inputSphereOriginX = new GuiInputDouble("origin x:", fr, ValueRestriction.HALF_UNITS, Double.NEGATIVE_INFINITY);
+        inputSphereOriginY = new GuiInputDouble("origin y:", fr, ValueRestriction.HALF_UNITS, Double.NEGATIVE_INFINITY);
+        inputSphereOriginZ = new GuiInputDouble("origin z:", fr, ValueRestriction.HALF_UNITS, Double.NEGATIVE_INFINITY);
+        inputSphereRadiusX = new GuiInputDouble("x radius:", fr, ValueRestriction.HALF_UNITS, 0.5);
+        inputSphereRadiusY = new GuiInputDouble("y radius:", fr, ValueRestriction.HALF_UNITS, 0.5);
+        inputSphereRadiusZ = new GuiInputDouble("z radius:", fr, ValueRestriction.HALF_UNITS, 0.5);
 
         // Add each control to the appropriate list.
         controlsByRegionType = new HashMap<RegionType, ArrayList<GuiLabeledControl>>();
@@ -101,7 +114,13 @@ public class GuiBuildRegion extends GuiScreen {
         controlsByRegionType.get(RegionType.PLANE).add(emptyRow);
         controlsByRegionType.get(RegionType.PLANE).add(inputPlaneCoord);
         controlsByRegionType.get(RegionType.PLANE).add(inputPlaneAxis);
-        // TODO: cuboid inputs
+        controlsByRegionType.get(RegionType.CUBOID).add(inputCuboidLowerCornerX);
+        controlsByRegionType.get(RegionType.CUBOID).add(inputCuboidLowerCornerY);
+        controlsByRegionType.get(RegionType.CUBOID).add(inputCuboidLowerCornerZ);
+        controlsByRegionType.get(RegionType.PLANE).add(emptyRow);
+        controlsByRegionType.get(RegionType.CUBOID).add(inputCuboidSizeX);
+        controlsByRegionType.get(RegionType.CUBOID).add(inputCuboidSizeY);
+        controlsByRegionType.get(RegionType.CUBOID).add(inputCuboidSizeZ);
         controlsByRegionType.get(RegionType.CYLINDER).add(inputCylinderOriginX);
         controlsByRegionType.get(RegionType.CYLINDER).add(inputCylinderOriginY);
         controlsByRegionType.get(RegionType.CYLINDER).add(inputCylinderOriginZ);
@@ -128,7 +147,9 @@ public class GuiBuildRegion extends GuiScreen {
         }
         inputPlaneAxis.setSelectedValue(regionFactory.getPlane().getAxis(), false);
         inputPlaneCoord.setValue(regionFactory.getPlane().getCoord());
-        // TODO: cuboid inputs
+        inputCuboidLowerCornerX.setValue(regionFactory.getCuboid().getLowerCornerReadonly().getX());
+        inputCuboidLowerCornerY.setValue(regionFactory.getCuboid().getLowerCornerReadonly().getY());
+        inputCuboidLowerCornerZ.setValue(regionFactory.getCuboid().getLowerCornerReadonly().getZ());
         inputCylinderOriginX.setValue(regionFactory.getCylinder().getOriginReadonly().getX());
         inputCylinderOriginY.setValue(regionFactory.getCylinder().getOriginReadonly().getY());
         inputCylinderOriginZ.setValue(regionFactory.getCylinder().getOriginReadonly().getZ());

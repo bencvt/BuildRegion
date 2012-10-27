@@ -75,6 +75,7 @@ public class Controller {
         // Update UI.
         shapeManager.updateRegion(curRegion);
         messageManager.info("build region locked:\n" + curRegion);
+        // TODO: option to keep curRegion visible in a corner of the screen at all times as part of the HUD
     }
 
     public void cmdSetFacing(RelativeDirection3D relDir) {
