@@ -27,9 +27,19 @@ public class GuiInputDouble extends GuiLabeledControl {
     public static final int BUTTON_LOCKED_ARGB = Color.DODGER_BLUE.getARGB();
     public static final int BUTTON_MOUSEOVERLOCKED_ARGB = Color.DODGER_BLUE.copy().blend(Color.LIGHT_GRAY, 0.25).getARGB();
 
-    public static final int SLIDER_LINE0_ARGB = Color.GRAY.copy().scaleAlpha(0.5).getARGB();
-    public static final int SLIDER_LINE1_ARGB = Color.DARK_GRAY.copy().scaleAlpha(0.5).getARGB();
+    public static final int SLIDER_BGLINE0_ARGB = Color.GRAY.copy().scaleAlpha(0.5).getARGB();
+    public static final int SLIDER_BGLINE1_ARGB = Color.DARK_GRAY.copy().scaleAlpha(0.5).getARGB();
     public static final int SLIDER_HALF_WIDTH = 2;
+    public static final int SLIDER_NORMAL_ARGB = Color.DARK_GRAY.getARGB();
+    public static final int SLIDER_DRAGGING_ARGB = BUTTON_LOCKED_ARGB;
+    public static final int SLIDER_BORDER_NORMAL_ARGB = Color.LIGHT_GRAY.getARGB();
+    public static final int SLIDER_BORDER_MOUSEOVER_ARGB = Color.WHITE.getARGB();
+    public static final int SLIDER_BORDER_DRAGGING_ARGB = SLIDER_DRAGGING_ARGB;
+    /**
+     * The smaller this double, the more pixels the slider has to move before
+     * affecting the value.
+     */
+    public static final double SLIDER_SENSITIVITY = 0.25;
 
     private double value;
     private final Units units;
@@ -67,8 +77,7 @@ public class GuiInputDouble extends GuiLabeledControl {
         final int xMinSlider = getControlXOffset() + XBEGIN_SLIDER;
         final int xMaxSlider = xPosition + width - R_XBEGIN_SLIDER;
         final int xMidSlider = xMinSlider + (xMaxSlider - xMinSlider)/2;
-        // TODO: scaling factor
-        setValue(dragStartValue + units.atom*(xMouse - xMidSlider));
+        setValue(dragStartValue + units.atom*(xMouse - xMidSlider)*SLIDER_SENSITIVITY);
     }
 
     private boolean isMinusButtonEnabled() {
@@ -98,57 +107,44 @@ public class GuiInputDouble extends GuiLabeledControl {
                 CONTROL_ENABLED_ARGB);
 
         // Minus button.
-        drawSubButton(xMouse, yMouse, "-",
+        drawMiniButton(xMouse, yMouse, "-",
                 isMinusButtonEnabled(), false,
                 xControlBegin + XBEGIN_MINUS,
                 xControlBegin + XEND_MINUS, xControlBegin + XEND_MINUS);
 
         // Plus button.
-        drawSubButton(xMouse, yMouse, "+",
+        drawMiniButton(xMouse, yMouse, "+",
                 isPlusButtonEnabled(), false,
                 xControlBegin + XBEGIN_PLUS,
                 xControlBegin + XEND_PLUS, xControlBegin + XEND_PLUS);
 
         // Slider.
-        final int xMinSlider = xControlBegin + XBEGIN_SLIDER;
-        final int xMaxSlider = xControlEnd - R_XBEGIN_SLIDER;
-        final int xSlider;
-        if (dragging) {
-            setValueFromSlider(xMouse);
-            parent.rapidUpdate(this);
-            xSlider = Math.min(Math.max(xMinSlider + SLIDER_HALF_WIDTH, xMouse), xMaxSlider - SLIDER_HALF_WIDTH);
-        } else {
-            xSlider = xMinSlider + (xMaxSlider - xMinSlider)/2;
-        }
-        int ySlider = yPosition + (height/2);
-        drawRect(xMinSlider, ySlider - 1, xMaxSlider, ySlider,     SLIDER_LINE0_ARGB);
-        drawRect(xMinSlider, ySlider,     xMaxSlider, ySlider + 1, SLIDER_LINE1_ARGB);
-        drawRect(
-                xSlider - SLIDER_HALF_WIDTH,
-                yPosition,
-                xSlider + SLIDER_HALF_WIDTH,
-                yPosition + height - 1,
-                Color.PINK.getARGB());
+        drawAndUpdateSlider(xMouse, yMouse,
+                xControlBegin + XBEGIN_SLIDER, xControlEnd - R_XBEGIN_SLIDER);
 
         // Group button.
         if (group != null) {
-            drawSubButton(xMouse, yMouse, "=",
+            drawMiniButton(xMouse, yMouse, "=",
                     true, group.isLocked(),
                     xControlEnd - R_XEND_GROUP,
                     xControlEnd - R_XBEGIN_GROUP, xControlEnd);
         }
     }
 
-    private void drawSubButton(int xMouse, int yMouse, String text, boolean enabled, boolean locked, int xBegin, int xEnd, int xEndMouse) {
+    private void drawMiniButton(int xMouse, int yMouse, String text, boolean enabled, boolean locked, int xBegin, int xEnd, int xEndMouse) {
         final int buttonARGB;
+        final int textARGB;
         if (!enabled) {
             buttonARGB = BUTTON_DISABLED_ARGB;
+            textARGB = CONTROL_DISABLED_ARGB;
         } else {
             if (xMouse >= xBegin && xMouse <= xEndMouse &&
                     yMouse >= yPosition && yMouse <= yPosition + height) {
                 buttonARGB = locked ? BUTTON_MOUSEOVERLOCKED_ARGB : BUTTON_MOUSEOVER_ARGB;
+                textARGB = CONTROL_ENABLED_ARGB;
             } else {
                 buttonARGB = locked ? BUTTON_LOCKED_ARGB : BUTTON_ENABLED_ARGB;
+                textARGB = CONTROL_MOUSEOVER_ARGB;
             }
         }
         drawRect(xBegin, yPosition, xEnd, yPosition + height - 1, buttonARGB);
@@ -156,7 +152,51 @@ public class GuiInputDouble extends GuiLabeledControl {
                 text,
                 xBegin + (xEnd - xBegin - parent.getFontRenderer().getStringWidth(text))/2 + 1,
                 yPosition + PAD_TOP,
-                enabled ? CONTROL_ENABLED_ARGB : CONTROL_DISABLED_ARGB);
+                textARGB);
+    }
+
+    private void drawAndUpdateSlider(int xMouse, int yMouse, int xMin, int xMax) {
+        // Determine where along the slider the vertical rectangle's center is.
+        // Update value if we're actively dragging.
+        final int x;
+        if (dragging) {
+            setValueFromSlider(xMouse);
+            parent.rapidUpdate(this);
+            x = Math.min(Math.max(xMin + SLIDER_HALF_WIDTH, xMouse), xMax - SLIDER_HALF_WIDTH);
+        } else {
+            x = xMin + (xMax - xMin)/2;
+        }
+
+        // Draw background horizontal line.
+        final int y = yPosition + (height/2);
+        drawRect(xMin, y - 1, xMax, y,     SLIDER_BGLINE0_ARGB);
+        drawRect(xMin, y,     xMax, y + 1, SLIDER_BGLINE1_ARGB);
+
+        // Draw vertical rectangle background.
+        drawRect(
+                x - SLIDER_HALF_WIDTH,
+                yPosition,
+                x + SLIDER_HALF_WIDTH,
+                yPosition + height - 1,
+                (dragging ? SLIDER_DRAGGING_ARGB : SLIDER_NORMAL_ARGB));
+
+        // Draw vertical rectangle border on top the background.
+        final int borderARGB;
+        if (dragging) {
+            borderARGB = SLIDER_BORDER_DRAGGING_ARGB;
+        } else if (xMouse >= xMin && xMouse <= xMax &&
+                yMouse >= yPosition && yMouse <= yPosition + height) {
+            borderARGB = SLIDER_BORDER_MOUSEOVER_ARGB;
+        } else {
+            borderARGB = SLIDER_BORDER_NORMAL_ARGB;
+        }
+        GuiBaseScreen.drawRectBorder(
+                x - SLIDER_HALF_WIDTH,
+                yPosition,
+                x + SLIDER_HALF_WIDTH,
+                yPosition + height - 1,
+                borderARGB,
+                1);
     }
 
     @Override

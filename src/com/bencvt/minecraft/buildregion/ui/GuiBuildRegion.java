@@ -43,6 +43,7 @@ public class GuiBuildRegion extends GuiBaseScreen {
     private final GuiInputDouble              inputCuboidLowerCornerX;
     private final GuiInputDouble              inputCuboidLowerCornerY;
     private final GuiInputDouble              inputCuboidLowerCornerZ;
+    private final GuiInputDoubleGroup         groupCuboidSizes;
     private final GuiInputDouble              inputCuboidSizeX;
     private final GuiInputDouble              inputCuboidSizeY;
     private final GuiInputDouble              inputCuboidSizeZ;
@@ -86,9 +87,10 @@ public class GuiBuildRegion extends GuiBaseScreen {
         inputCuboidLowerCornerX = new GuiInputDouble(this, "corner x:", Units.WHOLE, false, null);
         inputCuboidLowerCornerY = new GuiInputDouble(this, "corner y:", Units.WHOLE, false, null);
         inputCuboidLowerCornerZ = new GuiInputDouble(this, "corner z:", Units.WHOLE, false, null);
-        inputCuboidSizeX = new GuiInputDouble(this, "width (x):", Units.WHOLE, true, null);
-        inputCuboidSizeY = new GuiInputDouble(this, "height (y):", Units.WHOLE, true, null);
-        inputCuboidSizeZ = new GuiInputDouble(this, "length (z):", Units.WHOLE, true, null);
+        groupCuboidSizes = new GuiInputDoubleGroup();
+        inputCuboidSizeX = new GuiInputDouble(this, "width (x):", Units.WHOLE, true, groupCuboidSizes);
+        inputCuboidSizeY = new GuiInputDouble(this, "height (y):", Units.WHOLE, true, groupCuboidSizes);
+        inputCuboidSizeZ = new GuiInputDouble(this, "length (z):", Units.WHOLE, true, groupCuboidSizes);
         // TODO: special value restriction... origin matching cylinder axis must be whole units; other two can be half units
         inputCylinderOriginX = new GuiInputDouble(this, "origin x:", Units.WHOLE, false, null);
         inputCylinderOriginY = new GuiInputDouble(this, "origin y:", Units.WHOLE, false, null);
@@ -316,14 +318,16 @@ public class GuiBuildRegion extends GuiBaseScreen {
 
         // Draw border on top of background.
         if (BORDER_THICKNESS > 0) {
-            GuiBaseControl.drawRectBorder(xLeft, yTop, xRight, yBottom, BORDER_ARGB, BORDER_THICKNESS);
+            drawRectBorder(xLeft, yTop, xRight, yBottom, BORDER_ARGB, BORDER_THICKNESS);
         }
 
         // Defer control rendering to parent class.
         super.drawScreen(xMouse, yMouse, partialTick);
 
         // Except for control groups, we do that.
-        if (inputRegionType.getSelectedValue() == RegionType.CYLINDER) {
+        if (inputRegionType.getSelectedValue() == RegionType.CUBOID) {
+            groupCuboidSizes.draw();
+        } else if (inputRegionType.getSelectedValue() == RegionType.CYLINDER) {
             groupCylinderRadii.draw();
         } else if (inputRegionType.getSelectedValue() == RegionType.SPHERE) {
             groupSphereRadii.draw();
