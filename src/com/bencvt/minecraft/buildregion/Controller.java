@@ -54,19 +54,19 @@ public class Controller {
         shapeManager.reset();
     }
 
-    public void cmdClear() {
+    public void cmdClear(boolean animate) {
         if (curRegion == null) {
             return;
         }
         prevRegion = curRegion;
         curRegion = null;
-        shapeManager.updateRegion(curRegion);
+        shapeManager.updateRegion(curRegion, animate);
         messageManager.info("build region unlocked");
     }
 
-    public void cmdSet(RegionBase newRegion) {
+    public void cmdSet(RegionBase newRegion, boolean animate) {
         if (newRegion == null) {
-            cmdClear();
+            cmdClear(animate);
         }
         if (curRegion != null) {
             prevRegion = curRegion;
@@ -74,7 +74,7 @@ public class Controller {
         curRegion = newRegion;
 
         // Update UI.
-        shapeManager.updateRegion(curRegion);
+        shapeManager.updateRegion(curRegion, animate);
         messageManager.info("build region locked:\n" + curRegion);
         // TODO: option to keep curRegion visible in a corner of the screen at all times as part of the HUD
     }
@@ -93,7 +93,7 @@ public class Controller {
         // Move the origin so it's in front of the player.
         newRegion.addOriginCoord(dir.axis, dir.axisDirection * 2);
 
-        cmdSet(newRegion);
+        cmdSet(newRegion, true);
     }
 
     public void cmdAdjustFacing(boolean expand, RelativeDirection3D relDir) {
@@ -118,7 +118,7 @@ public class Controller {
         }
 
         // Update UI.
-        shapeManager.updateRegion(curRegion);
+        shapeManager.updateRegion(curRegion, true);
         if (expand) {
             messageManager.info("build region " +
                     (amount > 0.0 ? "expanded:\n" : "contracted:\n") +

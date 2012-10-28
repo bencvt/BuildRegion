@@ -86,20 +86,25 @@ public class RenderCylinder extends RenderBase {
     }
 
     @Override
-    public boolean updateIfPossible(RegionBase region) {
+    public boolean updateIfPossible(RegionBase region, boolean animate) {
         if (!region.isRegionType(RegionCylinder.class)) {
             return false;
         }
-        if (getOriginReadonly().distanceSquared(region.getOriginReadonly()) > SHIFT_MAX_SQUARED) {
+        if (animate && getOriginReadonly().distanceSquared(region.getOriginReadonly()) > SHIFT_MAX_SQUARED) {
             return false;
         }
         RegionCylinder cylinder = (RegionCylinder) region;
         if (axis != cylinder.getAxis()) {
             return false;
         }
-        animateShiftOrigin(cylinder.getOriginReadonly());
+        animateShiftOrigin(cylinder.getOriginReadonly(), animate);
         if (timelineResize != null && !timelineResize.isDone()) {
             timelineResize.abort();
+            timelineResize = null;
+        }
+        if (!animate) {
+            halfHeightAndRadii.set(cylinder.getHalfHeightAndRadiiReadonly());
+            return true;
         }
         timelineResize = new Timeline(halfHeightAndRadii);
         timelineResize.addPropertyToInterpolate("x",

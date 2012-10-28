@@ -75,17 +75,22 @@ public class RenderSphere extends RenderBase {
     }
 
     @Override
-    public boolean updateIfPossible(RegionBase region) {
+    public boolean updateIfPossible(RegionBase region, boolean animate) {
         if (!region.isRegionType(RegionSphere.class)) {
             return false;
         }
-        if (getOriginReadonly().distanceSquared(region.getOriginReadonly()) > SHIFT_MAX_SQUARED) {
+        if (animate && getOriginReadonly().distanceSquared(region.getOriginReadonly()) > SHIFT_MAX_SQUARED) {
             return false;
         }
         RegionSphere sphere = (RegionSphere) region;
-        animateShiftOrigin(sphere.getOriginReadonly());
+        animateShiftOrigin(sphere.getOriginReadonly(), animate);
         if (timelineResize != null && !timelineResize.isDone()) {
             timelineResize.abort();
+            timelineResize = null;
+        }
+        if (!animate) {
+            radii.set(sphere.getRadiiReadonly());
+            return true;
         }
         timelineResize = new Timeline(radii);
         timelineResize.addPropertyToInterpolate("x", radii.getX(), sphere.getRadiusX());

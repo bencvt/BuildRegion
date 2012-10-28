@@ -271,10 +271,12 @@ public abstract class RenderBase extends Shape {
      * Attempt to update this instance to match the specified region,
      * animating the change as appropriate.
      * 
+     * @param region the new region, will not be null
+     * @param animate if true animate smoothly, if false update instantly
      * @return false if the ShapeManager should just fade this instance out
      *         and create a new RenderBase instance instead.
      */
-    public abstract boolean updateIfPossible(RegionBase region);
+    public abstract boolean updateIfPossible(RegionBase region, boolean animate);
 
     /**
      * Adjust to the player moving around. For large or infinite shapes, this
@@ -301,10 +303,15 @@ public abstract class RenderBase extends Shape {
         this.alphaBase = Math.max(0.0, Math.min(alphaBase, 1.0));
     }
 
-    protected void animateShiftOrigin(ReadonlyVector3 newOrigin) {
+    /** @param animate if true animate smoothly, if false update instantly */
+    protected void animateShiftOrigin(ReadonlyVector3 newOrigin, boolean animate) {
         onUpdateOrigin(newOrigin);
         if (timelineShiftOrigin != null && !timelineShiftOrigin.isDone()) {
             timelineShiftOrigin.abort();
+            timelineShiftOrigin = null;
+        }
+        if (!animate) {
+            getOrigin().set(newOrigin);
         }
         timelineShiftOrigin = new Timeline(getOrigin());
         timelineShiftOrigin.addPropertyToInterpolate("x", getOrigin().getX(), newOrigin.getX());
@@ -314,15 +321,27 @@ public abstract class RenderBase extends Shape {
         timelineShiftOrigin.play();
     }
 
-    public void animateFadeIn() {
+    /** @param animate if true animate smoothly, if false update instantly */
+    public void animateFadeIn(boolean animate) {
         animateFadeStop();
-        setAlphaBase(0.0);
-        shapeScale.getScaleXYZ().set(ANIM_SCALE_FADE, ANIM_SCALE_FADE, ANIM_SCALE_FADE);
-        animateFadeStart(1.0, 1.0);
+        if (animate) {
+            setAlphaBase(0.0);
+            shapeScale.getScaleXYZ().set(ANIM_SCALE_FADE, ANIM_SCALE_FADE, ANIM_SCALE_FADE);
+            animateFadeStart(1.0, 1.0);
+        } else {
+            setAlphaBase(1.0);
+            shapeScale.getScaleXYZ().set(1.0, 1.0, 1.0);
+        }
     }
-    public void animateFadeOut() {
+    /** @param animate if true animate smoothly, if false update instantly */
+    public void animateFadeOut(boolean animate) {
         animateFadeStop();
-        animateFadeStart(0.0, ANIM_SCALE_FADE);
+        if (animate) {
+            animateFadeStart(0.0, ANIM_SCALE_FADE);
+        } else {
+            setAlphaBase(0.0);
+            shapeScale.getScaleXYZ().set(ANIM_SCALE_FADE, ANIM_SCALE_FADE, ANIM_SCALE_FADE);
+        }
     }
     private void animateFadeStop() {
         if (timelineFade != null && !timelineFade.isDone()) {

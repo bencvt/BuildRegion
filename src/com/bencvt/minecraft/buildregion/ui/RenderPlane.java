@@ -43,7 +43,7 @@ public class RenderPlane extends RenderBase {
     }
 
     @Override
-    public boolean updateIfPossible(RegionBase region) {
+    public boolean updateIfPossible(RegionBase region, boolean animate) {
         if (!region.isRegionType(RegionPlane.class)) {
             return false;
         }
@@ -51,10 +51,10 @@ public class RenderPlane extends RenderBase {
         if (axis != plane.getAxis()) {
             return false;
         }
-        if (Math.pow(getCoord() - plane.getCoord(), 2.0) > SHIFT_MAX_SQUARED) {
+        if (animate && Math.pow(getCoord() - plane.getCoord(), 2.0) > SHIFT_MAX_SQUARED) {
             return false;
         }
-        animateShiftOrigin(plane.getOriginReadonly());
+        animateShiftOrigin(plane.getOriginReadonly(), animate);
         return true;
     }
 

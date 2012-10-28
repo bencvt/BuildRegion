@@ -35,22 +35,22 @@ public class ShapeManager {
         prevShape = null;
     }
 
-    public void updateRegion(RegionBase region) {
+    public void updateRegion(RegionBase region, boolean animate) {
         if (region == null) {
-            removeShape();
+            removeShape(animate);
             return;
         }
-        if (mainShape != null && mainShape.updateIfPossible(region)) {
+        if (mainShape != null && mainShape.updateIfPossible(region, animate)) {
             return;
         }
-        removeShape();
+        removeShape(animate);
         mainShape = createShape(region);
         mainShape.setRenderMarkersNow(guiScreenActive);
         libShapeDraw.addShape(mainShape);
-        mainShape.animateFadeIn();
+        mainShape.animateFadeIn(animate);
     }
 
-    private void removeShape() {
+    private void removeShape(boolean animate) {
         if (mainShape == null) {
             return;
         }
@@ -59,7 +59,7 @@ public class ShapeManager {
         }
         prevShape = mainShape;
         mainShape = null;
-        prevShape.animateFadeOut();
+        prevShape.animateFadeOut(animate);
     }
 
     private RenderBase createShape(RegionBase region) {

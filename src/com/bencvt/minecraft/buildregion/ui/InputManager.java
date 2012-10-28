@@ -123,7 +123,7 @@ public class InputManager {
             long now = System.currentTimeMillis();
             if (now > lastMouseEvent + MOUSE_EVENT_INTERVAL) {
                 lastMouseEvent = now;
-                controller.cmdClear();
+                controller.cmdClear(true);
             }
         } else if (MOUSE_MOD_RIGHT_CLICK_SETS && Mouse.isButtonDown(1) && isMouseModKeyDown()) {
             long now = System.currentTimeMillis();

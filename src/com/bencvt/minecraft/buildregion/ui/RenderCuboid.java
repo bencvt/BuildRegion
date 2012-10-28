@@ -165,17 +165,23 @@ public class RenderCuboid extends RenderBase {
     }
 
     @Override
-    public boolean updateIfPossible(RegionBase region) {
+    public boolean updateIfPossible(RegionBase region, boolean animate) {
         if (!region.isRegionType(RegionCuboid.class)) {
             return false;
         }
-        if (getOriginReadonly().distanceSquared(region.getOriginReadonly()) > SHIFT_MAX_SQUARED) {
+        if (animate && getOriginReadonly().distanceSquared(region.getOriginReadonly()) > SHIFT_MAX_SQUARED) {
             return false;
         }
         RegionCuboid cuboid = (RegionCuboid) region;
-        animateShiftOrigin(region.getOriginReadonly());
+        animateShiftOrigin(region.getOriginReadonly(), animate);
         if (timelineShiftCorners != null && !timelineShiftCorners.isDone()) {
             timelineShiftCorners.abort();
+            timelineShiftCorners = null;
+        }
+        if (!animate) {
+            lower.set(cuboid.getLowerCornerReadonly());
+            upper.set(cuboid.getUpperCornerReadonly());
+            return true;
         }
         timelineShiftCorners = new Timeline(this);
         timelineShiftCorners.addPropertyToInterpolate(Timeline.property("x")

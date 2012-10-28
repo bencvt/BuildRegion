@@ -147,7 +147,7 @@ public class GuiBuildRegion extends GuiBaseScreen {
         } else {
             inputRegionType.setSelectedValue(RegionType.NONE, false);
         }
-        readRegionValues();
+        importRegionValues();
         updateControlProperties();
         groupCylinderRadii.lockIfAllEqual();
         groupSphereRadii.lockIfAllEqual();
@@ -223,7 +223,7 @@ public class GuiBuildRegion extends GuiBaseScreen {
         // TODO: add footer with buttons ("OK", "Usage", "Undo" (gray out initially))
     }
 
-    private void readRegionValues() {
+    private void importRegionValues() {
         inputPlaneAxis.setSelectedValue(regionFactory.getPlane().getAxis(), false);
         inputPlaneCoord.setValue(regionFactory.getPlane().getCoord());
 
@@ -250,7 +250,7 @@ public class GuiBuildRegion extends GuiBaseScreen {
         inputSphereRadiusZ.setValue(regionFactory.getSphere().getRadiusZ());
     }
 
-    private void writeRegionValues() {
+    private void exportRegionValues() {
         regionFactory.getPlane().setAxis(inputPlaneAxis.getSelectedValue());
         regionFactory.getPlane().setCoord(inputPlaneCoord.getValue());
 
@@ -332,17 +332,18 @@ public class GuiBuildRegion extends GuiBaseScreen {
 
     @Override
     protected void actionPerformed(GuiButton guiButton) {
-        writeRegionValues();
+        exportRegionValues();
         updateControlProperties();
         if (guiButton == inputBuildMode) {
             controller.cmdMode(inputBuildMode.getSelectedValue());
         } else {
-            controller.cmdSet(regionFactory.getRegionAs(inputRegionType.getSelectedValue()));
+            controller.cmdSet(regionFactory.getRegionAs(inputRegionType.getSelectedValue()), true);
         }
     }
 
     @Override
     public void rapidUpdate(GuiBaseControl control) {
-        // TODO
+        exportRegionValues();
+        controller.cmdSet(regionFactory.getRegionAs(inputRegionType.getSelectedValue()), false);
     }
 }

@@ -77,7 +77,7 @@ public class mod_BuildRegion extends BaseMod implements LSDEventListener, Player
         if (event.isNewServer()) {
             controller.cmdReset();
         } else {
-            controller.cmdClear();
+            controller.cmdClear(false);
         }
         PlayerControllerHooks.installHooks();
         if (updateCheck == null) {
