@@ -313,34 +313,7 @@ public class GuiBuildRegion extends GuiScreen {
 
         // Draw border on top of background.
         if (BORDER_THICKNESS > 0) {
-            // Draw top border, including corners.
-            drawRect(
-                    xLeft,
-                    yTop,
-                    xRight,
-                    yTop + BORDER_THICKNESS,
-                    BORDER_ARGB);
-            // Draw bottom border, including corners.
-            drawRect(
-                    xLeft,
-                    yBottom - BORDER_THICKNESS,
-                    xRight,
-                    yBottom,
-                    BORDER_ARGB);
-            // Draw left border, excluding corners.
-            drawRect(
-                    xLeft,
-                    yTop + BORDER_THICKNESS,
-                    xLeft + BORDER_THICKNESS,
-                    yBottom - BORDER_THICKNESS,
-                    BORDER_ARGB);
-            // Draw right border, excluding corners.
-            drawRect(
-                    xRight - BORDER_THICKNESS,
-                    yTop + BORDER_THICKNESS,
-                    xRight,
-                    yBottom - BORDER_THICKNESS,
-                    BORDER_ARGB);
+            GuiButtonMoveable.drawRectBorder(xLeft, yTop, xRight, yBottom, BORDER_ARGB, BORDER_THICKNESS);
         }
 
         // Defer control rendering to parent class.
