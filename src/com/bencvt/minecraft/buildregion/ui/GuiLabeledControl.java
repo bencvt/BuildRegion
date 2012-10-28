@@ -7,7 +7,8 @@ import net.minecraft.src.FontRenderer;
 public abstract class GuiLabeledControl extends GuiButtonMoveable {
     public static final int LABEL_SPACING = 4;
     public static final int LABEL_ARGB             = Color.LIGHT_GRAY.getARGB();
-    public static final int CONTROL_NORMAL_ARGB    = Color.WHITE.getARGB();
+    public static final int CONTROL_ENABLED_ARGB   = Color.WHITE.getARGB();
+    public static final int CONTROL_DISABLED_ARGB  = Color.DARK_GRAY.getARGB();
     public static final int CONTROL_MOUSEOVER_ARGB = Color.WHITE.getARGB();
     public static final int ROW_MOUSEOVER_ARGB     = Color.LIGHT_GRAY.copy().setAlpha(1.0/8.0).getARGB();
 

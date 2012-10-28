@@ -169,7 +169,7 @@ public class GuiEnumSelect<T extends Enum> extends GuiLabeledControl {
             } else {
                 fontRenderer.drawString(option.text,
                         xOffset + option.xBegin + PAD_LEFT, yPosition + PAD_TOP,
-                        CONTROL_NORMAL_ARGB);
+                        CONTROL_ENABLED_ARGB);
             }
         }
     }

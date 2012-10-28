@@ -35,7 +35,7 @@ public class GuiBuildRegion extends GuiScreen {
     private static final RegionType LONGEST_SUBTABLE = RegionType.CYLINDER; // for calculating window height
 
     private final Controller controller;
-    private final GuiEmptyRow                 emptyRow;
+    private final GuiEmptyRow                 rowSpacer;
     private final GuiEnumSelect<BuildMode>    inputBuildMode;
     private final GuiEnumSelect<RegionType>   inputRegionType;
     private final GuiHLine                    hLine;
@@ -52,11 +52,13 @@ public class GuiBuildRegion extends GuiScreen {
     private final GuiInputDouble              inputCylinderOriginZ;
     private final GuiEnumSelect<Axis>         inputCylinderAxis;
     private final GuiInputDouble              inputCylinderHeight;
+    private final GuiInputDoubleGroup         groupCylinderRadii;
     private final GuiInputDouble              inputCylinderRadiusA;
     private final GuiInputDouble              inputCylinderRadiusB;
     private final GuiInputDouble              inputSphereOriginX;
     private final GuiInputDouble              inputSphereOriginY;
     private final GuiInputDouble              inputSphereOriginZ;
+    private final GuiInputDoubleGroup         groupSphereRadii;
     private final GuiInputDouble              inputSphereRadiusX;
     private final GuiInputDouble              inputSphereRadiusY;
     private final GuiInputDouble              inputSphereRadiusZ;
@@ -72,7 +74,7 @@ public class GuiBuildRegion extends GuiScreen {
         this.controller = controller;
 
         // Create all controls.
-        emptyRow = new GuiEmptyRow(fr);
+        rowSpacer = new GuiEmptyRow(fr, fr.FONT_HEIGHT + 3);
         inputBuildMode = new GuiEnumSelect<BuildMode>("build mode:", fr, BuildMode.values(), null);
         for (BuildMode mode : BuildMode.values()) {
             inputBuildMode.setOptionColor(mode, mode.colorVisible);
@@ -80,27 +82,29 @@ public class GuiBuildRegion extends GuiScreen {
         inputRegionType = new GuiEnumSelect<RegionType>("region type:", fr, RegionType.values(), SELECT_COLOR);
         hLine = new GuiHLine(fr, BORDER_THICKNESS, BORDER_COLOR);
         inputPlaneAxis = new GuiEnumSelect<Axis>("axis:", fr, Axis.values(), SELECT_COLOR);
-        inputPlaneCoord = new GuiInputDouble("? coordinate:", fr, Units.WHOLE, false);
-        inputCuboidLowerCornerX = new GuiInputDouble("corner x:", fr, Units.WHOLE, false);
-        inputCuboidLowerCornerY = new GuiInputDouble("corner y:", fr, Units.WHOLE, false);
-        inputCuboidLowerCornerZ = new GuiInputDouble("corner z:", fr, Units.WHOLE, false);
-        inputCuboidSizeX = new GuiInputDouble("width (x):", fr, Units.WHOLE, true);
-        inputCuboidSizeY = new GuiInputDouble("height (y):", fr, Units.WHOLE, true);
-        inputCuboidSizeZ = new GuiInputDouble("length (z):", fr, Units.WHOLE, true);
+        inputPlaneCoord = new GuiInputDouble("? coordinate:", fr, Units.WHOLE, false, null);
+        inputCuboidLowerCornerX = new GuiInputDouble("corner x:", fr, Units.WHOLE, false, null);
+        inputCuboidLowerCornerY = new GuiInputDouble("corner y:", fr, Units.WHOLE, false, null);
+        inputCuboidLowerCornerZ = new GuiInputDouble("corner z:", fr, Units.WHOLE, false, null);
+        inputCuboidSizeX = new GuiInputDouble("width (x):", fr, Units.WHOLE, true, null);
+        inputCuboidSizeY = new GuiInputDouble("height (y):", fr, Units.WHOLE, true, null);
+        inputCuboidSizeZ = new GuiInputDouble("length (z):", fr, Units.WHOLE, true, null);
         // TODO: special value restriction... origin matching cylinder axis must be whole units; other two can be half units
-        inputCylinderOriginX = new GuiInputDouble("origin x:", fr, Units.WHOLE, false);
-        inputCylinderOriginY = new GuiInputDouble("origin y:", fr, Units.WHOLE, false);
-        inputCylinderOriginZ = new GuiInputDouble("origin z:", fr, Units.WHOLE, false);
+        inputCylinderOriginX = new GuiInputDouble("origin x:", fr, Units.WHOLE, false, null);
+        inputCylinderOriginY = new GuiInputDouble("origin y:", fr, Units.WHOLE, false, null);
+        inputCylinderOriginZ = new GuiInputDouble("origin z:", fr, Units.WHOLE, false, null);
         inputCylinderAxis = new GuiEnumSelect<Axis>("axis:", fr, Axis.values(), SELECT_COLOR);
-        inputCylinderHeight = new GuiInputDouble("height:", fr, Units.WHOLE, true);
-        inputCylinderRadiusA = new GuiInputDouble("? radius:", fr, Units.HALF, true);
-        inputCylinderRadiusB = new GuiInputDouble("? radius:", fr, Units.HALF, true);
-        inputSphereOriginX = new GuiInputDouble("origin x:", fr, Units.HALF, false);
-        inputSphereOriginY = new GuiInputDouble("origin y:", fr, Units.HALF, false);
-        inputSphereOriginZ = new GuiInputDouble("origin z:", fr, Units.HALF, false);
-        inputSphereRadiusX = new GuiInputDouble("x radius:", fr, Units.HALF, true);
-        inputSphereRadiusY = new GuiInputDouble("y radius:", fr, Units.HALF, true);
-        inputSphereRadiusZ = new GuiInputDouble("z radius:", fr, Units.HALF, true);
+        inputCylinderHeight = new GuiInputDouble("height:", fr, Units.WHOLE, true, null);
+        groupCylinderRadii = new GuiInputDoubleGroup();
+        inputCylinderRadiusA = new GuiInputDouble("? radius:", fr, Units.HALF, true, groupCylinderRadii);
+        inputCylinderRadiusB = new GuiInputDouble("? radius:", fr, Units.HALF, true, groupCylinderRadii);
+        inputSphereOriginX = new GuiInputDouble("origin x:", fr, Units.HALF, false, null);
+        inputSphereOriginY = new GuiInputDouble("origin y:", fr, Units.HALF, false, null);
+        inputSphereOriginZ = new GuiInputDouble("origin z:", fr, Units.HALF, false, null);
+        groupSphereRadii = new GuiInputDoubleGroup();
+        inputSphereRadiusX = new GuiInputDouble("x radius:", fr, Units.HALF, true, groupSphereRadii);
+        inputSphereRadiusY = new GuiInputDouble("y radius:", fr, Units.HALF, true, groupSphereRadii);
+        inputSphereRadiusZ = new GuiInputDouble("z radius:", fr, Units.HALF, true, groupSphereRadii);
 
         // Add each control to the appropriate list.
         controlsByRegionType = new HashMap<RegionType, ArrayList<GuiLabeledControl>>();
@@ -110,14 +114,12 @@ public class GuiBuildRegion extends GuiScreen {
         controlsByRegionType.get(RegionType.NONE).add(inputBuildMode);
         controlsByRegionType.get(RegionType.NONE).add(inputRegionType);
         controlsByRegionType.get(RegionType.NONE).add(hLine);
-        controlsByRegionType.get(RegionType.PLANE).add(emptyRow);
-        controlsByRegionType.get(RegionType.PLANE).add(emptyRow);
-        controlsByRegionType.get(RegionType.PLANE).add(inputPlaneCoord);
         controlsByRegionType.get(RegionType.PLANE).add(inputPlaneAxis);
+        controlsByRegionType.get(RegionType.PLANE).add(inputPlaneCoord);
         controlsByRegionType.get(RegionType.CUBOID).add(inputCuboidLowerCornerX);
         controlsByRegionType.get(RegionType.CUBOID).add(inputCuboidLowerCornerY);
         controlsByRegionType.get(RegionType.CUBOID).add(inputCuboidLowerCornerZ);
-        controlsByRegionType.get(RegionType.PLANE).add(emptyRow);
+        controlsByRegionType.get(RegionType.CUBOID).add(rowSpacer);
         controlsByRegionType.get(RegionType.CUBOID).add(inputCuboidSizeX);
         controlsByRegionType.get(RegionType.CUBOID).add(inputCuboidSizeY);
         controlsByRegionType.get(RegionType.CUBOID).add(inputCuboidSizeZ);
@@ -131,7 +133,7 @@ public class GuiBuildRegion extends GuiScreen {
         controlsByRegionType.get(RegionType.SPHERE).add(inputSphereOriginX);
         controlsByRegionType.get(RegionType.SPHERE).add(inputSphereOriginY);
         controlsByRegionType.get(RegionType.SPHERE).add(inputSphereOriginZ);
-        controlsByRegionType.get(RegionType.SPHERE).add(emptyRow);
+        controlsByRegionType.get(RegionType.SPHERE).add(rowSpacer);
         controlsByRegionType.get(RegionType.SPHERE).add(inputSphereRadiusX);
         controlsByRegionType.get(RegionType.SPHERE).add(inputSphereRadiusY);
         controlsByRegionType.get(RegionType.SPHERE).add(inputSphereRadiusZ);
@@ -147,6 +149,8 @@ public class GuiBuildRegion extends GuiScreen {
         }
         readRegionValues();
         updateControlProperties();
+        groupCylinderRadii.lockIfAllEqual();
+        groupSphereRadii.lockIfAllEqual();
 
         // Defer positioning and width adjustments until initGui().
     }
@@ -318,6 +322,13 @@ public class GuiBuildRegion extends GuiScreen {
 
         // Defer control rendering to parent class.
         super.drawScreen(xMouse, yMouse, partialTick);
+
+        // Except for control groups, we do that.
+        if (inputRegionType.getSelectedValue() == RegionType.CYLINDER) {
+            groupCylinderRadii.draw();
+        } else if (inputRegionType.getSelectedValue() == RegionType.SPHERE) {
+            groupSphereRadii.draw();
+        }
     }
 
     @Override
