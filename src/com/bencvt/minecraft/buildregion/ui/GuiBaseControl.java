@@ -31,16 +31,25 @@ public abstract class GuiBaseControl extends GuiButton {
     public final String getText() {
         return displayString;
     }
-    public final void setText(String text) {
+    public final GuiBaseControl setText(String text) {
         displayString = text;
+        return this;
     }
     
     public final int getWidth() {
         return width;
     }
+    public final GuiBaseControl setWidth(int width) {
+        this.width = width;
+        return this;
+    }
 
     public final int getHeight() {
         return height;
+    }
+    public final GuiBaseControl setHeight(int height) {
+        this.height = height;
+        return this;
     }
 
     public final GuiBaseControl position(int xPosition, int yPosition) {

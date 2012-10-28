@@ -3,9 +3,9 @@ package com.bencvt.minecraft.buildregion.ui;
 import java.util.HashSet;
 
 public class GuiInputDoubleGroup {
-    public final static int UNLOCKED_ARGB = GuiInputDouble.BUTTON_ENABLED_ARGB;
-    public final static int LOCKED_ARGB = GuiInputDouble.BUTTON_LOCKED_ARGB;
-    public final static int WIDTH = 5;
+    public static final int UNLOCKED_ARGB = GuiInputDouble.BUTTON_ENABLED_ARGB;
+    public static final int LOCKED_ARGB = GuiInputDouble.BUTTON_LOCKED_ARGB;
+    public static final int WIDTH = 5;
 
     private final HashSet<GuiInputDouble> fields = new HashSet<GuiInputDouble>();
     private boolean locked;

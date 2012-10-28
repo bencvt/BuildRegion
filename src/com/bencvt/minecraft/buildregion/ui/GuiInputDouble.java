@@ -10,7 +10,7 @@ public class GuiInputDouble extends GuiLabeledControl {
     public static final int PAD_BOTTOM = 1;
 
     public static final int XBEGIN_TEXT   = 0;
-    public static final int XEND_TEXT     = XBEGIN_TEXT + 44; // == fontRenderer.getStringWidth("-99999.5")
+    public static final int XEND_TEXT     = XBEGIN_TEXT + 32;
     public static final int XBEGIN_MINUS  = XEND_TEXT + 2;
     public static final int XEND_MINUS    = XBEGIN_MINUS + 11;
     public static final int XBEGIN_PLUS   = XEND_MINUS + 2;
