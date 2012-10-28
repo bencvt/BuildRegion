@@ -2,9 +2,8 @@ package com.bencvt.minecraft.buildregion.ui;
 
 import libshapedraw.primitive.Color;
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.FontRenderer;
 
-public abstract class GuiLabeledControl extends GuiButtonMoveable {
+public abstract class GuiLabeledControl extends GuiBaseControl {
     public static final int LABEL_SPACING = 4;
     public static final int LABEL_ARGB             = Color.LIGHT_GRAY.getARGB();
     public static final int CONTROL_ENABLED_ARGB   = Color.WHITE.getARGB();
@@ -12,44 +11,42 @@ public abstract class GuiLabeledControl extends GuiButtonMoveable {
     public static final int CONTROL_MOUSEOVER_ARGB = Color.WHITE.getARGB();
     public static final int ROW_MOUSEOVER_ARGB     = Color.LIGHT_GRAY.copy().setAlpha(1.0/8.0).getARGB();
 
-    protected final FontRenderer fontRenderer;
     private int labelWidth;
     private int controlWidth;
 
-    public GuiLabeledControl(String displayString, FontRenderer fontRenderer) {
-        super(displayString);
-        this.fontRenderer = fontRenderer;
-        setLabelWidth(fontRenderer.getStringWidth(displayString));
-        height = fontRenderer.FONT_HEIGHT;
+    protected GuiLabeledControl(GuiBaseScreen parent, String text) {
+        super(parent, text);
+        setLabelWidth(parent.getFontRenderer().getStringWidth(displayString));
+        height = parent.getFontRenderer().FONT_HEIGHT;
     }
 
     protected int getLabelYOffset() {
         return 0;
     }
 
-    public int getLabelWidth() {
+    public final int getLabelWidth() {
         return labelWidth;
     }
-    public void setLabelWidth(int labelWidth) {
+    public final void setLabelWidth(int labelWidth) {
         this.labelWidth = labelWidth;
         width = labelWidth + LABEL_SPACING + controlWidth;
     }
 
-    public int getControlWidth() {
+    public final int getControlWidth() {
         return controlWidth;
     }
-    public void setControlWidth(int controlWidth) {
+    public final void setControlWidth(int controlWidth) {
         this.controlWidth = controlWidth;
         width = labelWidth + LABEL_SPACING + controlWidth;
     }
 
-    protected int getControlXOffset() {
-        return xPosition + getLabelWidth() + LABEL_SPACING;
+    protected final int getControlXOffset() {
+        return xPosition + labelWidth + LABEL_SPACING;
     }
 
     @Override
     public void drawButton(Minecraft minecraft, int xMouse, int yMouse) {
-        if (!drawButton) {
+        if (!isVisible()) {
             return;
         }
 
@@ -65,8 +62,8 @@ public abstract class GuiLabeledControl extends GuiButtonMoveable {
 
         // Draw label text.
         minecraft.fontRenderer.drawString(
-                displayString,
-                xPosition + getLabelWidth() - fontRenderer.getStringWidth(displayString),
+                getText(),
+                xPosition + labelWidth - parent.getFontRenderer().getStringWidth(getText()),
                 yPosition + getLabelYOffset(),
                 LABEL_ARGB);
 

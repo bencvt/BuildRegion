@@ -6,7 +6,6 @@ import libshapedraw.animation.trident.Timeline;
 import libshapedraw.primitive.Color;
 import libshapedraw.primitive.ReadonlyColor;
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.FontRenderer;
 
 /**
  * A multi-select Minecraft GUI control.
@@ -49,8 +48,8 @@ public class GuiEnumSelect<T extends Enum> extends GuiLabeledControl {
     private boolean allowSetNull;
     private T selectedValue;
 
-    public GuiEnumSelect(String displayString, FontRenderer fontRenderer, T[] values, ReadonlyColor color) {
-        super(displayString, fontRenderer);
+    public GuiEnumSelect(GuiBaseScreen parent, String text, T[] values, ReadonlyColor color) {
+        super(parent, text);
         options = new LinkedHashMap<T, Option>();
         int controlWidth = 0;
         for (T value : values) {
@@ -65,13 +64,13 @@ public class GuiEnumSelect<T extends Enum> extends GuiLabeledControl {
                 controlWidth += OPTION_SPACING;
             }
             option.xBegin = controlWidth;
-            controlWidth += PAD_LEFT + fontRenderer.getStringWidth(option.text) + PAD_RIGHT;
+            controlWidth += PAD_LEFT + parent.getFontRenderer().getStringWidth(option.text) + PAD_RIGHT;
             option.xEnd = controlWidth;
             options.put(value, option);
         }
         selectedValue = null;
         setControlWidth(controlWidth); // also sets width
-        height = PAD_TOP + fontRenderer.FONT_HEIGHT + PAD_BOTTOM;
+        height = PAD_TOP + parent.getFontRenderer().FONT_HEIGHT + PAD_BOTTOM;
     }
 
     private Option getOptionForValue(T value) {
@@ -163,11 +162,11 @@ public class GuiEnumSelect<T extends Enum> extends GuiLabeledControl {
 
             // Draw foreground text.
             if (option.isMouseOver(xMouse, yMouse)) {
-                fontRenderer.drawString(option.textMouseOver,
+                parent.getFontRenderer().drawString(option.textMouseOver,
                         xOffset + option.xBegin + PAD_LEFT, yPosition + PAD_TOP,
                         CONTROL_MOUSEOVER_ARGB);
             } else {
-                fontRenderer.drawString(option.text,
+                parent.getFontRenderer().drawString(option.text,
                         xOffset + option.xBegin + PAD_LEFT, yPosition + PAD_TOP,
                         CONTROL_ENABLED_ARGB);
             }

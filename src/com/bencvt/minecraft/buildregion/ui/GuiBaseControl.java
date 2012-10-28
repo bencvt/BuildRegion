@@ -2,27 +2,51 @@ package com.bencvt.minecraft.buildregion.ui;
 
 import net.minecraft.src.GuiButton;
 
-public abstract class GuiButtonMoveable extends GuiButton {
+public abstract class GuiBaseControl extends GuiButton {
     private static int topId;
 
-    public GuiButtonMoveable(String displayString) {
-        super(topId, 0, 0, 0, 0, displayString);
-        // caller is responsible for setting xPosition and yPosition
+    protected final GuiBaseScreen parent;
+
+    protected GuiBaseControl(GuiBaseScreen parent, String text) {
+        super(topId, 0, 0, 0, 0, text);
+        // caller is responsible for setting xPosition and yPosition using position()
         topId++;
+        this.parent = parent;
     }
 
-    public int getWidth() {
+    public final boolean isVisible() {
+        return drawButton;
+    }
+    public final void setVisible(boolean visible) {
+        drawButton = visible;
+    }
+
+    public final boolean isEnabled() {
+        return enabled;
+    }
+    public final void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public final String getText() {
+        return displayString;
+    }
+    public final void setText(String text) {
+        displayString = text;
+    }
+    
+    public final int getWidth() {
         return width;
     }
 
-    public int getHeight() {
+    public final int getHeight() {
         return height;
     }
 
-    public int position(int xPosition, int yPosition) {
+    public final GuiBaseControl position(int xPosition, int yPosition) {
         this.xPosition = xPosition;
         this.yPosition = yPosition;
-        return getHeight();
+        return this;
     }
 
     public static void drawRectBorder(int xLeft, int yTop, int xRight, int yBottom, int borderARGB, int borderThickness) {

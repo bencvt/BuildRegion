@@ -1,11 +1,9 @@
 package com.bencvt.minecraft.buildregion.ui;
 
 import libshapedraw.primitive.Color;
+import net.minecraft.client.Minecraft;
 
 import com.bencvt.minecraft.buildregion.region.Units;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.src.FontRenderer;
 
 public class GuiInputDouble extends GuiLabeledControl {
     public static final int PAD_TOP = 2;
@@ -29,18 +27,24 @@ public class GuiInputDouble extends GuiLabeledControl {
     public static final int BUTTON_LOCKED_ARGB = Color.DODGER_BLUE.getARGB();
     public static final int BUTTON_MOUSEOVERLOCKED_ARGB = Color.DODGER_BLUE.copy().blend(Color.LIGHT_GRAY, 0.25).getARGB();
 
+    public static final int SLIDER_LINE0_ARGB = Color.GRAY.copy().scaleAlpha(0.5).getARGB();
+    public static final int SLIDER_LINE1_ARGB = Color.DARK_GRAY.copy().scaleAlpha(0.5).getARGB();
+    public static final int SLIDER_HALF_WIDTH = 2;
+
     private double value;
     private final Units units;
     private final boolean positive;
     private final GuiInputDoubleGroup group;
+    private boolean dragging;
+    private double dragStartValue;
 
-    public GuiInputDouble(String displayString, FontRenderer fontRenderer, Units units, boolean positive, GuiInputDoubleGroup group) {
-        super(displayString, fontRenderer);
+    public GuiInputDouble(GuiBaseScreen parent, String text, Units units, boolean positive, GuiInputDoubleGroup group) {
+        super(parent, text);
         this.units = units;
         this.positive = positive;
         this.group = group == null ? null : group.register(this);
         setControlWidth(XBEGIN_SLIDER + MIN_SLIDER_WIDTH + R_XBEGIN_SLIDER); // also sets width
-        height = PAD_TOP + fontRenderer.FONT_HEIGHT + PAD_BOTTOM;
+        height = PAD_TOP + parent.getFontRenderer().FONT_HEIGHT + PAD_BOTTOM;
     }
 
     public double getValue() {
@@ -58,6 +62,13 @@ public class GuiInputDouble extends GuiLabeledControl {
         } else {
             this.value = units.clamp(value);
         }
+    }
+    private void setValueFromSlider(int xMouse) {
+        final int xMinSlider = getControlXOffset() + XBEGIN_SLIDER;
+        final int xMaxSlider = xPosition + width - R_XBEGIN_SLIDER;
+        final int xMidSlider = xMinSlider + (xMaxSlider - xMinSlider)/2;
+        // TODO: scaling factor
+        setValue(dragStartValue + units.atom*(xMouse - xMidSlider));
     }
 
     private boolean isMinusButtonEnabled() {
@@ -80,9 +91,9 @@ public class GuiInputDouble extends GuiLabeledControl {
 
         // Value as text.
         String valueString = units.d2s(getValue());
-        fontRenderer.drawString(
+        parent.getFontRenderer().drawString(
                 valueString,
-                xControlBegin + XEND_TEXT - XBEGIN_TEXT - fontRenderer.getStringWidth(valueString),
+                xControlBegin + XEND_TEXT - XBEGIN_TEXT - parent.getFontRenderer().getStringWidth(valueString),
                 yPosition + PAD_TOP,
                 CONTROL_ENABLED_ARGB);
 
@@ -99,12 +110,25 @@ public class GuiInputDouble extends GuiLabeledControl {
                 xControlBegin + XEND_PLUS, xControlBegin + XEND_PLUS);
 
         // Slider.
-        int y = yPosition + (height/2) - 2;
-        drawRect(xControlBegin + XBEGIN_SLIDER, y, xControlEnd - R_XBEGIN_SLIDER, y + 1,
-                Color.GRAY.copy().scaleAlpha(0.5).getARGB());
-        y += 1;
-        drawRect(xControlBegin + XBEGIN_SLIDER, y, xControlEnd - R_XBEGIN_SLIDER, y + 1,
-                Color.DARK_GRAY.copy().scaleAlpha(0.5).getARGB());
+        final int xMinSlider = xControlBegin + XBEGIN_SLIDER;
+        final int xMaxSlider = xControlEnd - R_XBEGIN_SLIDER;
+        final int xSlider;
+        if (dragging) {
+            setValueFromSlider(xMouse);
+            parent.rapidUpdate(this);
+            xSlider = Math.min(Math.max(xMinSlider + SLIDER_HALF_WIDTH, xMouse), xMaxSlider - SLIDER_HALF_WIDTH);
+        } else {
+            xSlider = xMinSlider + (xMaxSlider - xMinSlider)/2;
+        }
+        int ySlider = yPosition + (height/2);
+        drawRect(xMinSlider, ySlider - 1, xMaxSlider, ySlider,     SLIDER_LINE0_ARGB);
+        drawRect(xMinSlider, ySlider,     xMaxSlider, ySlider + 1, SLIDER_LINE1_ARGB);
+        drawRect(
+                xSlider - SLIDER_HALF_WIDTH,
+                yPosition,
+                xSlider + SLIDER_HALF_WIDTH,
+                yPosition + height - 1,
+                Color.PINK.getARGB());
 
         // Group button.
         if (group != null) {
@@ -128,9 +152,9 @@ public class GuiInputDouble extends GuiLabeledControl {
             }
         }
         drawRect(xBegin, yPosition, xEnd, yPosition + height - 1, buttonARGB);
-        fontRenderer.drawString(
+        parent.getFontRenderer().drawString(
                 text,
-                xBegin + (xEnd - xBegin - fontRenderer.getStringWidth(text))/2 + 1,
+                xBegin + (xEnd - xBegin - parent.getFontRenderer().getStringWidth(text))/2 + 1,
                 yPosition + PAD_TOP,
                 enabled ? CONTROL_ENABLED_ARGB : CONTROL_DISABLED_ARGB);
     }
@@ -152,7 +176,9 @@ public class GuiInputDouble extends GuiLabeledControl {
             setValue(getValue() + units.atom);
             return true;
         } else if (xL >= XBEGIN_SLIDER && xR >= R_XBEGIN_SLIDER) {
-            System.out.println("you clicked slider");//TODO
+            dragging = true;
+            dragStartValue = getValue();
+            setValueFromSlider(xMouse);
             return true;
         } else if (group != null && xR <= R_XEND_GROUP) {
             if (group.isLocked()) {
@@ -164,5 +190,10 @@ public class GuiInputDouble extends GuiLabeledControl {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public void mouseReleased(int xMouse, int yMouse) {
+        dragging = false;
     }
 }

@@ -1,14 +1,12 @@
 package com.bencvt.minecraft.buildregion.ui;
 
 import libshapedraw.primitive.ReadonlyColor;
-import net.minecraft.src.FontRenderer;
 
 public class GuiHLine extends GuiLabeledControl {
-
     private final ReadonlyColor color;
 
-    public GuiHLine(FontRenderer fontRenderer, int height, ReadonlyColor color) {
-        super("", fontRenderer);
+    public GuiHLine(GuiBaseScreen parent, int height, ReadonlyColor color) {
+        super(parent, "");
         this.height = height;
         this.color = color;
     }
