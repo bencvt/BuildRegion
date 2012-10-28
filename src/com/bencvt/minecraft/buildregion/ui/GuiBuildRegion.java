@@ -73,6 +73,7 @@ public class GuiBuildRegion extends GuiBaseScreen {
     public GuiBuildRegion(Controller controller, FontRenderer fontRenderer) {
         this.controller = controller;
         this.fontRenderer = fontRenderer;
+        setDisableAutoClickSound(true);
 
         // Create all controls.
         rowSpacer = new GuiEmptyRow(this, fontRenderer.FONT_HEIGHT + 3);
