@@ -46,7 +46,7 @@ public class GuiInputDouble extends GuiLabeledControl {
     private final boolean positive;
     private final GuiInputDoubleGroup group;
     private boolean dragging;
-    private double dragStartValue;
+    private double dragBaseValue;
 
     public GuiInputDouble(GuiBaseScreen parent, String text, Units units, boolean positive, GuiInputDoubleGroup group) {
         super(parent, text);
@@ -77,7 +77,7 @@ public class GuiInputDouble extends GuiLabeledControl {
         final int xMinSlider = getControlXOffset() + XBEGIN_SLIDER;
         final int xMaxSlider = xPosition + width - R_XBEGIN_SLIDER;
         final int xMidSlider = xMinSlider + (xMaxSlider - xMinSlider)/2;
-        setValue(dragStartValue + units.atom*(xMouse - xMidSlider)*SLIDER_SENSITIVITY);
+        setValue(dragBaseValue + units.atom*(xMouse - xMidSlider)*SLIDER_SENSITIVITY);
     }
 
     private boolean isMinusButtonEnabled() {
@@ -99,7 +99,7 @@ public class GuiInputDouble extends GuiLabeledControl {
         final int xControlEnd = xPosition + width;
 
         // Value as text.
-        String valueString = units.d2s(getValue());
+        String valueString = units.d2s(value);
         parent.getFontRenderer().drawString(
                 valueString,
                 xControlBegin + XEND_TEXT - XBEGIN_TEXT - parent.getFontRenderer().getStringWidth(valueString),
@@ -160,8 +160,11 @@ public class GuiInputDouble extends GuiLabeledControl {
         // Update value if we're actively dragging.
         final int x;
         if (dragging) {
+            final double prev = value;
             setValueFromSlider(xMouse);
-            parent.rapidUpdate(this);
+            if (value != prev) {
+                parent.controlUpdate(this, true);
+            }
             x = Math.min(Math.max(xMin + SLIDER_HALF_WIDTH, xMouse), xMax - SLIDER_HALF_WIDTH);
         } else {
             x = xMin + (xMax - xMin)/2;
@@ -210,14 +213,14 @@ public class GuiInputDouble extends GuiLabeledControl {
             System.out.println("you clicked text");//TODO: turn into text input box
             return true;
         } else if (isMinusButtonEnabled() && xL >= XBEGIN_MINUS && xL <= XEND_MINUS) {
-            setValue(getValue() - units.atom);
+            setValue(value - units.atom);
             return true;
         } else if (isPlusButtonEnabled() && xL >= XBEGIN_PLUS && xL <= XEND_PLUS) {
-            setValue(getValue() + units.atom);
+            setValue(value + units.atom);
             return true;
         } else if (xL >= XBEGIN_SLIDER && xR >= R_XBEGIN_SLIDER) {
             dragging = true;
-            dragStartValue = getValue();
+            dragBaseValue = value;
             setValueFromSlider(xMouse);
             return true;
         } else if (group != null && xR <= R_XEND_GROUP) {

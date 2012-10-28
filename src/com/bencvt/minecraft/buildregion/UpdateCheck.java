@@ -7,9 +7,6 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.src.Path;
-
 /**
  * Check the remote website for updates.
  * <p>

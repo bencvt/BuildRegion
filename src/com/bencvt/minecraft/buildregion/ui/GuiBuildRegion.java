@@ -217,7 +217,7 @@ public class GuiBuildRegion extends GuiBaseScreen {
         // Notify controller that the GUI is open.
         controller.toggleGui(true);
 
-        // TODO: possibly allow the user to look around by holding right-click and moving around
+        // TODO: possibly allow the user to look around by holding right-click and moving around, or auto-follow the origin
         // TODO: allow the keybinds to move regions around to still work
         // TODO: pressing B or Esc is the same as pressing the "OK" button
         // TODO: buttons to rotate the region around its origin (for planes, fill in using player coords)
@@ -346,8 +346,8 @@ public class GuiBuildRegion extends GuiBaseScreen {
     }
 
     @Override
-    public void rapidUpdate(GuiBaseControl control) {
+    public void controlUpdate(GuiBaseControl control, boolean rapid) {
         exportRegionValues();
-        controller.cmdSet(regionFactory.getRegionAs(inputRegionType.getSelectedValue()), false);
+        controller.cmdSet(regionFactory.getRegionAs(inputRegionType.getSelectedValue()), !rapid);
     }
 }

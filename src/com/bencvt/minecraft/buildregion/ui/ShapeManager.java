@@ -2,10 +2,8 @@ package com.bencvt.minecraft.buildregion.ui;
 
 import libshapedraw.LibShapeDraw;
 import libshapedraw.primitive.ReadonlyVector3;
-import libshapedraw.primitive.Vector3;
 
 import com.bencvt.minecraft.buildregion.Controller;
-import com.bencvt.minecraft.buildregion.region.Axis;
 import com.bencvt.minecraft.buildregion.region.RegionBase;
 import com.bencvt.minecraft.buildregion.region.RegionCuboid;
 import com.bencvt.minecraft.buildregion.region.RegionCylinder;

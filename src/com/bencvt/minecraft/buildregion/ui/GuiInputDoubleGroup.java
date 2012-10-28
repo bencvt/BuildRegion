@@ -2,8 +2,6 @@ package com.bencvt.minecraft.buildregion.ui;
 
 import java.util.HashSet;
 
-import libshapedraw.primitive.Color;
-
 public class GuiInputDoubleGroup {
     public final static int UNLOCKED_ARGB = GuiInputDouble.BUTTON_ENABLED_ARGB;
     public final static int LOCKED_ARGB = GuiInputDouble.BUTTON_LOCKED_ARGB;

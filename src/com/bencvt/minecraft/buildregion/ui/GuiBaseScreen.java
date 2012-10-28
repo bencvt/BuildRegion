@@ -8,7 +8,16 @@ public abstract class GuiBaseScreen extends GuiScreen {
         return fontRenderer;
     }
 
-    public void rapidUpdate(GuiBaseControl control) {
+    /**
+     * When a control is clicked, its parent GuiScreen's actionPerformed method
+     * is automatically invoked. However this does not cover other ways that a
+     * control can be updated, such as dragging the mouse.
+     * 
+     * @param control the control being updated
+     * @param rapid if true the control is being rapidly updated and the screen
+     *              should expect subsequent updates within a few milliseconds
+     */
+    public void controlUpdate(GuiBaseControl control, boolean rapid) {
         // Do nothing. The child class can override.
     }
 

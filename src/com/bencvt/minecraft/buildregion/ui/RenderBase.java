@@ -8,7 +8,6 @@ import libshapedraw.primitive.ReadonlyVector3;
 import libshapedraw.primitive.Vector3;
 import libshapedraw.shape.Shape;
 import libshapedraw.transform.ShapeScale;
-import libshapedraw.transform.ShapeTranslate;
 
 import org.lwjgl.opengl.GL11;
 
