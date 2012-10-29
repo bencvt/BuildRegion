@@ -46,7 +46,7 @@ public class GuiInputDouble extends GuiLabeledControl {
     private final boolean positive;
     private final GuiInputDoubleGroup group;
     private boolean dragging;
-    private double dragBaseValue;
+    private Double dragBaseValue;
 
     public GuiInputDouble(GuiScreenBase parent, String text, Units units, boolean positive, GuiInputDoubleGroup group) {
         super(parent, text);
@@ -86,6 +86,19 @@ public class GuiInputDouble extends GuiLabeledControl {
 
     private boolean isPlusButtonEnabled() {
         return true;
+    }
+
+    private void setDragging(boolean dragging) {
+        this.dragging = dragging;
+        if (!dragging) {
+            dragBaseValue = null;
+        }
+        if (group != null) {
+            group.setDragging(dragging);
+        }
+    }
+    protected void setDraggingFromGroup(boolean dragging) {
+        this.dragging = dragging;
     }
 
     @Override
@@ -156,24 +169,29 @@ public class GuiInputDouble extends GuiLabeledControl {
     }
 
     private void drawAndUpdateSlider(int xMouse, int yMouse, int xMin, int xMax) {
-        // Determine where along the slider the vertical rectangle's center is.
-        // Update value if we're actively dragging.
-        final int x;
-        if (dragging) {
+        // Update the value we're actively dragging.
+        if (dragging && dragBaseValue != null) {
             final double prev = value;
             setValueFromSlider(xMouse);
             if (value != prev) {
                 parent.controlUpdate(this, true);
             }
-            x = Math.min(Math.max(xMin + SLIDER_HALF_WIDTH, xMouse), xMax - SLIDER_HALF_WIDTH);
-        } else {
-            x = xMin + (xMax - xMin)/2;
         }
+        // Else we're either not dragging, or this slider is mirroring another
+        // slider in its group.
 
         // Draw background horizontal line.
         final int y = yPosition + (height/2);
         drawRect(xMin, y - 1, xMax, y,     SLIDER_BGLINE0_ARGB);
         drawRect(xMin, y,     xMax, y + 1, SLIDER_BGLINE1_ARGB);
+
+        // Determine where along the slider the vertical rectangle's center is.
+        final int x;
+        if (dragging) {
+            x = Math.min(Math.max(xMin + SLIDER_HALF_WIDTH, xMouse), xMax - SLIDER_HALF_WIDTH);
+        } else {
+            x = xMin + (xMax - xMin)/2;
+        }
 
         // Draw vertical rectangle background.
         drawRect(
@@ -219,7 +237,7 @@ public class GuiInputDouble extends GuiLabeledControl {
             setValue(value + units.atom);
             return parent.muteNextClickSound();
         } else if (xL >= XBEGIN_SLIDER && xR >= R_XBEGIN_SLIDER) {
-            dragging = true;
+            setDragging(true);
             dragBaseValue = value;
             setValueFromSlider(xMouse);
             return parent.muteNextClickSound();
@@ -237,6 +255,6 @@ public class GuiInputDouble extends GuiLabeledControl {
 
     @Override
     public void mouseReleased(int xMouse, int yMouse) {
-        dragging = false;
+        setDragging(false);
     }
 }

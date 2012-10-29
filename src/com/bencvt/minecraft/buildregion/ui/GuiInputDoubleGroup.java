@@ -23,6 +23,14 @@ public class GuiInputDoubleGroup {
         }
     }
 
+    public void setDragging(boolean dragging) {
+        if (locked) {
+            for (GuiInputDouble field : fields) {
+                field.setDraggingFromGroup(dragging);
+            }
+        }
+    }
+
     public boolean isLocked() {
         return locked;
     }
