@@ -4,6 +4,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.src.FontRenderer;
 import net.minecraft.src.GuiScreen;
 
+import com.bencvt.minecraft.buildregion.lang.LocalizedString;
+
 /**
  * Abstract GuiScreen base class. Same as vanilla Minecraft's, plus various
  * utility methods:<ul>
@@ -106,5 +108,9 @@ public abstract class GuiScreenBase extends GuiScreen {
                 xRight,
                 yBottom - borderThickness,
                 borderARGB);
+    }
+
+    public static String i18n(String key, Object ... args) {
+        return LocalizedString.translate(key, args);
     }
 }

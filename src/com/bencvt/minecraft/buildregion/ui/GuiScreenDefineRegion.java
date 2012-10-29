@@ -77,37 +77,37 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
 
         // Create all row controls.
         rowSpacer = new GuiEmptyRow(this, fontRenderer.FONT_HEIGHT + 3);
-        inputBuildMode = new GuiSelectEnum<BuildMode>(this, "build mode:", BuildMode.values(), null);
+        inputBuildMode = new GuiSelectEnum<BuildMode>(this, i18n("label.buildmode"), BuildMode.values(), null);
         for (BuildMode mode : BuildMode.values()) {
             inputBuildMode.setOptionColor(mode, mode.colorVisible);
         }
-        inputRegionType = new GuiSelectEnum<RegionType>(this, "region type:", RegionType.values(), SELECT_COLOR);
+        inputRegionType = new GuiSelectEnum<RegionType>(this, i18n("label.regiontype"), RegionType.values(), SELECT_COLOR);
         hLine = new GuiHLine(this, BORDER_THICKNESS, BORDER_COLOR);
-        inputPlaneAxis = new GuiSelectEnum<Axis>(this, "axis:", Axis.values(), SELECT_COLOR);
-        inputPlaneCoord = new GuiInputNumber(this, "? coordinate:", Units.WHOLE, false, null);
-        inputCuboidLowerCornerX = new GuiInputNumber(this, "corner x:", Units.WHOLE, false, null);
-        inputCuboidLowerCornerY = new GuiInputNumber(this, "corner y:", Units.WHOLE, false, null);
-        inputCuboidLowerCornerZ = new GuiInputNumber(this, "corner z:", Units.WHOLE, false, null);
+        inputPlaneAxis = new GuiSelectEnum<Axis>(this, i18n("label.axis"), Axis.values(), SELECT_COLOR);
+        inputPlaneCoord = new GuiInputNumber(this, i18n("label.coord", "?"), Units.WHOLE, false, null);
+        inputCuboidLowerCornerX = new GuiInputNumber(this, i18n("label.corner", Axis.X), Units.WHOLE, false, null);
+        inputCuboidLowerCornerY = new GuiInputNumber(this, i18n("label.corner", Axis.Y), Units.WHOLE, false, null);
+        inputCuboidLowerCornerZ = new GuiInputNumber(this, i18n("label.corner", Axis.Z), Units.WHOLE, false, null);
         groupCuboidSizes = new GuiInputNumberGroup();
-        inputCuboidSizeX = new GuiInputNumber(this, "width (x):", Units.WHOLE, true, groupCuboidSizes);
-        inputCuboidSizeY = new GuiInputNumber(this, "height (y):", Units.WHOLE, true, groupCuboidSizes);
-        inputCuboidSizeZ = new GuiInputNumber(this, "length (z):", Units.WHOLE, true, groupCuboidSizes);
+        inputCuboidSizeX = new GuiInputNumber(this, i18n("label.size.x"), Units.WHOLE, true, groupCuboidSizes);
+        inputCuboidSizeY = new GuiInputNumber(this, i18n("label.size.y"), Units.WHOLE, true, groupCuboidSizes);
+        inputCuboidSizeZ = new GuiInputNumber(this, i18n("label.size.z"), Units.WHOLE, true, groupCuboidSizes);
         // TODO: special value restriction... origin matching cylinder axis must be whole units; other two can be half units
-        inputCylinderOriginX = new GuiInputNumber(this, "origin x:", Units.WHOLE, false, null);
-        inputCylinderOriginY = new GuiInputNumber(this, "origin y:", Units.WHOLE, false, null);
-        inputCylinderOriginZ = new GuiInputNumber(this, "origin z:", Units.WHOLE, false, null);
-        inputCylinderAxis = new GuiSelectEnum<Axis>(this, "axis:", Axis.values(), SELECT_COLOR);
-        inputCylinderHeight = new GuiInputNumber(this, "height:", Units.WHOLE, true, null);
+        inputCylinderOriginX = new GuiInputNumber(this, i18n("label.origin", Axis.X), Units.WHOLE, false, null);
+        inputCylinderOriginY = new GuiInputNumber(this, i18n("label.origin", Axis.Y), Units.WHOLE, false, null);
+        inputCylinderOriginZ = new GuiInputNumber(this, i18n("label.origin", Axis.Z), Units.WHOLE, false, null);
+        inputCylinderAxis = new GuiSelectEnum<Axis>(this, i18n("label.axis"), Axis.values(), SELECT_COLOR);
+        inputCylinderHeight = new GuiInputNumber(this, i18n("label.height"), Units.WHOLE, true, null);
         groupCylinderRadii = new GuiInputNumberGroup();
-        inputCylinderRadiusA = new GuiInputNumber(this, "? radius:", Units.HALF, true, groupCylinderRadii);
-        inputCylinderRadiusB = new GuiInputNumber(this, "? radius:", Units.HALF, true, groupCylinderRadii);
-        inputSphereOriginX = new GuiInputNumber(this, "origin x:", Units.HALF, false, null);
-        inputSphereOriginY = new GuiInputNumber(this, "origin y:", Units.HALF, false, null);
-        inputSphereOriginZ = new GuiInputNumber(this, "origin z:", Units.HALF, false, null);
+        inputCylinderRadiusA = new GuiInputNumber(this, i18n("label.radius", "?"), Units.HALF, true, groupCylinderRadii);
+        inputCylinderRadiusB = new GuiInputNumber(this, i18n("label.radius", "?"), Units.HALF, true, groupCylinderRadii);
+        inputSphereOriginX = new GuiInputNumber(this, i18n("label.origin", Axis.X), Units.HALF, false, null);
+        inputSphereOriginY = new GuiInputNumber(this, i18n("label.origin", Axis.Y), Units.HALF, false, null);
+        inputSphereOriginZ = new GuiInputNumber(this, i18n("label.origin", Axis.Z), Units.HALF, false, null);
         groupSphereRadii = new GuiInputNumberGroup();
-        inputSphereRadiusX = new GuiInputNumber(this, "x radius:", Units.HALF, true, groupSphereRadii);
-        inputSphereRadiusY = new GuiInputNumber(this, "y radius:", Units.HALF, true, groupSphereRadii);
-        inputSphereRadiusZ = new GuiInputNumber(this, "z radius:", Units.HALF, true, groupSphereRadii);
+        inputSphereRadiusX = new GuiInputNumber(this, i18n("label.radius", Axis.X), Units.HALF, true, groupSphereRadii);
+        inputSphereRadiusY = new GuiInputNumber(this, i18n("label.radius", Axis.Y), Units.HALF, true, groupSphereRadii);
+        inputSphereRadiusZ = new GuiInputNumber(this, i18n("label.radius", Axis.Z), Units.HALF, true, groupSphereRadii);
 
         // Add each row control to the appropriate list.
         rows = new HashMap<RegionType, ArrayList<GuiLabeledControl>>();
@@ -156,10 +156,10 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
         groupSphereRadii.lockIfAllEqual();
 
         // Create other (non-row) controls.
-        buttonHelp = new GuiStandardButton(this, "Help...");
-        buttonOptions = new GuiStandardButton(this, "Options...");
-        buttonReset = new GuiStandardButton(this, "Reset");
-        buttonDone = new GuiStandardButton(this, "Done");
+        buttonHelp = new GuiStandardButton(this, i18n("button.help"));
+        buttonOptions = new GuiStandardButton(this, i18n("button.options"));
+        buttonReset = new GuiStandardButton(this, i18n("button.reset"));
+        buttonDone = new GuiStandardButton(this, i18n("button.done"));
 
         // Defer positioning and width adjustments until initGui().
     }
@@ -326,9 +326,9 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
         }
 
         // Adjust dynamic label texts.
-        inputPlaneCoord.setText(regionFactory.getPlane().getAxis().toString().toLowerCase() + " coordinate:");
-        inputCylinderRadiusA.setText(regionFactory.getCylinder().getRadiusAxisA().toString().toLowerCase() + " radius:");
-        inputCylinderRadiusB.setText(regionFactory.getCylinder().getRadiusAxisB().toString().toLowerCase() + " radius:");
+        inputPlaneCoord.setText(i18n("label.coord", regionFactory.getPlane().getAxis()));
+        inputCylinderRadiusA.setText(i18n("label.radius", regionFactory.getCylinder().getRadiusAxisA()));
+        inputCylinderRadiusB.setText(i18n("label.radius", regionFactory.getCylinder().getRadiusAxisB()));
     }
 
     @Override

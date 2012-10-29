@@ -8,6 +8,7 @@ import libshapedraw.primitive.Vector3;
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.mod_BuildRegion;
 
+import com.bencvt.minecraft.buildregion.lang.LocalizedString;
 import com.bencvt.minecraft.buildregion.region.Direction3D;
 import com.bencvt.minecraft.buildregion.region.RegionBase;
 import com.bencvt.minecraft.buildregion.region.RelativeDirection3D;
@@ -61,7 +62,7 @@ public class Controller {
         prevRegion = curRegion;
         curRegion = null;
         shapeManager.updateRegion(curRegion, animate);
-        messageManager.info("build region unlocked");
+        messageManager.info(i18n("hud.clear"));
     }
 
     public void cmdSet(RegionBase newRegion, boolean animate) {
@@ -75,7 +76,7 @@ public class Controller {
 
         // Update UI.
         shapeManager.updateRegion(curRegion, animate);
-        messageManager.info("build region locked:\n" + curRegion);
+        messageManager.info(i18n("hud.set", curRegion));
         // TODO: option to keep curRegion visible in a corner of the screen at all times as part of the HUD
     }
 
@@ -120,20 +121,17 @@ public class Controller {
         // Update UI.
         shapeManager.updateRegion(curRegion, true);
         if (expand) {
-            messageManager.info("build region " +
-                    (amount > 0.0 ? "expanded:\n" : "contracted:\n") +
-                    curRegion);
+            String s = i18n("hud.resize." + (amount > 0.0 ? "expand" : "contract"));
+            messageManager.info(i18n("hud.resize", s, curRegion));
         } else {
-            messageManager.info("build region moved " +
-                    dir.toString().toLowerCase() + ":\n" + curRegion);
+            messageManager.info(i18n("hud.move", dir, curRegion));
         }
     }
 
     public void cmdMode(BuildMode newMode) {
         buildMode.setValue(newMode);
-        messageManager.info("build region mode: " +
-                newMode.toString().toLowerCase() +
-                "\npress " + inputManager.KEYBIND_MODE.getKeyName(true) + " for more options");
+        messageManager.info(i18n("hud.mode", newMode,
+                inputManager.KEYBIND_MODE.getKeyName(true)));
     }
 
     public void cmdModeNext() {
@@ -158,7 +156,7 @@ public class Controller {
     }
 
     public void notifyDenyClick() {
-        messageManager.info("misclick blocked by build region");
+        messageManager.info(i18n("hud.misclick"));
     }
 
     public void toggleGui(boolean isGuiScreenActive) {
@@ -211,6 +209,10 @@ public class Controller {
         throw new IllegalStateException("prevRegion should never be null");
     }
 
+    public String i18n(String key, Object ... args) {
+        return LocalizedString.translate(key, args);
+    }
+
     // ========
     // Internal helper methods
     // ========
@@ -227,7 +229,7 @@ public class Controller {
                     minecraft.thePlayer.rotationYaw,
                     minecraft.thePlayer.rotationPitch);
             if (dir == null) {
-                messageManager.error("ambiguous direction\nface north, south, east, west, up, or down");
+                messageManager.error(i18n("hud.ambiguous"));
                 return null;
             }
             return dir.getRelative(relDir);

@@ -4,7 +4,7 @@ import net.minecraft.client.Minecraft;
 
 public class GuiEmptyRow extends GuiLabeledControl {
     public GuiEmptyRow(GuiScreenBase parent, int height) {
-        super(parent, "");
+        super(parent, null);
         this.height = height;
     }
 

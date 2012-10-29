@@ -6,7 +6,7 @@ public class GuiHLine extends GuiLabeledControl {
     private final ReadonlyColor color;
 
     public GuiHLine(GuiScreenBase parent, int height, ReadonlyColor color) {
-        super(parent, "");
+        super(parent, null);
         this.height = height;
         this.color = color;
     }

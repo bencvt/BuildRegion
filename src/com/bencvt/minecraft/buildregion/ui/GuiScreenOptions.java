@@ -14,8 +14,8 @@ import net.minecraft.src.GuiControls;
  * @author bencvt
  */
 public class GuiScreenOptions extends GuiScreenBase {
-    private final GuiStandardButton buttonControls = new GuiStandardButton(this, "Controls...");
-    private final GuiStandardButton buttonDone = new GuiStandardButton(this, "Done");
+    private final GuiStandardButton buttonControls = new GuiStandardButton(this, i18n("button.controls"));
+    private final GuiStandardButton buttonDone = new GuiStandardButton(this, i18n("button.done"));
 
     public GuiScreenOptions(GuiScreenBase parentScreen) {
         super(parentScreen);

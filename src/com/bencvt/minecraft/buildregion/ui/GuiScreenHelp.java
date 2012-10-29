@@ -16,7 +16,7 @@ public class GuiScreenHelp extends GuiScreenBase {
     public final String title;
     public final String[] lines;
     public final int maxLineWidth;
-    private final GuiStandardButton buttonDone = new GuiStandardButton(this, "Done");
+    private final GuiStandardButton buttonDone = new GuiStandardButton(this, i18n("button.done"));
     private GuiSlot contents;
 
     public GuiScreenHelp(GuiScreenBase parentScreen, Controller controller) {

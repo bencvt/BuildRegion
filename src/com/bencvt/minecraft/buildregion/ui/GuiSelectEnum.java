@@ -7,6 +7,8 @@ import libshapedraw.primitive.Color;
 import libshapedraw.primitive.ReadonlyColor;
 import net.minecraft.client.Minecraft;
 
+import com.bencvt.minecraft.buildregion.lang.LocalizedString;
+
 /**
  * A multi-select Minecraft GUI control.
  * @param <T> an enum type
@@ -55,7 +57,7 @@ public class GuiSelectEnum<T extends Enum> extends GuiLabeledControl {
         for (T value : values) {
             Option option = new Option();
             option.value = value;
-            option.text = value.toString().toLowerCase();
+            option.text = LocalizedString.translate(value);
             option.textMouseOver = "\u00a7n" + option.text;
             option.color = color;
             option.setAlpha(ALPHA_OFF);

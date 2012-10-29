@@ -18,7 +18,7 @@ public abstract class GuiControlBase extends GuiButton {
     protected final GuiScreenBase parent;
 
     public GuiControlBase(GuiScreenBase parent, String text) {
-        super(topId, 0, 0, 0, 0, text);
+        super(topId, 0, 0, 0, 0, text == null ? "" : text);
         // Caller is responsible for setting xPosition and yPosition.
         // Derived class is responsible for setting width and height.
         topId++;

@@ -24,6 +24,7 @@ rm -rf META-INF
 
 # resources
 cp ../../src/minecraft/*.info .
+cp ../../src/minecraft/com/bencvt/minecraft/buildregion/lang/*.properties com/bencvt/minecraft/buildregion/lang/
 
 #jar cfv $JAR ./
 zip -r $JAR *

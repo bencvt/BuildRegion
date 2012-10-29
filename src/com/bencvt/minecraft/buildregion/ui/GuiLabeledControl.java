@@ -16,7 +16,7 @@ public abstract class GuiLabeledControl extends GuiControlBase {
 
     public GuiLabeledControl(GuiScreenBase parent, String text) {
         super(parent, text);
-        setLabelWidth(parent.getFontRenderer().getStringWidth(text));
+        setLabelWidth(parent.getFontRenderer().getStringWidth(getText()));
         height = parent.getFontRenderer().FONT_HEIGHT;
     }
 
