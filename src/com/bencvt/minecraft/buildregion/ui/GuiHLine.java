@@ -5,7 +5,7 @@ import libshapedraw.primitive.ReadonlyColor;
 public class GuiHLine extends GuiLabeledControl {
     private final ReadonlyColor color;
 
-    public GuiHLine(GuiBaseScreen parent, int height, ReadonlyColor color) {
+    public GuiHLine(GuiScreenBase parent, int height, ReadonlyColor color) {
         super(parent, "");
         this.height = height;
         this.color = color;

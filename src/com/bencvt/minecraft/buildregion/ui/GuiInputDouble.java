@@ -48,7 +48,7 @@ public class GuiInputDouble extends GuiLabeledControl {
     private boolean dragging;
     private double dragBaseValue;
 
-    public GuiInputDouble(GuiBaseScreen parent, String text, Units units, boolean positive, GuiInputDoubleGroup group) {
+    public GuiInputDouble(GuiScreenBase parent, String text, Units units, boolean positive, GuiInputDoubleGroup group) {
         super(parent, text);
         this.units = units;
         this.positive = positive;
@@ -193,7 +193,7 @@ public class GuiInputDouble extends GuiLabeledControl {
         } else {
             borderARGB = SLIDER_BORDER_NORMAL_ARGB;
         }
-        GuiBaseScreen.drawRectBorder(
+        GuiScreenBase.drawRectBorder(
                 x - SLIDER_HALF_WIDTH,
                 yPosition,
                 x + SLIDER_HALF_WIDTH,
@@ -211,25 +211,25 @@ public class GuiInputDouble extends GuiLabeledControl {
         final int xR = xPosition + width - xMouse;
         if (xL >= XBEGIN_TEXT && xL <= XEND_TEXT) {
             System.out.println("you clicked text");//TODO: turn into text input box
-            return true;
+            return parent.muteNextClickSound();
         } else if (isMinusButtonEnabled() && xL >= XBEGIN_MINUS && xL <= XEND_MINUS) {
             setValue(value - units.atom);
-            return true;
+            return parent.muteNextClickSound();
         } else if (isPlusButtonEnabled() && xL >= XBEGIN_PLUS && xL <= XEND_PLUS) {
             setValue(value + units.atom);
-            return true;
+            return parent.muteNextClickSound();
         } else if (xL >= XBEGIN_SLIDER && xR >= R_XBEGIN_SLIDER) {
             dragging = true;
             dragBaseValue = value;
             setValueFromSlider(xMouse);
-            return true;
+            return parent.muteNextClickSound();
         } else if (group != null && xR <= R_XEND_GROUP) {
             if (group.isLocked()) {
                 group.unlock();
             } else {
                 group.lock(value);
             }
-            return true;
+            return parent.muteNextClickSound();
         } else {
             return false;
         }

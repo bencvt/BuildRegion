@@ -48,7 +48,7 @@ public class GuiEnumSelect<T extends Enum> extends GuiLabeledControl {
     private boolean allowSetNull;
     private T selectedValue;
 
-    public GuiEnumSelect(GuiBaseScreen parent, String text, T[] values, ReadonlyColor color) {
+    public GuiEnumSelect(GuiScreenBase parent, String text, T[] values, ReadonlyColor color) {
         super(parent, text);
         options = new LinkedHashMap<T, Option>();
         int controlWidth = 0;

@@ -3,7 +3,7 @@ package com.bencvt.minecraft.buildregion.ui;
 import net.minecraft.client.Minecraft;
 
 public class GuiEmptyRow extends GuiLabeledControl {
-    public GuiEmptyRow(GuiBaseScreen parent, int height) {
+    public GuiEmptyRow(GuiScreenBase parent, int height) {
         super(parent, "");
         this.height = height;
     }

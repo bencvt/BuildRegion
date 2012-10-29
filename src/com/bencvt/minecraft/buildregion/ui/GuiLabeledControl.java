@@ -3,7 +3,7 @@ package com.bencvt.minecraft.buildregion.ui;
 import libshapedraw.primitive.Color;
 import net.minecraft.client.Minecraft;
 
-public abstract class GuiLabeledControl extends GuiBaseControl {
+public abstract class GuiLabeledControl extends GuiControlBase {
     public static final int LABEL_SPACING = 4;
     public static final int LABEL_ARGB             = Color.LIGHT_GRAY.getARGB();
     public static final int CONTROL_ENABLED_ARGB   = Color.WHITE.getARGB();
@@ -14,7 +14,7 @@ public abstract class GuiLabeledControl extends GuiBaseControl {
     private int labelWidth;
     private int controlWidth;
 
-    protected GuiLabeledControl(GuiBaseScreen parent, String text) {
+    public GuiLabeledControl(GuiScreenBase parent, String text) {
         super(parent, text);
         setLabelWidth(parent.getFontRenderer().getStringWidth(text));
         height = parent.getFontRenderer().FONT_HEIGHT;

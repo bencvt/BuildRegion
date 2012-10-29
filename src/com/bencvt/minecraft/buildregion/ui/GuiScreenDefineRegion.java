@@ -20,7 +20,7 @@ import com.bencvt.minecraft.buildregion.region.Units;
  * 
  * @author bencvt
  */
-public class GuiBuildRegion extends GuiBaseScreen {
+public class GuiScreenDefineRegion extends GuiScreenBase {
     public static final int ROW_SPACING = 2;
     public static final int PAD = 2;
     public static final int BORDER_THICKNESS = 1;
@@ -73,10 +73,9 @@ public class GuiBuildRegion extends GuiBaseScreen {
     private int windowWidth;
     private final RegionFactory regionFactory;
 
-    public GuiBuildRegion(Controller controller, FontRenderer fontRenderer) {
+    public GuiScreenDefineRegion(FontRenderer fontRenderer, Controller controller) {
+        super(fontRenderer);
         this.controller = controller;
-        this.fontRenderer = fontRenderer;
-        setDisableAutoClickSound(true);
 
         // Create all row controls.
         rowSpacer = new GuiEmptyRow(this, fontRenderer.FONT_HEIGHT + 3);
@@ -146,7 +145,7 @@ public class GuiBuildRegion extends GuiBaseScreen {
 
         // Populate the row controls' contents from the controller.
         regionFactory = new RegionFactory(controller.getPrototypeRegion());
-        // TODO: remember the current active Region for the "Undo" button
+        // TODO: remember the current active Region for the "Reset" button
         inputBuildMode.setSelectedValue(controller.getBuildMode().getValue(), false);
         if (controller.isRegionActive()) {
             inputRegionType.setSelectedValue(controller.getPrototypeRegion().getRegionType(), false);
@@ -373,7 +372,17 @@ public class GuiBuildRegion extends GuiBaseScreen {
     protected void actionPerformed(GuiButton guiButton) {
         exportRegionValues();
         updateControlProperties();
-        if (guiButton == inputBuildMode) {
+        if (guiButton == buttonHelp) {
+            mc.displayGuiScreen(new GuiScreenHelp(getFontRenderer()));
+        } else if (guiButton == buttonOptions) {
+            mc.displayGuiScreen(new GuiScreenOptions(getFontRenderer()));
+        } else if (guiButton == buttonReset) {
+            // TODO reset region to whatever it was when the user opened the gui
+            //regionFactory.reset();
+            importRegionValues();
+        } else if (guiButton == buttonDone) {
+            mc.displayGuiScreen(null);
+        } else if (guiButton == inputBuildMode) {
             controller.cmdMode(inputBuildMode.getSelectedValue());
         } else {
             controller.cmdSet(regionFactory.getRegionAs(inputRegionType.getSelectedValue()), true);
@@ -381,7 +390,7 @@ public class GuiBuildRegion extends GuiBaseScreen {
     }
 
     @Override
-    public void controlUpdate(GuiBaseControl control, boolean rapid) {
+    public void controlUpdate(GuiControlBase control, boolean rapid) {
         exportRegionValues();
         controller.cmdSet(regionFactory.getRegionAs(inputRegionType.getSelectedValue()), !rapid);
     }

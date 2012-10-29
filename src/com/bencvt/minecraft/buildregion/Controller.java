@@ -11,7 +11,7 @@ import net.minecraft.src.mod_BuildRegion;
 import com.bencvt.minecraft.buildregion.region.Direction3D;
 import com.bencvt.minecraft.buildregion.region.RegionBase;
 import com.bencvt.minecraft.buildregion.region.RelativeDirection3D;
-import com.bencvt.minecraft.buildregion.ui.GuiBuildRegion;
+import com.bencvt.minecraft.buildregion.ui.GuiScreenDefineRegion;
 import com.bencvt.minecraft.buildregion.ui.InputManager;
 import com.bencvt.minecraft.buildregion.ui.MessageManager;
 import com.bencvt.minecraft.buildregion.ui.ShapeManager;
@@ -141,7 +141,7 @@ public class Controller {
     }
 
     public void cmdOpenGui() {
-        minecraft.displayGuiScreen(new GuiBuildRegion(this, minecraft.fontRenderer));
+        minecraft.displayGuiScreen(new GuiScreenDefineRegion(minecraft.fontRenderer, this));
     }
 
     // ========
