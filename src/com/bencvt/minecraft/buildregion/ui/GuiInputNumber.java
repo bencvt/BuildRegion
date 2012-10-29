@@ -5,7 +5,7 @@ import net.minecraft.client.Minecraft;
 
 import com.bencvt.minecraft.buildregion.region.Units;
 
-public class GuiInputDouble extends GuiLabeledControl {
+public class GuiInputNumber extends GuiLabeledControl {
     public static final int PAD_TOP = 2;
     public static final int PAD_BOTTOM = 1;
 
@@ -17,7 +17,7 @@ public class GuiInputDouble extends GuiLabeledControl {
     public static final int XEND_PLUS     = XBEGIN_PLUS + 11;
     public static final int XBEGIN_SLIDER = XEND_PLUS + 2;
     public static final int MIN_SLIDER_WIDTH = 100;
-    public static final int R_XBEGIN_GROUP   = GuiInputDoubleGroup.WIDTH + 3;
+    public static final int R_XBEGIN_GROUP   = GuiInputNumberGroup.WIDTH + 3;
     public static final int R_XEND_GROUP     = R_XBEGIN_GROUP + 11;
     public static final int R_XBEGIN_SLIDER  = R_XEND_GROUP + 2;
 
@@ -44,11 +44,11 @@ public class GuiInputDouble extends GuiLabeledControl {
     private double value;
     private final Units units;
     private final boolean positive;
-    private final GuiInputDoubleGroup group;
+    private final GuiInputNumberGroup group;
     private boolean dragging;
     private Double dragBaseValue;
 
-    public GuiInputDouble(GuiScreenBase parent, String text, Units units, boolean positive, GuiInputDoubleGroup group) {
+    public GuiInputNumber(GuiScreenBase parent, String text, Units units, boolean positive, GuiInputNumberGroup group) {
         super(parent, text);
         this.units = units;
         this.positive = positive;

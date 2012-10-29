@@ -2,22 +2,22 @@ package com.bencvt.minecraft.buildregion.ui;
 
 import java.util.HashSet;
 
-public class GuiInputDoubleGroup {
-    public static final int UNLOCKED_ARGB = GuiInputDouble.BUTTON_ENABLED_ARGB;
-    public static final int LOCKED_ARGB = GuiInputDouble.BUTTON_LOCKED_ARGB;
+public class GuiInputNumberGroup {
+    public static final int UNLOCKED_ARGB = GuiInputNumber.BUTTON_ENABLED_ARGB;
+    public static final int LOCKED_ARGB = GuiInputNumber.BUTTON_LOCKED_ARGB;
     public static final int WIDTH = 5;
 
-    private final HashSet<GuiInputDouble> fields = new HashSet<GuiInputDouble>();
+    private final HashSet<GuiInputNumber> fields = new HashSet<GuiInputNumber>();
     private boolean locked;
 
-    public GuiInputDoubleGroup register(GuiInputDouble field) {
+    public GuiInputNumberGroup register(GuiInputNumber field) {
         fields.add(field);
         return this;
     }
 
     public void setValue(double value) {
         if (locked) {
-            for (GuiInputDouble field : fields) {
+            for (GuiInputNumber field : fields) {
                 field.setValueFromGroup(value);
             }
         }
@@ -25,7 +25,7 @@ public class GuiInputDoubleGroup {
 
     public void setDragging(boolean dragging) {
         if (locked) {
-            for (GuiInputDouble field : fields) {
+            for (GuiInputNumber field : fields) {
                 field.setDraggingFromGroup(dragging);
             }
         }
@@ -41,7 +41,7 @@ public class GuiInputDoubleGroup {
 
     public void lock(double value) {
         locked = true;
-        for (GuiInputDouble field : fields) {
+        for (GuiInputNumber field : fields) {
             field.setValueFromGroup(value);
         }
     }
@@ -50,7 +50,7 @@ public class GuiInputDoubleGroup {
         double value = 0.0;
         boolean first = true;
         boolean allEqual = true;
-        for (GuiInputDouble field : fields) {
+        for (GuiInputNumber field : fields) {
             if (first) {
                 value = field.getValue();
                 first = false;
@@ -67,19 +67,19 @@ public class GuiInputDoubleGroup {
         int yMin = Integer.MIN_VALUE;
         int yMax = Integer.MAX_VALUE;
         int xEnd = 0;
-        for (GuiInputDouble field : fields) {
+        for (GuiInputNumber field : fields) {
             int yTop = field.yPosition + (field.getHeight() + WIDTH)/2;
             yMin = Math.max(yMin, yTop);
             int yBottom = field.yPosition + field.getHeight() - (field.getHeight() + WIDTH)/2;
             yMax = Math.min(yMax, yBottom);
             xEnd = field.xPosition + field.getWidth();
-            GuiInputDouble.drawRect(
-                    xEnd - GuiInputDouble.R_XBEGIN_GROUP,
+            GuiInputNumber.drawRect(
+                    xEnd - GuiInputNumber.R_XBEGIN_GROUP,
                     yTop,
                     xEnd - WIDTH,
                     yBottom,
                     argb);
         }
-        GuiInputDouble.drawRect(xEnd - WIDTH, yMin, xEnd, yMax, argb);
+        GuiInputNumber.drawRect(xEnd - WIDTH, yMin, xEnd, yMax, argb);
     }
 }

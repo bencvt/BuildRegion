@@ -13,7 +13,7 @@ import net.minecraft.client.Minecraft;
  * 
  * @author bencvt
  */
-public class GuiEnumSelect<T extends Enum> extends GuiLabeledControl {
+public class GuiSelectEnum<T extends Enum> extends GuiLabeledControl {
     public static final int OPTION_SPACING = 2;
     public static final int PAD_LEFT = 2;
     public static final int PAD_RIGHT = 2;
@@ -48,7 +48,7 @@ public class GuiEnumSelect<T extends Enum> extends GuiLabeledControl {
     private boolean allowSetNull;
     private T selectedValue;
 
-    public GuiEnumSelect(GuiScreenBase parent, String text, T[] values, ReadonlyColor color) {
+    public GuiSelectEnum(GuiScreenBase parent, String text, T[] values, ReadonlyColor color) {
         super(parent, text);
         options = new LinkedHashMap<T, Option>();
         int controlWidth = 0;
@@ -84,12 +84,12 @@ public class GuiEnumSelect<T extends Enum> extends GuiLabeledControl {
     public boolean isAllowSetNull() {
         return allowSetNull;
     }
-    public GuiEnumSelect<T> setAllowSetNull(boolean allowSetNull) {
+    public GuiSelectEnum<T> setAllowSetNull(boolean allowSetNull) {
         this.allowSetNull = allowSetNull;
         return this;
     }
 
-    public GuiEnumSelect<T> setOptionColor(T value, ReadonlyColor color) {
+    public GuiSelectEnum<T> setOptionColor(T value, ReadonlyColor color) {
         if (value == null) {
             throw new IllegalArgumentException();
         }
@@ -100,7 +100,7 @@ public class GuiEnumSelect<T extends Enum> extends GuiLabeledControl {
     public T getSelectedValue() {
         return selectedValue;
     }
-    public GuiEnumSelect<T> setSelectedValue(T value, boolean animate) {
+    public GuiSelectEnum<T> setSelectedValue(T value, boolean animate) {
         Option prev = getOptionForValue(selectedValue);
         Option cur = getOptionForValue(value);
         selectedValue = value;
