@@ -1,7 +1,7 @@
 package com.bencvt.minecraft.buildregion.ui;
 
-import net.minecraft.src.FontRenderer;
 import net.minecraft.src.GuiButton;
+import net.minecraft.src.GuiControls;
 
 /**
  * TODO: user-specified options. Possible options:
@@ -14,24 +14,28 @@ import net.minecraft.src.GuiButton;
  * @author bencvt
  */
 public class GuiScreenOptions extends GuiScreenBase {
-    public GuiScreenOptions(FontRenderer fontRenderer) {
-        super(fontRenderer);
-    }
-
+    private final GuiStandardButton buttonControls = new GuiStandardButton(this, "Controls...");
     private final GuiStandardButton buttonDone = new GuiStandardButton(this, "Done");
+
+    public GuiScreenOptions(GuiScreenBase parentScreen) {
+        super(parentScreen);
+    }
 
     @Override
     public void initGui() {
-        buttonDone.position(
-                (width - buttonDone.getWidth())/2,
-                (height - buttonDone.getHeight())/2);
+        buttonControls.setWidth(150).setPositionXY(width/2 - 152, height - 30);
+        controlList.add(buttonControls);
+
+        buttonDone.setWidth(150).setPositionXY(width/2 + 2, height - 30);
         controlList.add(buttonDone);
     }
 
     @Override
     protected void actionPerformed(GuiButton guiButton) {
         if (guiButton == buttonDone) {
-            mc.displayGuiScreen(null);
+            close();
+        } else if (guiButton == buttonControls) {
+            open(new GuiControls(this, mc.gameSettings));
         }
     }
 }

@@ -1,27 +1,44 @@
 package com.bencvt.minecraft.buildregion.ui;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.src.FontRenderer;
 import net.minecraft.src.GuiScreen;
 
 /**
  * Abstract GuiScreen base class. Same as vanilla Minecraft's, plus various
  * utility methods:<ul>
- * <li>The fontRenderer is set in the constructor, so it will never be null.
- *     Better than than having to wait for initGui.</li>
+ * <li>Minecraft and FontRenderer fields are set in the constructor, so they
+ *     will never be null. Better than than having to wait for initGui.</li>
+ * <li>Add parentScreen, open, and close for screens that open
+ *     other screens temporarily.</li>
  * <li>Add controlUpdate handler</li>
  * <li>drawRectBorder</li>
  * </ul>
+ * TODO: add an option to temporarily hide the HUD, or at least chat, while the screen is open
  * @author bencvt
  */
 public abstract class GuiScreenBase extends GuiScreen {
+    public final GuiScreenBase parentScreen;
     private boolean needToPlayClickSound;
 
-    public GuiScreenBase(FontRenderer fontRenderer) {
-        this.fontRenderer = fontRenderer;
+    public GuiScreenBase(GuiScreenBase parentScreen) {
+        this.parentScreen = parentScreen;
+        mc = Minecraft.getMinecraft();
+        fontRenderer = mc.fontRenderer;
     }
 
     public FontRenderer getFontRenderer() {
         return fontRenderer;
+    }
+
+    public void open() {
+        mc.displayGuiScreen(this);
+    }
+    public void open(GuiScreen newScreen) {
+        mc.displayGuiScreen(newScreen);
+    }
+    public void close() {
+        mc.displayGuiScreen(parentScreen);
     }
 
     /**

@@ -5,7 +5,6 @@ import java.util.HashMap;
 
 import libshapedraw.primitive.Color;
 import libshapedraw.primitive.ReadonlyColor;
-import net.minecraft.src.FontRenderer;
 import net.minecraft.src.GuiButton;
 
 import com.bencvt.minecraft.buildregion.BuildMode;
@@ -24,7 +23,6 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
     public static final int ROW_SPACING = 2;
     public static final int PAD = 2;
     public static final int BORDER_THICKNESS = 1;
-    public static final int HEADER_ARGB            = Color.WHITE.getARGB();
     public static final int BACKGROUND_ARGB        = Color.BLACK.copy().setAlpha(3.0/16.0).getARGB();
     public static final ReadonlyColor BORDER_COLOR = Color.BLACK.copy().setAlpha(1.0/8.0);
     public static final int BORDER_ARGB            = BORDER_COLOR.getARGB();
@@ -73,8 +71,8 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
     private int windowWidth;
     private final RegionFactory regionFactory;
 
-    public GuiScreenDefineRegion(FontRenderer fontRenderer, Controller controller) {
-        super(fontRenderer);
+    public GuiScreenDefineRegion(Controller controller) {
+        super(null); // this is a root screen
         this.controller = controller;
 
         // Create all row controls.
@@ -204,10 +202,9 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
         }
         windowWidth += BORDER_THICKNESS*2 + PAD*2;
 
-        // Center everything, nudged up a few units because Minecraft's default
-        // HUD is attached to the bottom of the screen.
+        // Center horizontally and attach to bottom of the screen
         windowXPosition = (width - windowWidth) / 2;
-        windowYPosition = (height - windowHeight) / 2 - 16;
+        windowYPosition = height - windowHeight - 32;
 
         // [Re]position all row controls.
         int xPos = windowXPosition + BORDER_THICKNESS + PAD;
@@ -215,7 +212,7 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
         int yPosBack = yPos;
         for (RegionType r : RegionType.values()) {
             for (GuiLabeledControl control : rows.get(r)) {
-                yPos += control.position(xPos, yPos).getHeight() + ROW_SPACING;
+                yPos += control.setPositionXY(xPos, yPos).getHeight() + ROW_SPACING;
             }
             if (r == RegionType.NONE) {
                 yPosBack = yPos;
@@ -232,13 +229,13 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
                 Math.max(buttonReset.getWidth(), buttonDone.getWidth()));
         xPos = windowXPosition;
         yPos = windowYPosition + windowHeight + 4;
-        controlList.add(buttonHelp./*setWidth(buttonWidth).*/position(xPos, yPos));
+        controlList.add(buttonHelp./*setWidth(buttonWidth).*/setPositionXY(xPos, yPos));
         xPos += buttonHelp.getWidth() + 4;
-        controlList.add(buttonOptions./*setWidth(buttonWidth).*/position(xPos, yPos));
+        controlList.add(buttonOptions./*setWidth(buttonWidth).*/setPositionXY(xPos, yPos));
         xPos = windowXPosition + windowWidth - buttonDone.getWidth();
-        controlList.add(buttonDone./*setWidth(buttonWidth).*/position(xPos, yPos));
+        controlList.add(buttonDone./*setWidth(buttonWidth).*/setPositionXY(xPos, yPos));
         xPos -= buttonReset.getWidth() + 4;
-        controlList.add(buttonReset./*setWidth(buttonWidth).*/position(xPos, yPos));
+        controlList.add(buttonReset./*setWidth(buttonWidth).*/setPositionXY(xPos, yPos));
 
         // Notify controller that the GUI is open.
         controller.toggleGui(true);
@@ -341,11 +338,8 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
         final int yTop    = windowYPosition;
         final int yBottom = windowYPosition + windowHeight;
 
-        // Draw header above the window.
-        mc.fontRenderer.drawStringWithShadow(controller.getModTitle(),
-                xLeft + (windowWidth - mc.fontRenderer.getStringWidth(controller.getModTitle())) / 2,
-                yTop - mc.fontRenderer.FONT_HEIGHT - PAD,
-                HEADER_ARGB);
+        // Draw title.
+        drawCenteredString(fontRenderer, controller.getModTitle(), width/2, 4, 0xffffffff);
 
         // Draw background.
         drawRect(xLeft, yTop, xRight, yBottom, BACKGROUND_ARGB);
@@ -373,15 +367,15 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
         exportRegionValues();
         updateControlProperties();
         if (guiButton == buttonHelp) {
-            mc.displayGuiScreen(new GuiScreenHelp(getFontRenderer()));
+            open(new GuiScreenHelp(this, controller));
         } else if (guiButton == buttonOptions) {
-            mc.displayGuiScreen(new GuiScreenOptions(getFontRenderer()));
+            open(new GuiScreenOptions(this));
         } else if (guiButton == buttonReset) {
             // TODO reset region to whatever it was when the user opened the gui
             //regionFactory.reset();
             importRegionValues();
         } else if (guiButton == buttonDone) {
-            mc.displayGuiScreen(null);
+            close();
         } else if (guiButton == inputBuildMode) {
             controller.cmdMode(inputBuildMode.getSelectedValue());
         } else {

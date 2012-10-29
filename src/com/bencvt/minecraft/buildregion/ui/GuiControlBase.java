@@ -19,7 +19,7 @@ public abstract class GuiControlBase extends GuiButton {
 
     public GuiControlBase(GuiScreenBase parent, String text) {
         super(topId, 0, 0, 0, 0, text);
-        // Caller is responsible for setting xPosition and yPosition using position().
+        // Caller is responsible for setting xPosition and yPosition.
         // Derived class is responsible for setting width and height.
         topId++;
         this.parent = parent;
@@ -48,7 +48,7 @@ public abstract class GuiControlBase extends GuiButton {
         displayString = text;
         return this;
     }
-    
+
     public final int getWidth() {
         return width;
     }
@@ -65,7 +65,23 @@ public abstract class GuiControlBase extends GuiButton {
         return this;
     }
 
-    public final GuiControlBase position(int xPosition, int yPosition) {
+    public final int getXPosition() {
+        return xPosition;
+    }
+    public final GuiControlBase setXPosition(int xPosition) {
+        this.xPosition = xPosition;
+        return this;
+    }
+
+    public final int getYPosition() {
+        return yPosition;
+    }
+    public final GuiControlBase setYPosition(int yPosition) {
+        this.yPosition = yPosition;
+        return this;
+    }
+
+    public final GuiControlBase setPositionXY(int xPosition, int yPosition) {
         this.xPosition = xPosition;
         this.yPosition = yPosition;
         return this;

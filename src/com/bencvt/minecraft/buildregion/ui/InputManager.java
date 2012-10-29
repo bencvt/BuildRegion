@@ -3,9 +3,7 @@ package com.bencvt.minecraft.buildregion.ui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.BaseMod;
 import net.minecraft.src.EnumOS;
-import net.minecraft.src.GuiNewChat;
 import net.minecraft.src.KeyBinding;
-import net.minecraft.src.ModLoader;
 import net.minecraft.src.PlayerControllerHooks;
 
 import org.lwjgl.input.Keyboard;
@@ -21,40 +19,34 @@ import com.bencvt.minecraft.buildregion.region.RelativeDirection3D;
  * @author bencvt
  */
 public class InputManager {
-    public static final String PROPNAME_MODE = "buildregion.mode";
-    public static final KeyBinding KEYBIND_MODE = new KeyBinding(
-            PROPNAME_MODE,
-            Keyboard.KEY_B);
-
-    public static final String PROPNAME_SHIFT_BACK = "buildregion.shift.back";
-    public static final KeyBinding KEYBIND_SHIFT_BACK = new KeyBinding(
-            PROPNAME_SHIFT_BACK,
-            Keyboard.KEY_LBRACKET);
-
-    public static final String PROPNAME_SHIFT_FWD = "buildregion.shift.fwd";
-    public static final KeyBinding KEYBIND_SHIFT_FWD = new KeyBinding(
-            PROPNAME_SHIFT_FWD,
-            Keyboard.KEY_RBRACKET);
-
-    public static final String PROPNAME_SHIFT_UP = "buildregion.shift.up";
-    public static final KeyBinding KEYBIND_SHIFT_UP = new KeyBinding(
-            PROPNAME_SHIFT_UP,
-            Keyboard.KEY_UP);
-
-    public static final String PROPNAME_SHIFT_DOWN = "buildregion.shift.down";
-    public static final KeyBinding KEYBIND_SHIFT_DOWN = new KeyBinding(
-            PROPNAME_SHIFT_DOWN,
-            Keyboard.KEY_DOWN);
-
-    public static final String PROPNAME_SHIFT_LEFT = "buildregion.shift.left";
-    public static final KeyBinding KEYBIND_SHIFT_LEFT = new KeyBinding(
-            PROPNAME_SHIFT_LEFT,
-            Keyboard.KEY_LEFT);
-
-    public static final String PROPNAME_SHIFT_RIGHT = "buildregion.shift.right";
-    public static final KeyBinding KEYBIND_SHIFT_RIGHT = new KeyBinding(
-            PROPNAME_SHIFT_RIGHT,
-            Keyboard.KEY_RIGHT);
+    public static final CustomKeyBinding KEYBIND_MODE = new CustomKeyBinding(
+            Keyboard.KEY_B, false,
+            "buildregion.mode",
+            "BuildRegion mode");
+    public static final CustomKeyBinding KEYBIND_SHIFT_BACK = new CustomKeyBinding(
+            Keyboard.KEY_LBRACKET, true,
+            "buildregion.shift.back",
+            "BuildRegion shift ");
+    public static final CustomKeyBinding KEYBIND_SHIFT_FWD = new CustomKeyBinding(
+            Keyboard.KEY_RBRACKET, true,
+            "buildregion.shift.fwd",
+            "BuildRegion shift fwd");
+    public static final CustomKeyBinding KEYBIND_SHIFT_UP = new CustomKeyBinding(
+            Keyboard.KEY_UP, true,
+            "buildregion.shift.up",
+            "BuildRegion shift up");
+    public static final CustomKeyBinding KEYBIND_SHIFT_DOWN = new CustomKeyBinding(
+            Keyboard.KEY_DOWN, true,
+            "buildregion.shift.down",
+            "BuildRegion shift down");
+    public static final CustomKeyBinding KEYBIND_SHIFT_LEFT = new CustomKeyBinding(
+            Keyboard.KEY_LEFT, true,
+            "buildregion.shift.left",
+            "BuildRegion shift left");
+    public static final CustomKeyBinding KEYBIND_SHIFT_RIGHT = new CustomKeyBinding(
+            Keyboard.KEY_RIGHT, true,
+            "buildregion.shift.right",
+            "BuildRegion shift right");
 
     public static boolean IS_MAC = Minecraft.getOs() == EnumOS.MACOS;
     // Control-left-click on Mac OS X is right-click, so use command instead.
@@ -75,22 +67,13 @@ public class InputManager {
     public InputManager(Controller controller, BaseMod mod, Minecraft minecraft) {
         this.controller = controller;
         this.minecraft = minecraft;
-
-        ModLoader.registerKey(mod, KEYBIND_MODE, false);
-        ModLoader.registerKey(mod, KEYBIND_SHIFT_BACK, false);
-        ModLoader.registerKey(mod, KEYBIND_SHIFT_FWD, false);
-        ModLoader.registerKey(mod, KEYBIND_SHIFT_UP, false);
-        ModLoader.registerKey(mod, KEYBIND_SHIFT_DOWN, false);
-        ModLoader.registerKey(mod, KEYBIND_SHIFT_LEFT, false);
-        ModLoader.registerKey(mod, KEYBIND_SHIFT_RIGHT, false);
-
-        ModLoader.addLocalization(PROPNAME_MODE,        "BuildRegion mode");
-        ModLoader.addLocalization(PROPNAME_SHIFT_BACK,  "BuildRegion shift back");
-        ModLoader.addLocalization(PROPNAME_SHIFT_FWD,   "BuildRegion shift fwd");
-        ModLoader.addLocalization(PROPNAME_SHIFT_UP,    "BuildRegion shift up");
-        ModLoader.addLocalization(PROPNAME_SHIFT_DOWN,  "BuildRegion shift down");
-        ModLoader.addLocalization(PROPNAME_SHIFT_LEFT,  "BuildRegion shift left");
-        ModLoader.addLocalization(PROPNAME_SHIFT_RIGHT, "BuildRegion shift right");
+        KEYBIND_MODE.register(mod);
+        KEYBIND_SHIFT_BACK.register(mod);
+        KEYBIND_SHIFT_FWD.register(mod);
+        KEYBIND_SHIFT_UP.register(mod);
+        KEYBIND_SHIFT_DOWN.register(mod);
+        KEYBIND_SHIFT_LEFT.register(mod);
+        KEYBIND_SHIFT_RIGHT.register(mod);
     }
 
     public void handleKeyboardEvent(KeyBinding key) {
@@ -133,6 +116,7 @@ public class InputManager {
             }
         }
         // TODO: mod+mousewheel to shift region forward/back
+        // TODO: mod+middle button to bring up gui
     }
 
     private boolean isMouseModKeyDown() {
@@ -174,55 +158,49 @@ public class InputManager {
         return allow;
     }
 
-    public String getUserBinding(String propName) {
-        for (KeyBinding kb : minecraft.gameSettings.keyBindings) {
-            if (kb.keyDescription.equals(propName)) {
-                if (kb.keyCode < 0) {
-                    return "MOUSE";
-                }
-                String keyName = Keyboard.getKeyName(kb.keyCode);
-                if (keyName.equals("LBRACKET")) {
-                    keyName = "[";
-                } else if (keyName.equals("RBRACKET")) {
-                    keyName = "]";
-                }
-                return keyName;
-            }
-        }
-        return "UNKNOWN";
-    }
+    public String getUsage() {
+        StringBuilder b = new StringBuilder("Usage:\n");
+        final String indent = "  ";
+        final String dash = " \u2014 ";
 
-    public void showUsage() {
-        final GuiNewChat chat = minecraft.ingameGUI.getChatGUI();
-        chat.printChatMessage(controller.getModTitle() + " usage:");
+        b.append(indent)
+        .append(MOUSE_MOD_KEY_NAME).append("left-click")
+        .append(dash).append("clear\n");
 
-        final String pre = "  \u00a7c";
-        final String shiftOrCtrl = "shift-\u00a7r or \u00a7cctrl-";
-        final String sep = "\u00a7r and \u00a7c";
-        final String mid = "\u00a7r \u2014 ";
-        final String rarr = "\u27f6";
-        final String keyMode  = getUserBinding(PROPNAME_MODE);
-        final String keyBack  = getUserBinding(PROPNAME_SHIFT_BACK);
-        final String keyFwd   = getUserBinding(PROPNAME_SHIFT_FWD);
-        final String keyUp    = getUserBinding(PROPNAME_SHIFT_UP);
-        final String keyDown  = getUserBinding(PROPNAME_SHIFT_DOWN);
-        final String keyLeft  = getUserBinding(PROPNAME_SHIFT_LEFT);
-        final String keyRight = getUserBinding(PROPNAME_SHIFT_RIGHT);
+        b.append(indent)
+        .append(MOUSE_MOD_KEY_NAME).append("right-click")
+        .append(dash).append("set\n");
 
-        // TODO: probably better to make a GuiUsageScreen for this instead
-        chat.printChatMessage(pre + MOUSE_MOD_KEY_NAME + "left-click" + mid + "clear");
-        chat.printChatMessage(pre + MOUSE_MOD_KEY_NAME + "right-click" + mid + "set");
-        chat.printChatMessage(pre + keyMode + mid + "toggle mode");
-        chat.printChatMessage(pre + shiftOrCtrl + keyMode + mid + "open gui");
-        chat.printChatMessage(pre + keyBack + sep + keyFwd   + mid + "move region back/forward");
-        chat.printChatMessage(pre + keyUp   + sep + keyDown  + mid + "move region up/down");
-        chat.printChatMessage(pre + keyLeft + sep + keyRight + mid + "move region left/right");
-        chat.printChatMessage(pre + shiftOrCtrl + "\u00a7rmovement key" + mid + "expand region");
-        chat.printChatMessage("To adjust key bindings: Esc " + rarr +
-                " Options... " + rarr + " Controls...");
-    }
+        b.append(indent)
+        .append(KEYBIND_MODE.getKeyNameColored(false))
+        .append(dash).append("toggle mode\n");
 
-    public String getGuiKeybind() {
-        return "shift- or ctrl-" + getUserBinding(PROPNAME_MODE);
+        b.append(indent)
+        .append(KEYBIND_MODE.getKeyNameColored(true))
+        .append(dash).append("open gui\n");
+
+        b.append(indent)
+        .append(KEYBIND_SHIFT_BACK.getKeyNameColored(false))
+        .append(" and ")
+        .append(KEYBIND_SHIFT_FWD.getKeyNameColored(false))
+        .append(dash).append("move region back/forward\n");
+
+        b.append(indent)
+        .append(KEYBIND_SHIFT_UP.getKeyNameColored(false))
+        .append(" and ")
+        .append(KEYBIND_SHIFT_DOWN.getKeyNameColored(false))
+        .append(dash).append("move region up/down\n");
+
+        b.append(indent)
+        .append(KEYBIND_SHIFT_LEFT.getKeyNameColored(false))
+        .append(" and ")
+        .append(KEYBIND_SHIFT_RIGHT.getKeyNameColored(false))
+        .append(dash).append("move region left/right\n");
+
+        b.append(indent)
+        .append(CustomKeyBinding.SHIFT_OR_CTRL_COLORED).append("movement key")
+        .append(dash).append("expand region\n");
+
+        return b.toString();
     }
 }

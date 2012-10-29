@@ -133,7 +133,7 @@ public class Controller {
         buildMode.setValue(newMode);
         messageManager.info("build region mode: " +
                 newMode.toString().toLowerCase() +
-                "\npress " + inputManager.getGuiKeybind() + " for more options");
+                "\npress " + inputManager.KEYBIND_MODE.getKeyName(true) + " for more options");
     }
 
     public void cmdModeNext() {
@@ -141,7 +141,7 @@ public class Controller {
     }
 
     public void cmdOpenGui() {
-        minecraft.displayGuiScreen(new GuiScreenDefineRegion(minecraft.fontRenderer, this));
+        new GuiScreenDefineRegion(this).open();
     }
 
     // ========
