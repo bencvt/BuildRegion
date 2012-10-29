@@ -2,9 +2,12 @@ In Minecraft, having to go back and fix blocks that you accidentally placed or
 destroyed is time-consuming and annoying. BuildRegion is a user interface
 enhancement mod, designed to help you avoid these little accidents.
 
+BuildRegion can also help you make circles and other shapes, giving you a
+dynamic blueprint right there in the world.
+
 BuildRegion is *not* an auto-build tool. It will only prevent you from
 misclicking; it will not click for you. It's all client-side, meaning you can
-use this on SMP without the server having to run a special plugin.
+use this on multi-player without the server having to run a special plugin.
 
 See the [official minecraftforums.net thread](http://www.minecraftforum.net/topic/1514724-buildregion/)
 for screenshots and a demo video.

@@ -8,7 +8,8 @@ import net.minecraft.src.StringTranslate;
 
 public abstract class LocalizedString {
     private static String lang;
-    private static Properties table;
+    private static Properties defaultTable;
+    private static Properties curTable;
 
     /**
      * Attempt to translate a string, optionally with String.format arguments.
@@ -70,25 +71,30 @@ public abstract class LocalizedString {
         if (lang == null || !lang.equals(newLang)) {
             lang = newLang;
             // Ensure the default language is loaded.
-            if (table == null) {
-                Properties defaultProps = new Properties();
+            if (curTable == null) {
+                defaultTable = new Properties();
                 try {
-                    defaultProps.load(LocalizedString.class.getResourceAsStream("en_US.properties"));
+                    defaultTable.load(LocalizedString.class.getResourceAsStream("en_US.properties"));
                 } catch (IOException e) {
                     throw new RuntimeException("unable to load default lang file", e);
                 }
-                table = new Properties(defaultProps);
+                curTable = new Properties(defaultTable);
             }
             // Load translation of the selected language.
-            table.clear();
+            curTable.clear();
             try {
-                table.load(LocalizedString.class.getResourceAsStream(lang + ".properties"));
+                curTable.load(LocalizedString.class.getResourceAsStream(lang + ".properties"));
             } catch (Exception e) {
                 // No valid translation available for the selected language.
                 // Table lookups will have to rely on the default properties.
-                table.clear();
+                curTable.clear();
             }
         }
-        return table.getProperty(key);
+        String result = curTable.getProperty(key);
+        if (result != null && result.isEmpty()) {
+            // Entry present but empty: get from default.
+            return defaultTable.getProperty(key);
+        }
+        return result;
     }
 }

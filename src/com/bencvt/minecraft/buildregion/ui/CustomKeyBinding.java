@@ -6,6 +6,8 @@ import net.minecraft.src.ModLoader;
 
 import org.lwjgl.input.Keyboard;
 
+import com.bencvt.minecraft.buildregion.lang.LocalizedString;
+
 public class CustomKeyBinding extends KeyBinding {
     private final boolean allowRepeat;
     private boolean registered;
@@ -39,7 +41,7 @@ public class CustomKeyBinding extends KeyBinding {
 
     public String getKeyName(boolean withShiftOrCtrl) {
         if (withShiftOrCtrl) {
-            return "shift- or ctrl-" + getKeyName();
+            return "shift- " + LocalizedString.translate("or") + " ctrl-" + getKeyName();
         } else {
             return getKeyName();
         }
@@ -47,11 +49,13 @@ public class CustomKeyBinding extends KeyBinding {
 
     public String getKeyNameColored(boolean withShiftOrCtrl) {
         if (withShiftOrCtrl) {
-            return SHIFT_OR_CTRL_COLORED + getKeyName() + "\u00a7r";
+            return getShiftOrCtrlColored() + getKeyName() + "\u00a7r";
         } else {
             return "\u00a7c" + getKeyName() + "\u00a7r";
         }
     }
 
-    public static final String SHIFT_OR_CTRL_COLORED = "\u00a7cshift-\u00a7r or \u00a7cctrl-\u00a7c";
+    public static String getShiftOrCtrlColored() {
+        return "\u00a7cshift-\u00a7r " + LocalizedString.translate("or") +" \u00a7cctrl-\u00a7c";
+    }
 }

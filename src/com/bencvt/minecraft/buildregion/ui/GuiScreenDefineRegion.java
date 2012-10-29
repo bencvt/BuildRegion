@@ -204,7 +204,7 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
 
         // Center horizontally and attach to bottom of the screen
         windowXPosition = (width - windowWidth) / 2;
-        windowYPosition = height - windowHeight - 32;
+        windowYPosition = height - windowHeight - BOTTOM_OVERLAY_HEIGHT;
 
         // [Re]position all row controls.
         int xPos = windowXPosition + BORDER_THICKNESS + PAD;
@@ -228,7 +228,7 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
                 Math.max(buttonHelp.getWidth(), buttonOptions.getWidth()),
                 Math.max(buttonReset.getWidth(), buttonDone.getWidth()));
         xPos = windowXPosition;
-        yPos = windowYPosition + windowHeight + 4;
+        yPos = windowYPosition + windowHeight; // no vertical padding
         controlList.add(buttonHelp./*setWidth(buttonWidth).*/setPositionXY(xPos, yPos));
         xPos += buttonHelp.getWidth() + 4;
         controlList.add(buttonOptions./*setWidth(buttonWidth).*/setPositionXY(xPos, yPos));
@@ -333,18 +333,16 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
 
     @Override
     public void drawScreen(int xMouse, int yMouse, float partialTick) {
+        // Draw HUD-covering overlay at bottom and title at top.
+        drawBottomOverlay();
+        drawCenteredString(fontRenderer, controller.getModTitle(), width/2, 4, 0xffffffff);
+
+        // Draw window background and border on top of it.
         final int xLeft   = windowXPosition;
         final int xRight  = windowXPosition + windowWidth;
         final int yTop    = windowYPosition;
         final int yBottom = windowYPosition + windowHeight;
-
-        // Draw title.
-        drawCenteredString(fontRenderer, controller.getModTitle(), width/2, 4, 0xffffffff);
-
-        // Draw background.
         drawRect(xLeft, yTop, xRight, yBottom, BACKGROUND_ARGB);
-
-        // Draw border on top of background.
         if (BORDER_THICKNESS > 0) {
             drawRectBorder(xLeft, yTop, xRight, yBottom, BORDER_ARGB, BORDER_THICKNESS);
         }
@@ -363,7 +361,7 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
     }
 
     @Override
-    protected void actionPerformed(GuiButton guiButton) {
+    protected void onControlClick(GuiButton guiButton) {
         exportRegionValues();
         updateControlProperties();
         if (guiButton == buttonHelp) {
@@ -384,7 +382,7 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
     }
 
     @Override
-    public void controlUpdate(GuiControlBase control, boolean rapid) {
+    public void onControlUpdate(GuiControlBase control, boolean rapid) {
         exportRegionValues();
         controller.cmdSet(regionFactory.getRegionAs(inputRegionType.getSelectedValue()), !rapid);
     }

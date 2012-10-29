@@ -182,6 +182,7 @@ public class GuiSelectEnum<T extends Enum> extends GuiLabeledControl {
         if (!super.mousePressed(minecraft, xMouse, yMouse)) {
             return false;
         }
+        // TODO: respond to mouse wheel
         int xOffset = getControlXOffset();
         for (Option option : options.values()) {
             if (xMouse >= option.xBegin + xOffset && xMouse <= option.xEnd + xOffset) {

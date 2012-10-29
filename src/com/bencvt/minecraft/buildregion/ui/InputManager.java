@@ -10,6 +10,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import com.bencvt.minecraft.buildregion.Controller;
+import com.bencvt.minecraft.buildregion.lang.LocalizedString;
 import com.bencvt.minecraft.buildregion.region.Direction3D;
 import com.bencvt.minecraft.buildregion.region.RelativeDirection3D;
 
@@ -158,49 +159,51 @@ public class InputManager {
         return allow;
     }
 
-    public String getUsage() {
-        StringBuilder b = new StringBuilder("Usage:\n");
-        final String indent = "  ";
-        final String dash = " \u2014 ";
+    public String getUsage(String indent) {
+        StringBuilder b = new StringBuilder();
 
         b.append(indent)
-        .append(MOUSE_MOD_KEY_NAME).append("left-click")
-        .append(dash).append("clear\n");
+        .append("\u00a7c").append(MOUSE_MOD_KEY_NAME).append(i18n("input.rightclick"))
+        .append("\u00a7r\t").append(i18n("usage.set")).append('\n');
 
         b.append(indent)
-        .append(MOUSE_MOD_KEY_NAME).append("right-click")
-        .append(dash).append("set\n");
-
-        b.append(indent)
-        .append(KEYBIND_MODE.getKeyNameColored(false))
-        .append(dash).append("toggle mode\n");
-
-        b.append(indent)
-        .append(KEYBIND_MODE.getKeyNameColored(true))
-        .append(dash).append("open gui\n");
+        .append("\u00a7c").append(MOUSE_MOD_KEY_NAME).append(i18n("input.leftclick"))
+        .append("\u00a7r\t").append(i18n("usage.clear")).append('\n');
 
         b.append(indent)
         .append(KEYBIND_SHIFT_BACK.getKeyNameColored(false))
-        .append(" and ")
+        .append(' ').append(i18n("and")).append(' ')
         .append(KEYBIND_SHIFT_FWD.getKeyNameColored(false))
-        .append(dash).append("move region back/forward\n");
+        .append('\t').append(i18n("usage.move.backfwd")).append('\n');
 
         b.append(indent)
         .append(KEYBIND_SHIFT_UP.getKeyNameColored(false))
-        .append(" and ")
+        .append(' ').append(i18n("and")).append(' ')
         .append(KEYBIND_SHIFT_DOWN.getKeyNameColored(false))
-        .append(dash).append("move region up/down\n");
+        .append('\t').append(i18n("usage.move.updown")).append('\n');
 
         b.append(indent)
         .append(KEYBIND_SHIFT_LEFT.getKeyNameColored(false))
-        .append(" and ")
+        .append(' ').append(i18n("and")).append(' ')
         .append(KEYBIND_SHIFT_RIGHT.getKeyNameColored(false))
-        .append(dash).append("move region left/right\n");
+        .append('\t').append(i18n("usage.move.leftright")).append('\n');
 
         b.append(indent)
-        .append(CustomKeyBinding.SHIFT_OR_CTRL_COLORED).append("movement key")
-        .append(dash).append("expand region\n");
+        .append(CustomKeyBinding.getShiftOrCtrlColored()).append(i18n("input.movementkey"))
+        .append("\u00a7r\t").append(i18n("usage.resize")).append('\n');
+
+        b.append(indent)
+        .append(KEYBIND_MODE.getKeyNameColored(false))
+        .append('\t').append(i18n("usage.mode")).append('\n');
+
+        b.append(indent)
+        .append(KEYBIND_MODE.getKeyNameColored(true))
+        .append('\t').append(i18n("usage.gui")).append('\n');
 
         return b.toString();
+    }
+
+    private static String i18n(String key) {
+        return LocalizedString.translate(key);
     }
 }

@@ -174,7 +174,7 @@ public class GuiInputNumber extends GuiLabeledControl {
             final double prev = value;
             setValueFromSlider(xMouse);
             if (value != prev) {
-                parent.controlUpdate(this, true);
+                parent.onControlUpdate(this, true);
             }
         }
         // Else we're either not dragging, or this slider is mirroring another
@@ -225,6 +225,7 @@ public class GuiInputNumber extends GuiLabeledControl {
         if (!super.mousePressed(minecraft, xMouse, yMouse)) {
             return false;
         }
+        // TODO: respond to mouse wheel
         final int xL = xMouse - getControlXOffset();
         final int xR = xPosition + width - xMouse;
         if (xL >= XBEGIN_TEXT && xL <= XEND_TEXT) {

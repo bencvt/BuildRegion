@@ -31,7 +31,7 @@ public class GuiScreenOptions extends GuiScreenBase {
     }
 
     @Override
-    protected void actionPerformed(GuiButton guiButton) {
+    protected void onControlClick(GuiButton guiButton) {
         if (guiButton == buttonDone) {
             close();
         } else if (guiButton == buttonControls) {
