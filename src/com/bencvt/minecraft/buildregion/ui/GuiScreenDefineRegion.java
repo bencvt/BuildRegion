@@ -23,12 +23,10 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
     public static final int ROW_SPACING = 2;
     public static final int PAD = 2;
     public static final int BORDER_THICKNESS = 1;
-    public static final int BACKGROUND_ARGB        = Color.BLACK.copy().setAlpha(3.0/16.0).getARGB();
+    public static final int BACKGROUND_ARGB        = Color.BLACK.copy().setAlpha(7.0/16.0).getARGB();
     public static final ReadonlyColor BORDER_COLOR = Color.BLACK.copy().setAlpha(1.0/8.0);
     public static final int BORDER_ARGB            = BORDER_COLOR.getARGB();
     public static final ReadonlyColor SELECT_COLOR = Color.DODGER_BLUE;
-
-    private static final RegionType LONGEST_SUBTABLE = RegionType.CYLINDER; // for calculating window height
 
     private final Controller controller;
     private final GuiEmptyRow                 rowSpacer;
@@ -176,7 +174,8 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
                 maxLabelWidth = Math.max(maxLabelWidth, control.getLabelWidth());
                 maxControlWidth = Math.max(maxControlWidth, control.getControlWidth());
 
-                if (r == RegionType.NONE || r == LONGEST_SUBTABLE) {
+                // The cylinder subtable has the most rows.
+                if (r == RegionType.NONE || r == RegionType.CYLINDER) {
                     if (windowHeight > 0) {
                         windowHeight += ROW_SPACING;
                     }
@@ -202,7 +201,7 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
         }
         windowWidth += BORDER_THICKNESS*2 + PAD*2;
 
-        // Center horizontally and attach to bottom of the screen
+        // Center horizontally and attach to bottom of the screen.
         windowXPosition = (width - windowWidth) / 2;
         windowYPosition = height - windowHeight - BOTTOM_OVERLAY_HEIGHT;
 
@@ -229,13 +228,14 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
                 Math.max(buttonReset.getWidth(), buttonDone.getWidth()));
         xPos = windowXPosition;
         yPos = windowYPosition + windowHeight; // no vertical padding
-        controlList.add(buttonHelp./*setWidth(buttonWidth).*/setPositionXY(xPos, yPos));
+        controlList.add(buttonHelp.setWidth(buttonWidth).setPositionXY(xPos, yPos));
         xPos += buttonHelp.getWidth() + 4;
-        controlList.add(buttonOptions./*setWidth(buttonWidth).*/setPositionXY(xPos, yPos));
-        xPos = windowXPosition + windowWidth - buttonDone.getWidth();
-        controlList.add(buttonDone./*setWidth(buttonWidth).*/setPositionXY(xPos, yPos));
-        xPos -= buttonReset.getWidth() + 4;
-        controlList.add(buttonReset./*setWidth(buttonWidth).*/setPositionXY(xPos, yPos));
+        // TODO: enable options button once GUI is built
+        //controlList.add(buttonOptions.setWidth(buttonWidth).setPositionXY(xPos, yPos));
+        xPos = windowXPosition + windowWidth - buttonDone.setWidth(buttonWidth).getWidth();
+        controlList.add(buttonDone.setPositionXY(xPos, yPos));
+        xPos -= buttonReset.setWidth(buttonWidth).getWidth() + 4;
+        controlList.add(buttonReset.setPositionXY(xPos, yPos));
 
         // Notify controller that the GUI is open.
         controller.toggleGui(true);
@@ -333,9 +333,8 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
 
     @Override
     public void drawScreen(int xMouse, int yMouse, float partialTick) {
-        // Draw HUD-covering overlay at bottom and title at top.
+        // Draw HUD-covering overlay at bottom.
         drawBottomOverlay();
-        drawCenteredString(fontRenderer, controller.getModTitle(), width/2, 4, 0xffffffff);
 
         // Draw window background and border on top of it.
         final int xLeft   = windowXPosition;

@@ -134,12 +134,6 @@ public abstract class RenderBase extends Shape {
 
     /**
      * Render a marker at the region's origin.
-     * <p>
-     * TODO: Also render markers every 10 blocks along the axes, so long as
-     *       it's inside the shape. This will be a handy way to measure
-     *       distances.
-     * TODO: Replace the renderMarkersNormally/renderMarkersNow flags with a
-     *       user preference for markers: {off, origin, ticks}
      */
     protected void renderMarkers(MinecraftAccess mc, ReadonlyColor lineColor) {
         if (!renderMarkersNormally && !renderMarkersNow) {

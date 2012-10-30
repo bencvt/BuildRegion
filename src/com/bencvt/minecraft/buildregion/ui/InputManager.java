@@ -25,27 +25,27 @@ public class InputManager {
             "buildregion.mode",
             "BuildRegion mode");
     public static final CustomKeyBinding KEYBIND_SHIFT_BACK = new CustomKeyBinding(
-            Keyboard.KEY_LBRACKET, true,
+            Keyboard.KEY_LBRACKET, false,
             "buildregion.shift.back",
-            "BuildRegion shift ");
+            "BuildRegion shift");
     public static final CustomKeyBinding KEYBIND_SHIFT_FWD = new CustomKeyBinding(
-            Keyboard.KEY_RBRACKET, true,
+            Keyboard.KEY_RBRACKET, false,
             "buildregion.shift.fwd",
             "BuildRegion shift fwd");
     public static final CustomKeyBinding KEYBIND_SHIFT_UP = new CustomKeyBinding(
-            Keyboard.KEY_UP, true,
+            Keyboard.KEY_UP, false,
             "buildregion.shift.up",
             "BuildRegion shift up");
     public static final CustomKeyBinding KEYBIND_SHIFT_DOWN = new CustomKeyBinding(
-            Keyboard.KEY_DOWN, true,
+            Keyboard.KEY_DOWN, false,
             "buildregion.shift.down",
             "BuildRegion shift down");
     public static final CustomKeyBinding KEYBIND_SHIFT_LEFT = new CustomKeyBinding(
-            Keyboard.KEY_LEFT, true,
+            Keyboard.KEY_LEFT, false,
             "buildregion.shift.left",
             "BuildRegion shift left");
     public static final CustomKeyBinding KEYBIND_SHIFT_RIGHT = new CustomKeyBinding(
-            Keyboard.KEY_RIGHT, true,
+            Keyboard.KEY_RIGHT, false,
             "buildregion.shift.right",
             "BuildRegion shift right");
 
@@ -203,7 +203,7 @@ public class InputManager {
         return b.toString();
     }
 
-    private static String i18n(String key) {
-        return LocalizedString.translate(key);
+    public static String i18n(String key, Object ... args) {
+        return LocalizedString.translate(key, args);
     }
 }

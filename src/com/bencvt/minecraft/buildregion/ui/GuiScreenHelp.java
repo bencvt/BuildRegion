@@ -19,16 +19,16 @@ import com.bencvt.minecraft.buildregion.Controller;
  * @author bencvt
  */
 public class GuiScreenHelp extends GuiScreenBase {
-    public final static int MARGIN = 48;
-    public final static int TEXT_ARGB = Color.WHITE.getARGB();
-    public final static URI WEBSITE_URL = URI.create("http://bit.ly/BuildRegion");
+    public static final int MARGIN_X = 48;
+    public static final int TEXT_ARGB = Color.WHITE.getARGB();
+    public static final URI WEBSITE_URL = URI.create("http://bit.ly/BuildRegion");
 
     private final GuiStandardButton buttonDone = new GuiStandardButton(this, i18n("button.done"));
     private final ArrayList<String> lines = new ArrayList<String>();
-    private final HashMap<Integer, String> columnLines = new HashMap<Integer, String>();
+    private final HashMap<Integer, String> rightColumnLines = new HashMap<Integer, String>();
     private final Controller controller;
     private int urlLineNum;
-    private int firstColumnWidth;
+    private int leftColumnWidth;
     private GuiSlot contents;
 
     public GuiScreenHelp(GuiScreenBase parentScreen, Controller controller) {
@@ -38,7 +38,7 @@ public class GuiScreenHelp extends GuiScreenBase {
 
     private void getLines(Controller controller) {
         lines.clear();
-        lines.addAll(fontRenderer.listFormattedStringToWidth(i18n("help.about"), width - MARGIN*2));
+        lines.addAll(fontRenderer.listFormattedStringToWidth(i18n("help.about"), width - MARGIN_X*2));
         lines.add("");
         lines.add(i18n("help.author") + " bencvt");
         urlLineNum = lines.size();
@@ -47,16 +47,16 @@ public class GuiScreenHelp extends GuiScreenBase {
         lines.addAll(Arrays.asList(controller.getInputManager().getUsage("  ").split("\n")));
         lines.add("");
 
-        columnLines.clear();
-        firstColumnWidth = 0;
+        rightColumnLines.clear();
+        leftColumnWidth = 0;
         for (int i = 0; i < lines.size(); i++) {
             String line = lines.get(i);
             int t = line.indexOf('\t');
             if (t >= 0) {
-                String firstColumn = line.substring(0, t);
-                firstColumnWidth = Math.max(firstColumnWidth, fontRenderer.getStringWidth(firstColumn));
-                lines.set(i, firstColumn);
-                columnLines.put(i, line.substring(t + 1));
+                String leftColumn = line.substring(0, t);
+                leftColumnWidth = Math.max(leftColumnWidth, fontRenderer.getStringWidth(leftColumn));
+                lines.set(i, leftColumn);
+                rightColumnLines.put(i, line.substring(t + 1));
             }
         }
     }
@@ -68,7 +68,6 @@ public class GuiScreenHelp extends GuiScreenBase {
         buttonDone.setWidth(200).setPositionXY((width - buttonDone.getWidth())/2, height - 30);
         controlList.add(buttonDone);
 
-        final GuiScreenHelp _this = this;
         contents = new GuiSlot(mc, width, height, 16, height - 28, fontRenderer.FONT_HEIGHT + 1) {
             private boolean openedUrl;
 
@@ -101,10 +100,10 @@ public class GuiScreenHelp extends GuiScreenBase {
 
             @Override
             protected void drawSlot(int slotNum, int xPos, int yPos, int slotContentHeight, Tessellator tess) {
-                getFontRenderer().drawString(lines.get(slotNum), MARGIN, yPos, TEXT_ARGB);
-                if (columnLines.containsKey(slotNum)) {
-                    getFontRenderer().drawString(columnLines.get(slotNum),
-                            firstColumnWidth + MARGIN + 8, yPos, TEXT_ARGB);
+                getFontRenderer().drawString(lines.get(slotNum), MARGIN_X, yPos, TEXT_ARGB);
+                if (rightColumnLines.containsKey(slotNum)) {
+                    getFontRenderer().drawString(rightColumnLines.get(slotNum),
+                            leftColumnWidth + MARGIN_X + 8, yPos, TEXT_ARGB);
                 }
             }
 

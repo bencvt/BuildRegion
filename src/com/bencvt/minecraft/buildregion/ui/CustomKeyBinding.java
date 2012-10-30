@@ -41,7 +41,7 @@ public class CustomKeyBinding extends KeyBinding {
 
     public String getKeyName(boolean withShiftOrCtrl) {
         if (withShiftOrCtrl) {
-            return "shift- " + LocalizedString.translate("or") + " ctrl-" + getKeyName();
+            return "shift- " + i18n("or") + " ctrl-" + getKeyName();
         } else {
             return getKeyName();
         }
@@ -56,6 +56,10 @@ public class CustomKeyBinding extends KeyBinding {
     }
 
     public static String getShiftOrCtrlColored() {
-        return "\u00a7cshift-\u00a7r " + LocalizedString.translate("or") +" \u00a7cctrl-\u00a7c";
+        return "\u00a7cshift-\u00a7r " + i18n("or") +" \u00a7cctrl-\u00a7c";
+    }
+
+    public static String i18n(String key, Object ... args) {
+        return LocalizedString.translate(key, args);
     }
 }
