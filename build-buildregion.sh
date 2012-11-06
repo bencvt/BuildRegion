@@ -2,7 +2,7 @@
 set -e
 
 # replace with version number if creating a release
-# don't forget to update getVersion method and .info files
+# don't forget to update Controller.MOD_VERSION and mcmod.info files
 JAR=$PWD/BuildRegion-SNAPSHOT.zip
 
 rm $JAR || true

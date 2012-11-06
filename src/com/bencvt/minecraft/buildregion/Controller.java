@@ -23,6 +23,9 @@ import com.bencvt.minecraft.buildregion.ui.ShapeManager;
  * @author bencvt
  */
 public class Controller {
+    public static final String MOD_VERSION = "1.1.1-SNAPSHOT";
+    public static final String MINECRAFT_VERSION = "1.4.2";
+
     private final Minecraft minecraft;
     private final InputManager inputManager;
     private final MessageManager messageManager;
@@ -38,7 +41,7 @@ public class Controller {
         inputManager = new InputManager(this, mod, minecraft);
         messageManager = new MessageManager(minecraft);
         shapeManager = new ShapeManager(this, libShapeDraw);
-        modTitle = mod.getName() + " v" + mod.getModVersion();
+        modTitle = mod.getName() + " v" + MOD_VERSION;
         modDirectory = new File(Minecraft.getMinecraftDir(), "mods" + File.separator + mod.getName());
         buildMode = new BuildModeValue(BuildMode.INSIDE);
         cmdReset();
@@ -62,7 +65,7 @@ public class Controller {
         prevRegion = curRegion;
         curRegion = null;
         shapeManager.updateRegion(curRegion, animate);
-        messageManager.info(i18n("hud.clear"));
+        messageManager.info(i18n("hud.cleared"));
     }
 
     public void cmdSet(RegionBase newRegion, boolean animate) {
@@ -121,10 +124,10 @@ public class Controller {
         // Update UI.
         shapeManager.updateRegion(curRegion, true);
         if (expand) {
-            String s = i18n("hud.resize." + (amount > 0.0 ? "expand" : "contract"));
-            messageManager.info(i18n("hud.resize", s, curRegion));
+            String s = i18n("hud.resized." + (amount > 0.0 ? "expanded" : "contracted"));
+            messageManager.info(i18n("hud.resized", s, curRegion));
         } else {
-            messageManager.info(i18n("hud.move", dir, curRegion));
+            messageManager.info(i18n("hud.moved", dir, curRegion));
         }
     }
 
@@ -156,7 +159,7 @@ public class Controller {
     }
 
     public void notifyDenyClick() {
-        messageManager.info(i18n("hud.misclick"));
+        messageManager.info(i18n("hud.misclicked"));
     }
 
     public void toggleGui(boolean isGuiScreenActive) {

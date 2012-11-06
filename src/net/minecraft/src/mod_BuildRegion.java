@@ -30,13 +30,9 @@ public class mod_BuildRegion extends BaseMod implements LSDEventListener, Player
         return "BuildRegion";
     }
 
-    public String getModVersion() {
-        return "1.1.1-SNAPSHOT";
-    }
-
     @Override
     public String getVersion() {
-        return getModVersion() + " [1.4.2]";
+        return Controller.MOD_VERSION + " [" + Controller.MINECRAFT_VERSION + "]";
     }
 
     @Override
@@ -81,7 +77,7 @@ public class mod_BuildRegion extends BaseMod implements LSDEventListener, Player
         }
         PlayerControllerHooks.installHooks();
         if (updateCheck == null) {
-            updateCheck = new UpdateCheck(getModVersion(), controller.getModDirectory());
+            updateCheck = new UpdateCheck(Controller.MOD_VERSION, controller.getModDirectory());
         }
     }
 

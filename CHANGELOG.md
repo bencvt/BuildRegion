@@ -1,8 +1,8 @@
-## partially implemented features to be released in 1.2
+## partially implemented features to be released in 2.0
 - added new region types: cuboid, cylinder, sphere
-- added a GUI screen to set region parameters, accessible by pressing `B`
-- changed the build mode keybind to `shift-B` (was: `B`)
-- removed the usage keybind (was: `shift-B`); now accessible via the GUI
+- added a GUI to set region parameters, accessible by pressing `shift-B`
+- added new keybinds to move and resize regions
+- added localization support; translators needed!
 
 ## 1.1
 - updated for Minecraft 1.4
