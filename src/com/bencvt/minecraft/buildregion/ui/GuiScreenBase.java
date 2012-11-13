@@ -25,7 +25,6 @@ import com.bencvt.minecraft.buildregion.lang.LocalizedString;
  */
 public abstract class GuiScreenBase extends GuiScreen {
     public final GuiScreenBase parentScreen;
-    private Boolean needToPlayClickSound;
 
     public GuiScreenBase(GuiScreenBase parentScreen) {
         this.parentScreen = parentScreen;
@@ -47,31 +46,8 @@ public abstract class GuiScreenBase extends GuiScreen {
         mc.displayGuiScreen(parentScreen);
     }
 
-    /** Intended to be called from GuiControlBase.mousePressed. */
-    public final boolean muteNextClickSound() {
-        needToPlayClickSound = false;
-        return true;
-    }
-
-    @Override
-    protected final void mouseClicked(int xMouse, int yMouse, int mouseButton) {
-        needToPlayClickSound = null;
-
-        float origVolume = mc.gameSettings.soundVolume;
-        mc.gameSettings.soundVolume = 0.0F;
-        super.mouseClicked(xMouse, yMouse, mouseButton);
-        mc.gameSettings.soundVolume = origVolume;
-
-        if (needToPlayClickSound != null && needToPlayClickSound) {
-            mc.sndManager.playSoundFX("random.click", 1.0F, 1.0F);
-        }
-    }
-
     @Override
     protected final void actionPerformed(GuiButton guiButton) {
-        if (needToPlayClickSound == null) {
-            needToPlayClickSound = true;
-        }
         onControlClick(guiButton);
     }
 

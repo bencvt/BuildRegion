@@ -230,25 +230,25 @@ public class GuiInputNumber extends GuiLabeledControl {
         final int xR = xPosition + width - xMouse;
         if (xL >= XBEGIN_TEXT && xL <= XEND_TEXT) {
             System.out.println("you clicked text");//TODO: turn into text input box
-            return parent.muteNextClickSound();
+            return true;
         } else if (isMinusButtonEnabled() && xL >= XBEGIN_MINUS && xL <= XEND_MINUS) {
             setValue(value - units.atom);
-            return parent.muteNextClickSound();
+            return true;
         } else if (isPlusButtonEnabled() && xL >= XBEGIN_PLUS && xL <= XEND_PLUS) {
             setValue(value + units.atom);
-            return parent.muteNextClickSound();
+            return true;
         } else if (xL >= XBEGIN_SLIDER && xR >= R_XBEGIN_SLIDER) {
             setDragging(true);
             dragBaseValue = value;
             setValueFromSlider(xMouse);
-            return parent.muteNextClickSound();
+            return true;
         } else if (group != null && xR <= R_XEND_GROUP) {
             if (group.isLocked()) {
                 group.unlock();
             } else {
                 group.lock(value);
             }
-            return parent.muteNextClickSound();
+            return true;
         } else {
             return false;
         }
