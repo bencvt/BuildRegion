@@ -100,25 +100,44 @@ public abstract class GuiScreenBase extends GuiScreen {
 
     public static int BOTTOM_OVERLAY_HEIGHT = 28;
 
+    /** Hide the HUD */
     public void drawBottomOverlay() {
         final int top = height - BOTTOM_OVERLAY_HEIGHT;
-        drawRect(0, top, width, height, Color.PALE_GOLDENROD.getARGB());
-        //if(true)return;
+        final Tessellator tess = Tessellator.instance;
+
+        // Draw darkened background texture
+        GL11.glDisable(GL11.GL_LIGHTING);
+        GL11.glDisable(GL11.GL_FOG);
+        GL11.glDisable(GL11.GL_DEPTH_TEST);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, mc.renderEngine.getTexture("/gui/background.png"));
+        final double txSize = 32.0;
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        //GL11.glColor4d(1.0, 1.0, 1.0, 1.0);
-        Tessellator tess = Tessellator.instance;
         tess.startDrawingQuads();
-        tess.setColorRGBA_I(4210752, 255);
-        //tess.setColorRGBA(0x40, 0x40, 0x40, 0xff);
-        tess.addVertexWithUV(0.0,   top,    0.0, 0.0,        top/32.0);
-        tess.addVertexWithUV(width, top,    0.0, width/32.0, top/32.0);
-        tess.setColorRGBA_I(4210752, 255);
-        //tess.setColorRGBA(0x40, 0x40, 0x40, 0xff);
-        tess.addVertexWithUV(width, height, 0.0, width/32.0, height/32.0);
-        tess.addVertexWithUV(0.0,   height, 0.0, 0.0,        height/32.0);
+        tess.setColorRGBA_I(0x404040, 255);
+        tess.addVertexWithUV(  0.0, height, 0.0,    0.0/txSize, height/txSize);
+        tess.addVertexWithUV(width, height, 0.0,  width/txSize, height/txSize);
+        tess.addVertexWithUV(width,    top, 0.0,  width/txSize,    top/txSize);
+        tess.addVertexWithUV(  0.0,    top, 0.0,    0.0/txSize,    top/txSize);
         tess.draw();
-        // TODO: more rendering to do.....
+
+        // Draw gradient on top edge
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL11.glDisable(GL11.GL_ALPHA_TEST);
+        GL11.glShadeModel(GL11.GL_SMOOTH);
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        tess.startDrawingQuads();
+        tess.setColorRGBA_I(0, 0);
+        tess.addVertexWithUV(  0.0, top + 4, 0.0,   0.0, 1.0);
+        tess.addVertexWithUV(width, top + 4, 0.0,   1.0, 1.0);
+        tess.setColorRGBA_I(0, 255);
+        tess.addVertexWithUV(width,     top, 0.0,   1.0, 0.0);
+        tess.addVertexWithUV(  0.0,     top, 0.0,   0.0, 0.0);
+        tess.draw();
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glShadeModel(GL11.GL_FLAT);
+        GL11.glEnable(GL11.GL_ALPHA_TEST);
+        GL11.glDisable(GL11.GL_BLEND);
     }
 
     public static void drawRectBorder(int xLeft, int yTop, int xRight, int yBottom, int borderARGB, int borderThickness) {
