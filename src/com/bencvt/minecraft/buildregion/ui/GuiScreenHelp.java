@@ -113,8 +113,7 @@ public class GuiScreenHelp extends GuiScreenBase {
             }
 
             @Override
-            protected int func_77225_g() {
-                // should be deobfuscated as something like getScrollbarXPos
+            protected int getScrollBarX() {
                 return width - 10;
             }
         };
