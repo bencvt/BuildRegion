@@ -46,7 +46,7 @@ public class GuiScreenHelp extends GuiScreenBase {
         lines.add(i18n("help.usage"));
         lines.addAll(Arrays.asList(controller.getInputManager().getUsage("  ").split("\n")));
         lines.add("");
-        lines.add(i18n("help.gui"));
+        lines.addAll(fontRenderer.listFormattedStringToWidth(i18n("help.gui"), width - MARGIN_X*2));
         lines.add("");
 
         rightColumnLines.clear();
