@@ -389,6 +389,12 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
     }
 
     private void onRegionKeyOrMouseChange() {
+        inputBuildMode.setSelectedValue(controller.getBuildMode().getValue(), true);
+        RegionType regionType = RegionType.NONE;
+        if (controller.getCurRegion() != null) {
+            regionType = controller.getCurRegion().getRegionType();
+        }
+        inputRegionType.setSelectedValue(regionType, true);
         regionFactory.setRegion(controller.getPrototypeRegion());
         importRegion();
         updateControlProperties();
