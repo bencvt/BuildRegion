@@ -71,7 +71,7 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
     private final HashMap<RegionType, ArrayList<GuiLabeledControl>> rows;
     private final GuiStandardButton buttonHelp;
     private final GuiStandardButton buttonOptions;
-    private final GuiStandardButton buttonReset;
+    private final GuiStandardButton buttonUndo;
     private final GuiStandardButton buttonDone;
     // Position, height, and width are calculated in initGui().
     private int windowXPosition;
@@ -170,7 +170,8 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
         // Create other (non-row) controls.
         buttonHelp = new GuiStandardButton(this, i18n("button.help"));
         buttonOptions = new GuiStandardButton(this, i18n("button.options"));
-        buttonReset = new GuiStandardButton(this, i18n("button.reset"));
+        buttonUndo = new GuiStandardButton(this, i18n("button.undo"));
+        buttonUndo.setEnabled(false);
         buttonDone = new GuiStandardButton(this, i18n("button.done"));
 
         // Defer positioning and width adjustments until initGui().
@@ -239,7 +240,7 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
         // Add to the main list of controls to render.
         final int buttonWidth = Math.max(
                 Math.max(buttonHelp.getWidth(), buttonOptions.getWidth()),
-                Math.max(buttonReset.getWidth(), buttonDone.getWidth()));
+                Math.max(buttonUndo.getWidth(), buttonDone.getWidth()));
         xPos = windowXPosition;
         yPos = windowYPosition + windowHeight; // no vertical padding
         controlList.add(buttonHelp.setWidth(buttonWidth).setPositionXY(xPos, yPos));
@@ -248,8 +249,8 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
         //controlList.add(buttonOptions.setWidth(buttonWidth).setPositionXY(xPos, yPos));
         xPos = windowXPosition + windowWidth - buttonDone.setWidth(buttonWidth).getWidth();
         controlList.add(buttonDone.setPositionXY(xPos, yPos));
-        xPos -= buttonReset.setWidth(buttonWidth).getWidth() + 4;
-        controlList.add(buttonReset.setPositionXY(xPos, yPos));
+        xPos -= buttonUndo.setWidth(buttonWidth).getWidth() + 4;
+        controlList.add(buttonUndo.setPositionXY(xPos, yPos));
 
         // Hide the chat window which would otherwise clutter up the screen.
         ChatHider.hide();
@@ -407,7 +408,7 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
             open(new GuiScreenHelp(this, controller));
         } else if (guiButton == buttonOptions) {
             open(new GuiScreenOptions(this));
-        } else if (guiButton == buttonReset) {
+        } else if (guiButton == buttonUndo) {
             // Reset build mode and region to whatever they were when the user
             // opened the gui.
             controller.cmdMode(inputBuildMode
@@ -415,6 +416,7 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
                     .getSelectedValue());
             regionFactory.reset();
             onControlClick(inputRegionType.setSelectedValue(originalRegionType, true));
+            buttonUndo.setEnabled(false);
         } else if (guiButton == buttonDone) {
             // Restore the chat window. We do this here instead of overriding
             // onGuiClosed because we want chat hidden for child windows too.
@@ -422,14 +424,17 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
             close();
         } else if (guiButton == inputBuildMode) {
             controller.cmdMode(inputBuildMode.getSelectedValue());
+            buttonUndo.setEnabled(true);
         } else if (guiButton == inputRegionType) {
             importRegion();
             updateControlProperties();
             controller.cmdSet(regionFactory.getRegion(), true);
+            buttonUndo.setEnabled(true);
         } else {
             exportRegion();
             updateControlProperties();
             controller.cmdSet(regionFactory.getRegion(), true);
+            buttonUndo.setEnabled(true);
         }
     }
 
