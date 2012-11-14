@@ -52,24 +52,26 @@ public class Controller {
     // cmd methods to update state
     // ========
 
-    public void cmdReset() {
+    public boolean cmdReset() {
         buildMode.setValueNoAnimation(BuildMode.INSIDE);
         curRegion = null;
         prevRegion = RegionBase.DEFAULT_REGION;
         shapeManager.reset();
+        return true;
     }
 
-    public void cmdClear(boolean animate) {
+    public boolean cmdClear(boolean animate) {
         if (curRegion == null) {
-            return;
+            return false;
         }
         prevRegion = curRegion;
         curRegion = null;
         shapeManager.updateRegion(curRegion, animate);
         messageManager.info(i18n("hud.cleared"));
+        return true;
     }
 
-    public void cmdSet(RegionBase newRegion, boolean animate) {
+    public boolean cmdSet(RegionBase newRegion, boolean animate) {
         if (newRegion == null) {
             cmdClear(animate);
         }
@@ -82,26 +84,26 @@ public class Controller {
         shapeManager.updateRegion(curRegion, animate);
         messageManager.info(i18n("hud.set", curRegion));
         // TODO: option to keep curRegion visible in a corner of the screen at all times as part of the HUD
+        return true;
     }
 
-    public void cmdSetFacing(RelativeDirection3D relDir) {
+    public boolean cmdSetFacing(RelativeDirection3D relDir) {
         RegionBase protoRegion = getPrototypeRegion();
         Direction3D dir = getFacingDirection(relDir, false);
         if (dir == null) {
-            return;
+            return false;
         }
         RegionBase newRegion = protoRegion.copyUsing(getBlockInFrontOfPlayerWork(dir), dir.axis);
-        cmdSet(newRegion, true);
+        return cmdSet(newRegion, true);
     }
 
-    public void cmdAdjustFacing(boolean expand, RelativeDirection3D relDir) {
+    public boolean cmdAdjustFacing(boolean expand, RelativeDirection3D relDir) {
         Direction3D dir = getFacingDirection(relDir, true);
         if (dir == null) {
-            return;
+            return false;
         }
         if (curRegion == null || !curRegion.canAdjustAlongAxis(expand, dir.axis)) {
-            cmdSetFacing(relDir);
-            return;
+            return cmdSetFacing(relDir);
         }
 
         // Update region.
@@ -109,7 +111,7 @@ public class Controller {
         double amount = dir.axisDirection * curRegion.getUnits(dir.axis).atom;
         if (expand) {
             if (!curRegion.expand(dir.axis, amount)) {
-                return;
+                return false;
             }
         } else {
             curRegion.addOriginCoord(dir.axis, amount);
@@ -123,20 +125,23 @@ public class Controller {
         } else {
             messageManager.info(i18n("hud.moved", dir, curRegion));
         }
+        return true;
     }
 
-    public void cmdMode(BuildMode newMode) {
+    public boolean cmdMode(BuildMode newMode) {
         buildMode.setValue(newMode);
         messageManager.info(i18n("hud.mode", newMode,
                 inputManager.KEYBIND_MODE.getKeyName(true)));
+        return true;
     }
 
-    public void cmdModeNext() {
-        cmdMode(buildMode.getValue().getNextMode());
+    public boolean cmdModeNext() {
+        return cmdMode(buildMode.getValue().getNextMode());
     }
 
-    public void cmdOpenGui() {
+    public boolean cmdOpenGui() {
         new GuiScreenDefineRegion(this).open();
+        return true;
     }
 
     // ========
@@ -188,8 +193,8 @@ public class Controller {
         }
     }
 
-    public boolean isRegionActive() {
-        return curRegion != null;
+    public RegionBase getCurRegion() {
+        return curRegion;
     }
 
     public RegionBase getPrototypeRegion() {

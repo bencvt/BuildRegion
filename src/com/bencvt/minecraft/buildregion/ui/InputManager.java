@@ -13,6 +13,7 @@ import com.bencvt.minecraft.buildregion.Controller;
 import com.bencvt.minecraft.buildregion.lang.LocalizedString;
 import com.bencvt.minecraft.buildregion.region.Direction3D;
 import com.bencvt.minecraft.buildregion.region.RelativeDirection3D;
+import com.bencvt.minecraft.buildregion.ui.window.GuiScreenDefineRegion;
 
 /**
  * Handle user input (keyboard/mouse events).
@@ -48,6 +49,12 @@ public class InputManager {
             Keyboard.KEY_RIGHT, false,
             "buildregion.shift.right",
             "BuildRegion shift right");
+    public static final CustomKeyBinding[] ALL_KEYBINDS = {
+        KEYBIND_MODE,
+        KEYBIND_SHIFT_BACK, KEYBIND_SHIFT_FWD,
+        KEYBIND_SHIFT_UP, KEYBIND_SHIFT_DOWN,
+        KEYBIND_SHIFT_LEFT, KEYBIND_SHIFT_RIGHT
+    };
 
     public static boolean IS_MAC = Minecraft.getOs() == EnumOS.MACOS;
     // Control-left-click on Mac OS X is right-click, so use command instead.
@@ -68,59 +75,61 @@ public class InputManager {
     public InputManager(Controller controller, BaseMod mod, Minecraft minecraft) {
         this.controller = controller;
         this.minecraft = minecraft;
-        KEYBIND_MODE.register(mod);
-        KEYBIND_SHIFT_BACK.register(mod);
-        KEYBIND_SHIFT_FWD.register(mod);
-        KEYBIND_SHIFT_UP.register(mod);
-        KEYBIND_SHIFT_DOWN.register(mod);
-        KEYBIND_SHIFT_LEFT.register(mod);
-        KEYBIND_SHIFT_RIGHT.register(mod);
+        for (CustomKeyBinding key : ALL_KEYBINDS) {
+            key.register(mod);
+        }
     }
 
-    public void handleKeyboardEvent(KeyBinding key) {
-        if (minecraft.currentScreen != null || minecraft.thePlayer == null) {
-            return;
+    public boolean handleKeyboardEvent(KeyBinding key, boolean inGui) {
+        if ((!inGui && minecraft.currentScreen != null) || minecraft.thePlayer == null) {
+            return false;
         }
-        if (key == KEYBIND_MODE) {
-            if (isShiftOrControlKeyDown() || !controller.isRegionActive()) {
-                controller.cmdOpenGui();
+        if (key == KEYBIND_MODE && !inGui) {
+            if (isShiftOrControlKeyDown() || controller.getCurRegion() == null) {
+                return controller.cmdOpenGui();
             } else {
-                controller.cmdModeNext();
+                return controller.cmdModeNext();
             }
         } else if (key == KEYBIND_SHIFT_BACK) {
-            controller.cmdAdjustFacing(isShiftOrControlKeyDown(), RelativeDirection3D.BACK);
+            return controller.cmdAdjustFacing(isShiftOrControlKeyDown(), RelativeDirection3D.BACK);
         } else if (key == KEYBIND_SHIFT_FWD) {
-            controller.cmdAdjustFacing(isShiftOrControlKeyDown(), RelativeDirection3D.FORWARD);
+            return controller.cmdAdjustFacing(isShiftOrControlKeyDown(), RelativeDirection3D.FORWARD);
         } else if (key == KEYBIND_SHIFT_UP) {
-            controller.cmdAdjustFacing(isShiftOrControlKeyDown(), RelativeDirection3D.UP);
+            return controller.cmdAdjustFacing(isShiftOrControlKeyDown(), RelativeDirection3D.UP);
         } else if (key == KEYBIND_SHIFT_DOWN) {
-            controller.cmdAdjustFacing(isShiftOrControlKeyDown(), RelativeDirection3D.DOWN);
+            return controller.cmdAdjustFacing(isShiftOrControlKeyDown(), RelativeDirection3D.DOWN);
         } else if (key == KEYBIND_SHIFT_LEFT) {
-            controller.cmdAdjustFacing(isShiftOrControlKeyDown(), RelativeDirection3D.LEFT);
+            return controller.cmdAdjustFacing(isShiftOrControlKeyDown(), RelativeDirection3D.LEFT);
         } else if (key == KEYBIND_SHIFT_RIGHT) {
-            controller.cmdAdjustFacing(isShiftOrControlKeyDown(), RelativeDirection3D.RIGHT);
+            return controller.cmdAdjustFacing(isShiftOrControlKeyDown(), RelativeDirection3D.RIGHT);
         }
+        return false;
     }
 
-    public void checkForMouseEvent() {
+    public boolean handleInput(boolean inGui) {
+        if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
+            ChatHider.show();
+        }
+        if (!inGui && minecraft.currentScreen != null) {
+            return false;
+        }
+        // Check for mouse events.
         if (MOUSE_MOD_LEFT_CLICK_CLEARS && Mouse.isButtonDown(0) && isMouseModKeyDown()) {
             long now = System.currentTimeMillis();
             if (now > lastMouseEvent + MOUSE_EVENT_INTERVAL) {
                 lastMouseEvent = now;
-                controller.cmdClear(true);
+                return controller.cmdClear(true);
             }
         } else if (MOUSE_MOD_RIGHT_CLICK_SETS && Mouse.isButtonDown(1) && isMouseModKeyDown()) {
             long now = System.currentTimeMillis();
             if (now > lastMouseEvent + MOUSE_EVENT_INTERVAL) {
                 lastMouseEvent = now;
-                controller.cmdSetFacing(RelativeDirection3D.FORWARD);
+                return controller.cmdSetFacing(RelativeDirection3D.FORWARD);
             }
         }
+        return false;
         // TODO: mod+mousewheel to shift region forward/back
         // TODO: mod+middle button to bring up gui
-        if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
-            ChatHider.show();
-        }
     }
 
     private boolean isMouseModKeyDown() {

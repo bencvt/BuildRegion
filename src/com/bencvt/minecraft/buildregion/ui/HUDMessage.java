@@ -3,7 +3,6 @@ package com.bencvt.minecraft.buildregion.ui;
 import libshapedraw.primitive.Color;
 import libshapedraw.primitive.ReadonlyColor;
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.GuiChat;
 import net.minecraft.src.ScaledResolution;
 
 /**
@@ -24,15 +23,23 @@ public class HUDMessage {
         this.minecraft = minecraft;
     }
 
+    private boolean isHiddenByGui(boolean highPriority) {
+        if (minecraft.currentScreen == null && !minecraft.gameSettings.hideGUI) {
+            return false;
+        }
+        return !highPriority;
+    }
+
     /**
      * @param message
+     * @param highPriority if true display the HUD message even if a GUI screen is active
      * @param startColor
      * @param fadeToColor if you want a static color, just set this to the same as startColor
      * @param fadeDuration how long the animation lasts in milliseconds
      */
-    public void update(String message, ReadonlyColor startColor, ReadonlyColor fadeToColor, long fadeDuration) {
+    public void update(String message, boolean highPriority, ReadonlyColor startColor, ReadonlyColor fadeToColor, long fadeDuration) {
         clear();
-        if (minecraft.gameSettings.hideGUI || minecraft.currentScreen != null) {
+        if (isHiddenByGui(highPriority)) {
             return;
         }
         lines = message.split("\n");
@@ -47,10 +54,7 @@ public class HUDMessage {
     }
 
     public void render() {
-        if (!color.isAnimating()) {
-            return;
-        }
-        if (minecraft.currentScreen != null && !(minecraft.currentScreen instanceof GuiChat)) {
+        if (!color.isAnimating() || isHiddenByGui(true)) {
             return;
         }
         int argb = color.getARGB();

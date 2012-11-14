@@ -51,6 +51,7 @@ public abstract class GuiScreenBase extends GuiScreen {
         mc.displayGuiScreen(newScreen);
     }
     public void close() {
+        Mouse.setGrabbed(false);
         mc.displayGuiScreen(parentScreen);
     }
 

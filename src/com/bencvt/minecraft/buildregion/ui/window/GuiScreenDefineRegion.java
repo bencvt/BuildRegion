@@ -20,6 +20,7 @@ import com.bencvt.minecraft.buildregion.region.RegionSphere;
 import com.bencvt.minecraft.buildregion.region.RegionType;
 import com.bencvt.minecraft.buildregion.region.Units;
 import com.bencvt.minecraft.buildregion.ui.ChatHider;
+import com.bencvt.minecraft.buildregion.ui.CustomKeyBinding;
 
 /**
  * The main BuildRegion GUI.
@@ -36,6 +37,7 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
     public static final ReadonlyColor SELECT_COLOR = Color.DODGER_BLUE;
 
     private final Controller controller;
+    private final RegionFactory regionFactory;
     private final BuildMode originalBuildMode;
     private final RegionType originalRegionType;
     private final GuiEmptyRow                 rowSpacer;
@@ -78,14 +80,14 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
     private int windowYPosition;
     private int windowHeight;
     private int windowWidth;
-    private final RegionFactory regionFactory;
 
     public GuiScreenDefineRegion(Controller controller) {
         super(null); // this is a root screen
         this.controller = controller;
+        regionFactory = new RegionFactory(controller.getPrototypeRegion(), controller.getBlockInFrontOfPlayer());
         originalBuildMode = controller.getBuildMode().getValue();
-        if (controller.isRegionActive()) {
-            originalRegionType = controller.getPrototypeRegion().getRegionType();
+        if (controller.getCurRegion() != null) {
+            originalRegionType = controller.getCurRegion().getRegionType();
         } else {
             originalRegionType = RegionType.NONE;
         }
@@ -160,7 +162,6 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
         rows.get(RegionType.SPHERE).add(inputSphereRadiusZ);
 
         // Populate the row controls' contents from the controller.
-        regionFactory = new RegionFactory(controller.getPrototypeRegion(), controller.getBlockInFrontOfPlayer());
         inputBuildMode.setSelectedValue(originalBuildMode, false);
         inputRegionType.setSelectedValue(originalRegionType, false);
         importRegion();
@@ -253,9 +254,6 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
 
         // Hide the chat window which would otherwise clutter up the screen.
         ChatHider.hide();
-
-        // TODO: allow the keybinds to move regions around to still work
-        // TODO: pressing B or Esc is the same as pressing the "OK" button
     }
 
     /**
@@ -378,7 +376,32 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
     }
 
     @Override
+    protected void keyTyped(char keyChar, int keyCode) {
+        super.keyTyped(keyChar, keyCode);
+        // Allow BuildRegion keybinds to work even while in the GUI.
+        for (CustomKeyBinding key : controller.getInputManager().ALL_KEYBINDS) {
+            if (key.keyCode == keyCode) {
+                if (controller.getInputManager().handleKeyboardEvent(key, true)) {
+                    onRegionKeyOrMouseChange();
+                }
+            }
+        }
+    }
+
+    private void onRegionKeyOrMouseChange() {
+        regionFactory.setRegion(controller.getPrototypeRegion());
+        importRegion();
+        updateControlProperties();
+        buttonUndo.setEnabled(true);
+    }
+
+    @Override
     public void drawScreen(int xMouse, int yMouse, float partialTick) {
+        // Allow BuildRegion mouse controls to work even while in the GUI.
+        if (controller.getInputManager().handleInput(true)) {
+            onRegionKeyOrMouseChange();
+        }
+
         // Draw HUD-covering overlay at bottom.
         drawBottomOverlay();
 
@@ -406,6 +429,14 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
     }
 
     @Override
+    public void close() {
+        super.close();
+        // Restore the chat window. We do this here instead of overriding
+        // onGuiClosed because we want chat hidden for child windows too.
+        ChatHider.show();
+    }
+
+    @Override
     protected void onControlClick(GuiButton guiButton) {
         if (guiButton == buttonHelp) {
             open(new GuiScreenHelp(this, controller));
@@ -417,13 +448,10 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
             controller.cmdMode(inputBuildMode
                     .setSelectedValue(originalBuildMode, true)
                     .getSelectedValue());
-            regionFactory.reset();
+            regionFactory.setRegion(null);
             onControlClick(inputRegionType.setSelectedValue(originalRegionType, true));
             buttonUndo.setEnabled(false);
         } else if (guiButton == buttonDone) {
-            // Restore the chat window. We do this here instead of overriding
-            // onGuiClosed because we want chat hidden for child windows too.
-            ChatHider.show();
             close();
         } else if (guiButton == inputBuildMode) {
             controller.cmdMode(inputBuildMode.getSelectedValue());

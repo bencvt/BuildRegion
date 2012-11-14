@@ -24,11 +24,11 @@ public class MessageManager {
     }
 
     public void info(String message) {
-        hudMessage.update(message, MESSAGE_COLOR_INFO, MESSAGE_COLOR_INFO, MESSAGE_DURATION_INFO);
+        hudMessage.update(message, false, MESSAGE_COLOR_INFO, MESSAGE_COLOR_INFO, MESSAGE_DURATION_INFO);
     }
 
     public void error(String message) {
-        hudMessage.update(message, MESSAGE_COLOR_ERROR, MESSAGE_COLOR_ERROR, MESSAGE_DURATION_ERROR);
+        hudMessage.update(message, true, MESSAGE_COLOR_ERROR, MESSAGE_COLOR_ERROR, MESSAGE_DURATION_ERROR);
     }
 
     public void chat(String message) {

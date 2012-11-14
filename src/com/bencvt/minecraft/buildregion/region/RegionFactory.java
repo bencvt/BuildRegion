@@ -107,8 +107,7 @@ public class RegionFactory {
     public RegionBase getRegion() {
         return region;
     }
-
-    public void reset() {
-        region = null;
+    public void setRegion(RegionBase region) {
+        this.region = region;
     }
 }
