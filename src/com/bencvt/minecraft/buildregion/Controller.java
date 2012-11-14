@@ -89,14 +89,7 @@ public class Controller {
         if (dir == null) {
             return;
         }
-        Vector3 origin = new Vector3(
-                minecraft.thePlayer.posX,
-                minecraft.thePlayer.posY,
-                minecraft.thePlayer.posZ).floor();
-        RegionBase newRegion = protoRegion.copyUsing(origin, dir.axis);
-        // Move the origin so it's in front of the player.
-        newRegion.addOriginCoord(dir.axis, dir.axisDirection * 2);
-
+        RegionBase newRegion = protoRegion.copyUsing(getBlockInFrontOfPlayerWork(dir), dir.axis);
         cmdSet(newRegion, true);
     }
 
@@ -216,9 +209,22 @@ public class Controller {
         return LocalizedString.translate(key, args);
     }
 
+    public Vector3 getBlockInFrontOfPlayer() {
+        return getBlockInFrontOfPlayerWork(getFacingDirection(RelativeDirection3D.FORWARD, false));
+    }
+
     // ========
     // Internal helper methods
     // ========
+
+    private Vector3 getBlockInFrontOfPlayerWork(Direction3D dir) {
+        // TODO: better rounding, half units?
+        Vector3 coords = new Vector3(
+                minecraft.thePlayer.posX,
+                minecraft.thePlayer.posY,
+                minecraft.thePlayer.posZ).floor();
+        return dir.axis.addVectorComponent(coords, dir.axisDirection * 2.0);
+    }
 
     private Direction3D getFacingDirection(RelativeDirection3D relDir, boolean unambiguously) {
         if (relDir == RelativeDirection3D.UP) {

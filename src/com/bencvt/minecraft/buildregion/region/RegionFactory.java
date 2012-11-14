@@ -1,5 +1,6 @@
 package com.bencvt.minecraft.buildregion.region;
 
+import libshapedraw.primitive.ReadonlyVector3;
 import libshapedraw.primitive.Vector3;
 
 public class RegionFactory {
@@ -8,18 +9,33 @@ public class RegionFactory {
     private final RegionCylinder cylinder;    
     private final RegionSphere sphere;    
 
-    public RegionFactory(RegionBase proto) {
+    public RegionFactory(RegionBase proto, ReadonlyVector3 defaultOrigin) {
         if (proto == null) {
             throw new IllegalArgumentException();
         }
+
+        // Convert proto to a cuboid.
+        Vector3 lower = new Vector3();
+        Vector3 upper = new Vector3();
+        proto.getAABB(lower, upper);
+        final Axis axis = proto.getAxis();
+        cuboid = new RegionCuboid(lower, upper, axis);
         if (proto == RegionBase.DEFAULT_REGION) {
-            // TODO: reposition in front of player
+            // Reposition cuboid's origin in front of player.
+            cuboid.setOriginCoords(defaultOrigin);
         }
-        // TODO: coerce the active Region into instances for the other types with reasonable defaults
-        plane = (proto instanceof RegionPlane) ? (RegionPlane) proto : new RegionPlane(new Vector3(34,67,-32), Axis.Z);
-        cuboid = (proto instanceof RegionCuboid) ? (RegionCuboid) proto : new RegionCuboid(new Vector3(8,83,321),new Vector3(10,7,5), Axis.Y);
-        cylinder = (proto instanceof RegionCylinder) ? (RegionCylinder) proto : new RegionCylinder(new Vector3(-48,72,-93), Axis.Y, 7, 12, 10);
-        sphere = (proto instanceof RegionSphere) ? (RegionSphere) proto : new RegionSphere(new Vector3(108,83,221),new Vector3(10,7,5), Axis.Z);
+        final ReadonlyVector3 origin = cuboid.getOriginReadonly();
+
+        // Convert the cuboid region into the other types.
+        plane = new RegionPlane(origin, axis);
+        cylinder = new RegionCylinder(origin, axis,
+                cuboid.getSize(axis),
+                cuboid.getSize(axis.next())/2.0,
+                cuboid.getSize(axis.next().next())/2.0);
+        sphere = new RegionSphere(origin, new Vector3(
+                cuboid.getSize(axis)/2.0,
+                cuboid.getSize(axis.next())/2.0,
+                cuboid.getSize(axis.next().next())/2.0), axis);
     }
 
     public RegionPlane getPlane() {

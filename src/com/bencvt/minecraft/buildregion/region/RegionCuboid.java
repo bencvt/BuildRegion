@@ -39,10 +39,7 @@ public class RegionCuboid extends RegionBase {
                 result.resize(getSizeY(), getSizeX(), getSizeZ());
             }
         }
-
-        result.getOriginMutable().set(newOrigin);
-        result.onOriginUpdate();
-        return result;
+        return result.setOriginCoords(newOrigin);
     }
 
     private void resize(double sizeX, double sizeY, double sizeZ) {
@@ -161,6 +158,17 @@ public class RegionCuboid extends RegionBase {
     }
     public double getSizeZ() {
         return upperCorner.getZ() - lowerCorner.getZ() + 1;
+    }
+    public double getSize(Axis axis) {
+        if (axis == Axis.X) {
+            return getSizeX();
+        } else if (axis == Axis.Y) {
+            return getSizeY();
+        } else if (axis == Axis.Z) {
+            return getSizeZ();
+        } else {
+            throw new IllegalArgumentException();
+        }
     }
 
     public void setFromCornerSize(double cornerX, double cornerY, double cornerZ, double sizeX, double sizeY, double sizeZ) {

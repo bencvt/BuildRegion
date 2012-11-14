@@ -54,6 +54,13 @@ public class RegionPlane extends RegionBase {
 
     @Override
     public boolean getAABB(Vector3 lower, Vector3 upper) {
+        // make a 7x7x1 box
+        lower.set(getOriginReadonly());
+        upper.set(getOriginReadonly());
+        getAxis().next().addVectorComponent(lower, -3);
+        getAxis().next().addVectorComponent(upper,  3);
+        getAxis().next().next().addVectorComponent(lower, -3);
+        getAxis().next().next().addVectorComponent(upper,  3);
         return false;
     }
 

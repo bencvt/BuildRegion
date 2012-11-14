@@ -141,7 +141,7 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
         rows.get(RegionType.SPHERE).add(inputSphereRadiusZ);
 
         // Populate the row controls' contents from the controller.
-        regionFactory = new RegionFactory(controller.getPrototypeRegion());
+        regionFactory = new RegionFactory(controller.getPrototypeRegion(), controller.getBlockInFrontOfPlayer());
         // TODO: remember the current active Region for the "Reset" button
         inputBuildMode.setSelectedValue(controller.getBuildMode().getValue(), false);
         if (controller.isRegionActive()) {

@@ -108,9 +108,10 @@ public class RegionCylinder extends RegionBase {
     }
 
     @Override
-    public void setAxis(Axis axis) {
+    public RegionBase setAxis(Axis axis) {
         super.setAxis(axis);
         onOriginUpdate();
+        return this;
     }
 
     public double getHeight() {
