@@ -20,7 +20,6 @@ public class ShapeManager {
     private final LibShapeDraw libShapeDraw;
     private RenderBase mainShape;
     private RenderBase prevShape;
-    private boolean guiScreenActive;
 
     public ShapeManager(Controller controller, LibShapeDraw libShapeDraw) {
         this.controller = controller;
@@ -43,7 +42,6 @@ public class ShapeManager {
         }
         removeShape(animate);
         mainShape = createShape(region);
-        mainShape.setRenderMarkersNow(guiScreenActive);
         libShapeDraw.addShape(mainShape);
         mainShape.animateFadeIn(animate);
     }
@@ -91,16 +89,6 @@ public class ShapeManager {
     public void updateObserverPosition(ReadonlyVector3 playerCoords) {
         if (mainShape != null) {
             mainShape.updateObserverPosition(playerCoords);
-        }
-    }
-
-    public void setGuiScreenActive(boolean guiScreenActive) {
-        this.guiScreenActive = guiScreenActive;
-        if (mainShape != null) {
-            mainShape.setRenderMarkersNow(guiScreenActive);
-        }
-        if (prevShape != null) {
-            prevShape.setRenderMarkersNow(guiScreenActive);
         }
     }
 }

@@ -63,13 +63,12 @@ public abstract class RenderBase extends Shape {
     private final ReadonlyColor lineColorHidden;
     private double alphaBase; // [0.0, 1.0] alpha scaling factor to apply to all lines
     private final ShapeScale shapeScale; // transform the entire shape
-    private boolean renderMarkersNow;
-    private final boolean renderMarkersNormally;
+    private final boolean renderMarkers;
     private final Vector3 actualOrigin;
     private Timeline timelineShiftOrigin;
     private Timeline timelineFade;
 
-    protected RenderBase(ReadonlyColor lineColorVisible, ReadonlyColor lineColorHidden, boolean renderOriginMarkerNormally) {
+    protected RenderBase(ReadonlyColor lineColorVisible, ReadonlyColor lineColorHidden, boolean renderOriginMarker) {
         super(Vector3.ZEROS.copy()); // child class responsible for setting origin
         setRelativeToOrigin(false);
         if (lineColorVisible == null || lineColorHidden == null ||
@@ -81,7 +80,7 @@ public abstract class RenderBase extends Shape {
         setAlphaBase(1.0);
         shapeScale = new ShapeScale(1.0, 1.0, 1.0);
         addTransform(shapeScale);
-        this.renderMarkersNormally = renderOriginMarkerNormally;
+        this.renderMarkers = renderOriginMarker;
         actualOrigin = getOriginReadonly().copy();
     }
 
@@ -133,10 +132,10 @@ public abstract class RenderBase extends Shape {
     }
 
     /**
-     * Render a marker at the region's origin.
+     * Render markers at the region's origin and at the region's lower corner.
      */
     protected void renderMarkers(MinecraftAccess mc, ReadonlyColor lineColor) {
-        if (!renderMarkersNormally && !renderMarkersNow) {
+        if (!renderMarkers) {
             return;
         }
 
@@ -276,13 +275,6 @@ public abstract class RenderBase extends Shape {
      * is the input to use to limit the number of lines rendered.
      */
     public abstract void updateObserverPosition(ReadonlyVector3 observerPosition);
-
-    public boolean isRenderMarkersNow() {
-        return renderMarkersNow;
-    }
-    public void setRenderMarkersNow(boolean renderMarkersNow) {
-        this.renderMarkersNow = renderMarkersNow;
-    }
 
     // ========
     // Animation

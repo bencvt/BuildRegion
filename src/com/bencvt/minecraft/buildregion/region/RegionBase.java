@@ -1,9 +1,9 @@
 package com.bencvt.minecraft.buildregion.region;
 
-import com.bencvt.minecraft.buildregion.lang.LocalizedString;
-
 import libshapedraw.primitive.ReadonlyVector3;
 import libshapedraw.primitive.Vector3;
+
+import com.bencvt.minecraft.buildregion.lang.LocalizedString;
 
 /**
  * A geometric region in space.

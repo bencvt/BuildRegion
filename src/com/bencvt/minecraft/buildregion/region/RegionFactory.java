@@ -23,6 +23,10 @@ public class RegionFactory {
         if (proto == RegionBase.DEFAULT_REGION) {
             // Reposition cuboid's origin in front of player.
             cuboid.setOriginCoords(defaultOrigin);
+        } else if (proto.getRegionType() == RegionType.PLANE) {
+            // Project player coordinates onto origin.
+            cuboid.setOriginCoord(axis.next(), axis.next().getVectorComponent(defaultOrigin));
+            cuboid.setOriginCoord(axis.next().next(), axis.next().next().getVectorComponent(defaultOrigin));
         }
         final ReadonlyVector3 origin = cuboid.getOriginReadonly();
 

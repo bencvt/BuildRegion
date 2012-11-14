@@ -24,7 +24,7 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
     public static final int ROW_SPACING = 2;
     public static final int PAD = 2;
     public static final int BORDER_THICKNESS = 1;
-    public static final int BACKGROUND_ARGB        = Color.BLACK.copy().setAlpha(7.0/16.0).getARGB();
+    public static final int BACKGROUND_ARGB        = Color.BLACK.copy().setAlpha(3.0/8.0).getARGB();
     public static final ReadonlyColor BORDER_COLOR = Color.BLACK.copy().setAlpha(1.0/8.0);
     public static final int BORDER_ARGB            = BORDER_COLOR.getARGB();
     public static final ReadonlyColor SELECT_COLOR = Color.DODGER_BLUE;
@@ -238,9 +238,7 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
         xPos -= buttonReset.setWidth(buttonWidth).getWidth() + 4;
         controlList.add(buttonReset.setPositionXY(xPos, yPos));
 
-        // Notify controller that the GUI is open.
-        controller.toggleGui(true);
-
+        // Hide the chat window which would otherwise clutter up the screen.
         ChatHider.hide();
 
         // TODO: possibly allow the user to look around by holding right-click and moving around, or auto-follow the origin
@@ -314,11 +312,6 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
         regionFactory.getSphere().setRadiusZ(inputSphereRadiusZ.getValue());
     }
 
-    @Override
-    public void onGuiClosed() {
-        controller.toggleGui(false);
-    }
-
     public void updateControlProperties() {
         // Hide controls that don't match the current region type being modified.
         RegionType active = inputRegionType.getSelectedValue();
@@ -375,6 +368,9 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
             //regionFactory.reset();
             importRegionValues();
         } else if (guiButton == buttonDone) {
+            // Restore the chat window. We do this here instead of overriding
+            // onGuiClosed because we want chat hidden for child windows too.
+            ChatHider.show();
             close();
         } else if (guiButton == inputBuildMode) {
             controller.cmdMode(inputBuildMode.getSelectedValue());

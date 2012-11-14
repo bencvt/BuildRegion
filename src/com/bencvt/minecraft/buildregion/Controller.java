@@ -155,10 +155,6 @@ public class Controller {
         messageManager.info(i18n("hud.misclicked"));
     }
 
-    public void toggleGui(boolean isGuiScreenActive) {
-        shapeManager.setGuiScreenActive(isGuiScreenActive);
-    }
-
     // ========
     // Misc accessors
     // ========
