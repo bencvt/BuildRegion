@@ -1,4 +1,4 @@
-package com.bencvt.minecraft.buildregion.ui;
+package com.bencvt.minecraft.buildregion.ui.world;
 
 import libshapedraw.MinecraftAccess;
 import libshapedraw.animation.trident.Timeline;

@@ -12,10 +12,10 @@ import com.bencvt.minecraft.buildregion.lang.LocalizedString;
 import com.bencvt.minecraft.buildregion.region.Direction3D;
 import com.bencvt.minecraft.buildregion.region.RegionBase;
 import com.bencvt.minecraft.buildregion.region.RelativeDirection3D;
-import com.bencvt.minecraft.buildregion.ui.GuiScreenDefineRegion;
 import com.bencvt.minecraft.buildregion.ui.InputManager;
 import com.bencvt.minecraft.buildregion.ui.MessageManager;
-import com.bencvt.minecraft.buildregion.ui.ShapeManager;
+import com.bencvt.minecraft.buildregion.ui.window.GuiScreenDefineRegion;
+import com.bencvt.minecraft.buildregion.ui.world.ShapeManager;
 
 /**
  * Primary class that ties everything together.

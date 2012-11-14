@@ -1,4 +1,4 @@
-package com.bencvt.minecraft.buildregion.ui;
+package com.bencvt.minecraft.buildregion.ui.window;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,6 +13,7 @@ import com.bencvt.minecraft.buildregion.region.Axis;
 import com.bencvt.minecraft.buildregion.region.RegionFactory;
 import com.bencvt.minecraft.buildregion.region.RegionType;
 import com.bencvt.minecraft.buildregion.region.Units;
+import com.bencvt.minecraft.buildregion.ui.ChatHider;
 
 /**
  * The main BuildRegion GUI.

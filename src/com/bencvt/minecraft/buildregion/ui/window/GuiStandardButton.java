@@ -1,4 +1,4 @@
-package com.bencvt.minecraft.buildregion.ui;
+package com.bencvt.minecraft.buildregion.ui.window;
 
 
 public class GuiStandardButton extends GuiControlBase {

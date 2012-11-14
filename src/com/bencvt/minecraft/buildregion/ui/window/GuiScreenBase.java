@@ -1,4 +1,4 @@
-package com.bencvt.minecraft.buildregion.ui;
+package com.bencvt.minecraft.buildregion.ui.window;
 
 import libshapedraw.primitive.Color;
 import net.minecraft.client.Minecraft;
@@ -10,6 +10,7 @@ import net.minecraft.src.Tessellator;
 import org.lwjgl.opengl.GL11;
 
 import com.bencvt.minecraft.buildregion.lang.LocalizedString;
+import com.bencvt.minecraft.buildregion.ui.ChatHider;
 
 /**
  * Abstract GuiScreen base class. Same as vanilla Minecraft's, plus various

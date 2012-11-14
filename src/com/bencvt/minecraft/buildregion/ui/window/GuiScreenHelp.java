@@ -1,4 +1,4 @@
-package com.bencvt.minecraft.buildregion.ui;
+package com.bencvt.minecraft.buildregion.ui.window;
 
 import java.awt.Desktop;
 import java.net.URI;

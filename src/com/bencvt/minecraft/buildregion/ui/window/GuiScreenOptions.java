@@ -1,4 +1,4 @@
-package com.bencvt.minecraft.buildregion.ui;
+package com.bencvt.minecraft.buildregion.ui.window;
 
 import net.minecraft.src.GuiButton;
 import net.minecraft.src.GuiControls;
