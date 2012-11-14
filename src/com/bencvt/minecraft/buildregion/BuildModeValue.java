@@ -1,6 +1,5 @@
 package com.bencvt.minecraft.buildregion;
 
-import libshapedraw.animation.trident.Timeline;
 import libshapedraw.primitive.Color;
 import libshapedraw.primitive.ReadonlyColor;
 
@@ -16,7 +15,6 @@ public class BuildModeValue implements ReadonlyBuildModeValue {
     private BuildMode value;
     private final Color colorVisible;
     private final Color colorHidden;
-    private Timeline timeline;
 
     public BuildModeValue(BuildMode value) {
         if (value == null) {
@@ -48,9 +46,8 @@ public class BuildModeValue implements ReadonlyBuildModeValue {
         }
         this.value = value;
 
-        killAnimation();
-        colorVisible.set(value.colorVisible);
-        colorHidden.set(value.colorHidden);
+        colorVisible.animateStop().set(value.colorVisible);
+        colorHidden.animateStop().set(value.colorHidden);
     }
 
     public void setValue(BuildMode value) {
@@ -59,37 +56,7 @@ public class BuildModeValue implements ReadonlyBuildModeValue {
         }
         this.value = value;
 
-        killAnimation();
-        timeline = new Timeline();
-        animateColor(colorVisible, value.colorVisible);
-        animateColor(colorHidden, value.colorHidden);
-        timeline.setDuration(ANIM_DURATION);
-        timeline.play();
-    }
-
-    private void killAnimation() {
-        if (timeline != null && !timeline.isDone()) {
-            timeline.abort();
-        }
-        timeline = null;
-    }
-
-    private void animateColor(Color color, ReadonlyColor toColor) {
-        timeline.addPropertyToInterpolate(Timeline.property("red")
-                .on(color)
-                .from(color.getRed())
-                .to(toColor.getRed()));
-        timeline.addPropertyToInterpolate(Timeline.property("green")
-                .on(color)
-                .from(color.getGreen())
-                .to(toColor.getGreen()));
-        timeline.addPropertyToInterpolate(Timeline.property("blue")
-                .on(color)
-                .from(color.getBlue())
-                .to(toColor.getBlue()));
-        timeline.addPropertyToInterpolate(Timeline.property("alpha")
-                .on(color)
-                .from(color.getAlpha())
-                .to(toColor.getAlpha()));
+        colorVisible.animateStart(value.colorVisible, ANIM_DURATION);
+        colorVisible.animateStart(value.colorHidden, ANIM_DURATION);
     }
 }

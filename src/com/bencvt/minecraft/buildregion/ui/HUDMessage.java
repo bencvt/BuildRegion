@@ -1,6 +1,5 @@
 package com.bencvt.minecraft.buildregion.ui;
 
-import libshapedraw.animation.trident.Timeline;
 import libshapedraw.primitive.Color;
 import libshapedraw.primitive.ReadonlyColor;
 import net.minecraft.client.Minecraft;
@@ -20,7 +19,6 @@ public class HUDMessage {
     private final Minecraft minecraft;
     private String[] lines;
     private Color color;
-    private Timeline timeline;
 
     public HUDMessage(Minecraft minecraft) {
         this.minecraft = minecraft;
@@ -37,29 +35,19 @@ public class HUDMessage {
         if (minecraft.gameSettings.hideGUI || minecraft.currentScreen != null) {
             return;
         }
-
         lines = message.split("\n");
-        color = startColor.copy();
-
-        timeline = new Timeline(color);
-        timeline.addPropertyToInterpolate("red",   startColor.getRed(),   fadeToColor.getRed());
-        timeline.addPropertyToInterpolate("blue",  startColor.getBlue(),  fadeToColor.getBlue());
-        timeline.addPropertyToInterpolate("green", startColor.getGreen(), fadeToColor.getGreen());
-        timeline.addPropertyToInterpolate("alpha", startColor.getAlpha(), fadeToColor.getAlpha());
-        timeline.setDuration(fadeDuration);
-        timeline.play();
+        if (lines.length > 0) {
+            color = startColor.copy().animateStart(fadeToColor, fadeDuration);
+        }
     }
 
     public void clear() {
-        if (timeline != null) {
-            timeline.abort();
-            timeline = null;
-        }
+        color.animateStop();
         lines = null;
     }
 
     public void render() {
-        if (timeline == null || timeline.isDone()) {
+        if (!color.isAnimating()) {
             return;
         }
         if (minecraft.currentScreen != null && !(minecraft.currentScreen instanceof GuiChat)) {
