@@ -73,11 +73,13 @@ public class RegionSphere extends RegionBase {
     public String toString() {
         double r = radii.getX();
         if (r == radii.getY() && r == radii.getZ()) {
-            return "sphere @ " + Units.HALF.v2s(getOriginReadonly()) +
-                    "\nradius " + r;
+            return i18n("enum.regiontype.sphere.locked") + " @" +
+                    Units.HALF.v2s(getOriginReadonly()) + "\n" +
+                    i18n("radius") + " " + r;
         } else {
-            return "ellipsoid @ " + Units.HALF.v2s(getOriginReadonly()) +
-                    "\nradius " + Units.HALF.v2s(radii);
+            return i18n("enum.regiontype.sphere.unlocked") + " @" +
+                    Units.HALF.v2s(getOriginReadonly()) + "\n" +
+                    i18n("radius") + " " + Units.HALF.v2s(radii);
         }
     }
 

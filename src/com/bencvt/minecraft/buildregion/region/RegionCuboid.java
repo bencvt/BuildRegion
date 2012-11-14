@@ -110,9 +110,10 @@ public class RegionCuboid extends RegionBase {
     @Override
     public String toString() {
         normalize();
-        StringBuilder b = new StringBuilder().append("cuboid ")
+        StringBuilder b = new StringBuilder().append(i18n("enum.regiontype.cuboid.unlocked"))
+                .append(' ')
                 .append(Units.WHOLE.v2sCompact(lowerCorner))
-                .append(" to ")
+                .append(' ').append(i18n("to")).append(' ')
                 .append(Units.WHOLE.v2sCompact(upperCorner))
                 .append('\n')
                 .append((int) (upperCorner.getX() - lowerCorner.getX()) + 1)
@@ -123,9 +124,9 @@ public class RegionCuboid extends RegionBase {
                 .append(" = ");
         int size = (int) getSize();
         if (size == 1) {
-            b.append("1 block");
+            b.append(i18n("block", 1));
         } else {
-            b.append(size).append(" blocks");
+            b.append(i18n("blocks", size));
         }
         return b.toString();
     }

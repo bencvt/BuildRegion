@@ -57,6 +57,6 @@ public class BuildModeValue implements ReadonlyBuildModeValue {
         this.value = value;
 
         colorVisible.animateStart(value.colorVisible, ANIM_DURATION);
-        colorVisible.animateStart(value.colorHidden, ANIM_DURATION);
+        colorHidden.animateStart(value.colorHidden, ANIM_DURATION);
     }
 }

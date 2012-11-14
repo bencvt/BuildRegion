@@ -1,5 +1,7 @@
 package com.bencvt.minecraft.buildregion.region;
 
+import com.bencvt.minecraft.buildregion.lang.LocalizedString;
+
 import libshapedraw.primitive.ReadonlyVector3;
 import libshapedraw.primitive.Vector3;
 
@@ -93,5 +95,12 @@ public abstract class RegionBase {
     public final void addOriginCoord(Axis axis, double amount) {
         axis.addVectorComponent(origin, amount);
         onOriginUpdate();
+    }
+
+    public static String i18n(String key, Object ... args) {
+        return LocalizedString.translate(key, args);
+    }
+    public static String i18n(Enum e) {
+        return LocalizedString.translate(e);
     }
 }

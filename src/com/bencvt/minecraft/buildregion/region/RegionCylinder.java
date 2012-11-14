@@ -89,23 +89,23 @@ public class RegionCylinder extends RegionBase {
         double radiusA = getRadiusA();
         double radiusB = getRadiusB();
         if (radiusA == radiusB) {
-            b.append("cylinder @ ");
-            b.append(Units.HALF.v2s(getOriginReadonly()));
-            b.append("\nradius ").append(getRadiusAxisA().toString().toLowerCase());
-            b.append('/').append(getRadiusAxisB().toString().toLowerCase());
+            b.append(i18n("enum.regiontype.cylinder.locked")).append(" @ ");
+            b.append(Units.HALF.v2s(getOriginReadonly())).append('\n');
+            b.append(i18n("radius")).append(' ').append(i18n(getRadiusAxisA()));
+            b.append('/').append(i18n(getRadiusAxisB()));
             b.append('=');
             b.append(Units.HALF.d2s(radiusA));
         } else {
-            b.append("cylindroid @ ");
-            b.append(Units.HALF.v2s(getOriginReadonly()));
-            b.append("\nradius ").append(getRadiusAxisA().toString().toLowerCase());
+            b.append(i18n("enum.regiontype.cylinder.unlocked")).append(" @ ");
+            b.append(Units.HALF.v2s(getOriginReadonly())).append('\n');
+            b.append(i18n("radius")).append(' ').append(i18n(getRadiusAxisA()));
             b.append('=');
             b.append(Units.HALF.d2s(radiusA));
-            b.append(", ").append(getRadiusAxisB().toString().toLowerCase());
+            b.append(", ").append(i18n(getRadiusAxisB()));
             b.append('=');
             b.append(Units.HALF.d2s(radiusB));
         }
-        b.append(" height ").append(axis.toString().toLowerCase());
+        b.append(' ').append(i18n("height")).append(' ').append(i18n(axis));
         b.append('=');
         b.append(Units.WHOLE.d2s(getHeight()));
         return b.toString();

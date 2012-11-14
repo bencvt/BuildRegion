@@ -75,7 +75,7 @@ public class RegionPlane extends RegionBase {
 
     @Override
     public String toString() {
-        return "plane " + axis.toString().toLowerCase() + "=" + (int) getCoord();
+        return i18n("enum.regiontype.plane") + " " + i18n(axis) + "=" + (int) getCoord();
     }
 
     public Axis getAxis() {
