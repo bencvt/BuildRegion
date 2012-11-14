@@ -44,6 +44,7 @@ public abstract class GuiScreenBase extends GuiScreen {
     }
     public void close() {
         mc.displayGuiScreen(parentScreen);
+        ChatHider.show();
     }
 
     @Override

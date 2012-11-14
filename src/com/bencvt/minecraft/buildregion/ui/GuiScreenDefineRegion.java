@@ -240,6 +240,8 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
         // Notify controller that the GUI is open.
         controller.toggleGui(true);
 
+        ChatHider.hide();
+
         // TODO: possibly allow the user to look around by holding right-click and moving around, or auto-follow the origin
         // TODO: allow the keybinds to move regions around to still work
         // TODO: pressing B or Esc is the same as pressing the "OK" button

@@ -118,6 +118,9 @@ public class InputManager {
         }
         // TODO: mod+mousewheel to shift region forward/back
         // TODO: mod+middle button to bring up gui
+        if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
+            ChatHider.show();
+        }
     }
 
     private boolean isMouseModKeyDown() {
