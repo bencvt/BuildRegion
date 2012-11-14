@@ -27,7 +27,7 @@ public class UpdateCheck {
         if (new File(modDirectory, "noupdatecheck.txt").exists()) {
             return;
         }
-        new Thread(new Runnable() {
+        new Thread("BuildRegion update check") {
             @Override
             public void run() {
                 try {
@@ -77,7 +77,7 @@ public class UpdateCheck {
                         .append(" is available at\n  \u00a7c")
                         .append(SHORT_URL).toString();
             }
-        }).start();
+        }.start();
     }
 
     public String getResult() {
