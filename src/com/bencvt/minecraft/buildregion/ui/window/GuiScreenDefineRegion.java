@@ -256,8 +256,6 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
 
         // TODO: allow the keybinds to move regions around to still work
         // TODO: pressing B or Esc is the same as pressing the "OK" button
-        // TODO: buttons to rotate the region around its origin (for planes, fill in using player coords)
-        // TODO: row mouseover tooltips
     }
 
     /**
