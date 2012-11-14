@@ -1,6 +1,12 @@
+## partially implemented features to be released in 2.1
+- added cylinder and sphere region types
+- added options file and GUI screen
+
 ## partially implemented features to be released in 2.0
-- added new region types: cuboid, cylinder, sphere
-- added a GUI to set region parameters, accessible by pressing `shift-B`
+- added cuboid region type
+- added a GUI screen to set region parameters, accessible by pressing `ctrl-B`,
+  `shift-B`, or `ctrl-middle-click` (or `cmd-middle-click` on Mac)
+- moved usage text to a GUI help screen
 - added new keybinds to move and resize regions
 - added localization support; translators needed!
 

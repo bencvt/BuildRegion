@@ -382,13 +382,13 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
         for (CustomKeyBinding key : controller.getInputManager().ALL_KEYBINDS) {
             if (key.keyCode == keyCode) {
                 if (controller.getInputManager().handleKeyboardEvent(key, true)) {
-                    onRegionKeyOrMouseChange();
+                    onRegionChangedByMouseOrKeybind();
                 }
             }
         }
     }
 
-    private void onRegionKeyOrMouseChange() {
+    private void onRegionChangedByMouseOrKeybind() {
         inputBuildMode.setSelectedValue(controller.getBuildMode().getValue(), true);
         RegionType regionType = RegionType.NONE;
         if (controller.getCurRegion() != null) {
@@ -405,7 +405,7 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
     public void drawScreen(int xMouse, int yMouse, float partialTick) {
         // Allow BuildRegion mouse controls to work even while in the GUI.
         if (controller.getInputManager().handleInput(true)) {
-            onRegionKeyOrMouseChange();
+            onRegionChangedByMouseOrKeybind();
         }
 
         // Draw HUD-covering overlay at bottom.
