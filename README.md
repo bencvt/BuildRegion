@@ -16,12 +16,12 @@ for screenshots and a demo video.
 
 Installing this mod works exactly the same as any other Minecraft client mod.
 
-1.  Make sure that both
-    [LibShapeDraw](http://www.minecraftforum.net/topic/1458931-libshapedraw/) and
-    [ModLoader](http://www.minecraftforum.net/topic/75440-modloader/)
-    are installed as these are base requirements. If you prefer, you can use
-    [Forge](http://www.minecraftforge.net/forum/) instead of ModLoader;
-    BuildRegion is compatible with either.
+1.  Make sure that
+    [LibShapeDraw](http://www.minecraftforum.net/topic/1458931-libshapedraw/)
+    is installed as it is a base requirement. You'll also need
+    [ModLoader](http://www.minecraftforum.net/topic/75440-modloader/) or
+    [Forge](http://www.minecraftforge.net/forum/); BuildRegion is compatible
+    with either.
 2.  Download and extract the zip for the latest release.
 3.  Patch the contents of the zip file into your `minecraft.jar`, being sure to
     remove the `META-INF` folder.
