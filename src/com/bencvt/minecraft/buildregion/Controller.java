@@ -12,6 +12,7 @@ import com.bencvt.minecraft.buildregion.lang.LocalizedString;
 import com.bencvt.minecraft.buildregion.region.Direction3D;
 import com.bencvt.minecraft.buildregion.region.RegionBase;
 import com.bencvt.minecraft.buildregion.region.RelativeDirection3D;
+import com.bencvt.minecraft.buildregion.region.Units;
 import com.bencvt.minecraft.buildregion.ui.InputManager;
 import com.bencvt.minecraft.buildregion.ui.MessageManager;
 import com.bencvt.minecraft.buildregion.ui.window.GuiScreenDefineRegion;
@@ -214,11 +215,10 @@ public class Controller {
     // ========
 
     private Vector3 getBlockInFrontOfPlayerWork(Direction3D dir) {
-        // TODO: better rounding, half units?
-        Vector3 coords = new Vector3(
+        Vector3 coords = Units.WHOLE.clamp(new Vector3(
                 minecraft.thePlayer.posX,
                 minecraft.thePlayer.posY,
-                minecraft.thePlayer.posZ).floor();
+                minecraft.thePlayer.posZ));
         return dir.axis.addVectorComponent(coords, dir.axisDirection * 2.0);
     }
 

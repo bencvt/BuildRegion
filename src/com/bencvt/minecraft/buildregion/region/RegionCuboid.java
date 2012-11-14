@@ -13,11 +13,13 @@ import libshapedraw.primitive.Vector3;
 public class RegionCuboid extends RegionBase {
     private final Vector3 lowerCorner;
     private final Vector3 upperCorner;
+    private final double atom;
 
     protected RegionCuboid(ReadonlyVector3 lowerCorner, ReadonlyVector3 upperCorner, Axis axis) {
         super(lowerCorner.copy().midpoint(upperCorner), axis);
         this.lowerCorner = lowerCorner.copy();
         this.upperCorner = upperCorner.copy();
+        atom = getUnits(null).atom;
         normalize();
     }
 
@@ -43,12 +45,12 @@ public class RegionCuboid extends RegionBase {
     }
 
     private void resize(double sizeX, double sizeY, double sizeZ) {
-        upperCorner.set(lowerCorner).add(sizeX - 1, sizeY - 1, sizeZ - 1);        
+        upperCorner.set(lowerCorner).add(sizeX - atom, sizeY - atom, sizeZ - atom);
     }
 
     @Override
     protected void onOriginUpdate() {
-        Units.HALF.clamp(getOriginMutable());
+        getUnits(null).half().clamp(getOriginMutable());
         if (lowerCorner == null) {
             // we were called by constructor
             return;
@@ -64,8 +66,8 @@ public class RegionCuboid extends RegionBase {
     }
 
     private void normalize() {
-        Units.WHOLE.clamp(lowerCorner);
-        Units.WHOLE.clamp(upperCorner);
+        getUnits(null).clamp(lowerCorner);
+        getUnits(null).clamp(upperCorner);
         if (lowerCorner.getX() > upperCorner.getX() ||
                 lowerCorner.getY() > upperCorner.getY() ||
                 lowerCorner.getZ() > upperCorner.getZ()) {
@@ -79,9 +81,9 @@ public class RegionCuboid extends RegionBase {
     @Override
     public boolean isInsideRegion(double x, double y, double z) {
         normalize();
-        x = Math.floor(x);
-        y = Math.floor(y);
-        z = Math.floor(z);
+        x = getUnits(Axis.X).clamp(x);
+        y = getUnits(Axis.Y).clamp(y);
+        z = getUnits(Axis.Z).clamp(z);
         return (x >= lowerCorner.getX() && x <= upperCorner.getX() &&
                 y >= lowerCorner.getY() && y <= upperCorner.getY() &&
                 z >= lowerCorner.getZ() && z <= upperCorner.getZ());
@@ -90,9 +92,7 @@ public class RegionCuboid extends RegionBase {
     @Override
     public double getSize() {
         normalize();
-        return ((upperCorner.getX() - lowerCorner.getX() + 1.0) *
-                (upperCorner.getY() - lowerCorner.getY() + 1.0) *
-                (upperCorner.getZ() - lowerCorner.getZ() + 1.0));
+        return getSizeX() * getSizeY() * getSizeZ();
     }
 
     @Override
@@ -123,21 +123,21 @@ public class RegionCuboid extends RegionBase {
         normalize();
         StringBuilder b = new StringBuilder().append(i18n("enum.regiontype.cuboid.unlocked"))
                 .append(' ')
-                .append(Units.WHOLE.v2sCompact(lowerCorner))
+                .append(getUnits(null).v2sCompact(lowerCorner))
                 .append(' ').append(i18n("to")).append(' ')
-                .append(Units.WHOLE.v2sCompact(upperCorner))
+                .append(getUnits(null).v2sCompact(upperCorner))
                 .append('\n')
-                .append((int) (upperCorner.getX() - lowerCorner.getX()) + 1)
+                .append(getUnits(Axis.X).d2sCompact(getSizeX()))
                 .append('\u00d7')
-                .append((int) (upperCorner.getY() - lowerCorner.getY()) + 1)
+                .append(getUnits(Axis.Y).d2sCompact(getSizeY()))
                 .append('\u00d7')
-                .append((int) (upperCorner.getZ() - lowerCorner.getZ()) + 1)
+                .append(getUnits(Axis.Z).d2sCompact(getSizeZ()))
                 .append(" = ");
-        int size = (int) getSize();
-        if (size == 1) {
+        double size = getSize();
+        if (size == 1.0) {
             b.append(i18n("block", 1));
         } else {
-            b.append(i18n("blocks", size));
+            b.append(i18n("blocks", getUnits(null).d2sCompact(size)));
         }
         return b.toString();
     }
@@ -151,13 +151,13 @@ public class RegionCuboid extends RegionBase {
     }
 
     public double getSizeX() {
-        return upperCorner.getX() - lowerCorner.getX() + 1;
+        return upperCorner.getX() - lowerCorner.getX() + atom;
     }
     public double getSizeY() {
-        return upperCorner.getY() - lowerCorner.getY() + 1;
+        return upperCorner.getY() - lowerCorner.getY() + atom;
     }
     public double getSizeZ() {
-        return upperCorner.getZ() - lowerCorner.getZ() + 1;
+        return upperCorner.getZ() - lowerCorner.getZ() + atom;
     }
     public double getSize(Axis axis) {
         if (axis == Axis.X) {
@@ -172,11 +172,11 @@ public class RegionCuboid extends RegionBase {
     }
 
     public RegionCuboid set(ReadonlyVector3 lowerCorner, double sizeX, double sizeY, double sizeZ) {
-        Units.WHOLE.clamp(this.lowerCorner.set(lowerCorner));
+        getUnits(null).clamp(this.lowerCorner.set(lowerCorner));
         upperCorner.set(
-                this.lowerCorner.getX() - 1.0 + Math.max(1.0, Units.WHOLE.clamp(sizeX)),
-                this.lowerCorner.getY() - 1.0 + Math.max(1.0, Units.WHOLE.clamp(sizeY)),
-                this.lowerCorner.getZ() - 1.0 + Math.max(1.0, Units.WHOLE.clamp(sizeZ)));
+                this.lowerCorner.getX() + getUnits(Axis.X).clampAtom(sizeX) - atom,
+                this.lowerCorner.getY() + getUnits(Axis.Y).clampAtom(sizeY) - atom,
+                this.lowerCorner.getZ() + getUnits(Axis.Z).clampAtom(sizeZ) - atom);
         normalize();
         return this;
     }

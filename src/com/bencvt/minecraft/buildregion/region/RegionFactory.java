@@ -27,37 +27,42 @@ public class RegionFactory {
 
         final RegionBase proto = region == null ? original : region;
 
-        // Convert proto to a cuboid.
+        // Convert proto to a cuboid using half units.
         Vector3 lower = new Vector3();
         Vector3 upper = new Vector3();
         proto.getAABB(lower, upper);
         final Axis axis = proto.getAxis();
-        RegionCuboid cuboid = new RegionCuboid(lower, upper, axis);
+        RegionCuboid aabb = new RegionCuboid(lower, upper, axis) {
+            @Override
+            public Units getUnits(Axis axis) {
+                return Units.HALF;
+            }
+        };
         if (proto == RegionBase.DEFAULT_REGION) {
             // Reposition cuboid's origin in front of player.
-            cuboid.setOriginCoords(defaultOrigin);
+            aabb.setOriginCoords(defaultOrigin);
         } else if (proto.getRegionType() == RegionType.PLANE) {
             // Project player coordinates onto origin.
-            cuboid.setOriginCoord(axis.next(), axis.next().getVectorComponent(defaultOrigin));
-            cuboid.setOriginCoord(axis.next().next(), axis.next().next().getVectorComponent(defaultOrigin));
+            aabb.setOriginCoord(axis.next(), axis.next().getVectorComponent(defaultOrigin));
+            aabb.setOriginCoord(axis.next().next(), axis.next().next().getVectorComponent(defaultOrigin));
         }
-        final ReadonlyVector3 origin = cuboid.getOriginReadonly();
+        final ReadonlyVector3 origin = aabb.getOriginReadonly();
 
         // Convert the cuboid region into the appropriate type.
         if (regionType == RegionType.PLANE) {
             region = new RegionPlane(origin, axis);
         } else if (regionType == RegionType.CUBOID) {
-            region = cuboid;
+            region = aabb.copyUsing(origin, axis);
         } else if (regionType == RegionType.CYLINDER) {
             region = new RegionCylinder(origin, axis,
-                    cuboid.getSize(axis),
-                    cuboid.getSize(axis.next())/2.0,
-                    cuboid.getSize(axis.next().next())/2.0);
+                    aabb.getSize(axis),
+                    aabb.getSize(axis.next())/2.0,
+                    aabb.getSize(axis.next().next())/2.0);
         } else if (regionType == RegionType.SPHERE) {
             region = new RegionSphere(origin, new Vector3(
-                    cuboid.getSize(axis)/2.0,
-                    cuboid.getSize(axis.next())/2.0,
-                    cuboid.getSize(axis.next().next())/2.0), axis);
+                    aabb.getSize(axis)/2.0,
+                    aabb.getSize(axis.next())/2.0,
+                    aabb.getSize(axis.next().next())/2.0), axis);
         } else {
             throw new UnsupportedOperationException(
                     "unimplemented region type " + String.valueOf(regionType));

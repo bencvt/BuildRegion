@@ -17,16 +17,25 @@ public enum Units {
         this.atom = atom;
     }
 
-    public void clamp(Vector3 v) {
+    public Units half() {
+        if (this == WHOLE) {
+            return HALF;
+        } else {
+            return ANY;
+        }
+    }
+
+    public Vector3 clamp(Vector3 v) {
         if (this == WHOLE) {
             v.floor();
         } else if (this == HALF) {
             v.scale(2.0).floor().scale(0.5);
         }
         // else do nothing
+        return v;
     }
 
-    public void clampAtom(Vector3 v) {
+    public Vector3 clampAtom(Vector3 v) {
         clamp(v);
         if (v.getX() < atom) {
             v.setX(atom);
@@ -37,6 +46,7 @@ public enum Units {
         if (v.getZ() < atom) {
             v.setZ(atom);
         }
+        return v;
     }
 
     public double clamp(double d) {
