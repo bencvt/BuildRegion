@@ -117,22 +117,25 @@ public class RegionCylinder extends RegionBase {
     public double getHeight() {
         return getAxis().getVectorComponent(halfHeightAndRadii) * 2.0;
     }
-    public void setHeight(double height) {
+    public RegionCylinder setHeight(double height) {
         getAxis().setVectorComponent(halfHeightAndRadii, Units.HALF.clampAtom(height * 0.5));
+        return this;
     }
 
     public double getRadiusA() {
         return getAxis().next().getVectorComponent(halfHeightAndRadii);
     }
-    public void setRadiusA(double radiusA) {
+    public RegionCylinder setRadiusA(double radiusA) {
         getAxis().next().setVectorComponent(halfHeightAndRadii, Units.HALF.clampAtom(radiusA));
+        return this;
     }
 
     public double getRadiusB() {
         return getAxis().next().next().getVectorComponent(halfHeightAndRadii);
     }
-    public void setRadiusB(double radiusB) {
+    public RegionCylinder setRadiusB(double radiusB) {
         getAxis().next().next().setVectorComponent(halfHeightAndRadii, Units.HALF.clampAtom(radiusB));
+        return this;
     }
 
     public Axis getRadiusAxisA() {
@@ -145,5 +148,10 @@ public class RegionCylinder extends RegionBase {
 
     public ReadonlyVector3 getHalfHeightAndRadiiReadonly() {
         return halfHeightAndRadii;
+    }
+
+    public RegionCylinder set(ReadonlyVector3 origin, Axis axis, double height, double radiusA, double radiusB) {
+        super.setAxis(axis).setOriginCoords(origin);
+        return setHeight(height).setRadiusA(radiusA).setRadiusB(radiusB);
     }
 }

@@ -5,12 +5,18 @@ import java.util.HashMap;
 
 import libshapedraw.primitive.Color;
 import libshapedraw.primitive.ReadonlyColor;
+import libshapedraw.primitive.Vector3;
 import net.minecraft.src.GuiButton;
 
 import com.bencvt.minecraft.buildregion.BuildMode;
 import com.bencvt.minecraft.buildregion.Controller;
 import com.bencvt.minecraft.buildregion.region.Axis;
+import com.bencvt.minecraft.buildregion.region.RegionBase;
+import com.bencvt.minecraft.buildregion.region.RegionCuboid;
+import com.bencvt.minecraft.buildregion.region.RegionCylinder;
 import com.bencvt.minecraft.buildregion.region.RegionFactory;
+import com.bencvt.minecraft.buildregion.region.RegionPlane;
+import com.bencvt.minecraft.buildregion.region.RegionSphere;
 import com.bencvt.minecraft.buildregion.region.RegionType;
 import com.bencvt.minecraft.buildregion.region.Units;
 import com.bencvt.minecraft.buildregion.ui.ChatHider;
@@ -30,6 +36,8 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
     public static final ReadonlyColor SELECT_COLOR = Color.DODGER_BLUE;
 
     private final Controller controller;
+    private final BuildMode originalBuildMode;
+    private final RegionType originalRegionType;
     private final GuiEmptyRow                 rowSpacer;
     private final GuiSelectEnum<BuildMode>    inputBuildMode;
     private final GuiSelectEnum<RegionType>   inputRegionType;
@@ -73,6 +81,12 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
     public GuiScreenDefineRegion(Controller controller) {
         super(null); // this is a root screen
         this.controller = controller;
+        originalBuildMode = controller.getBuildMode().getValue();
+        if (controller.isRegionActive()) {
+            originalRegionType = controller.getPrototypeRegion().getRegionType();
+        } else {
+            originalRegionType = RegionType.NONE;
+        }
 
         // Create all row controls.
         rowSpacer = new GuiEmptyRow(this, fontRenderer.FONT_HEIGHT + 3);
@@ -142,17 +156,10 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
 
         // Populate the row controls' contents from the controller.
         regionFactory = new RegionFactory(controller.getPrototypeRegion(), controller.getBlockInFrontOfPlayer());
-        // TODO: remember the current active Region for the "Reset" button
-        inputBuildMode.setSelectedValue(controller.getBuildMode().getValue(), false);
-        if (controller.isRegionActive()) {
-            inputRegionType.setSelectedValue(controller.getPrototypeRegion().getRegionType(), false);
-        } else {
-            inputRegionType.setSelectedValue(RegionType.NONE, false);
-        }
-        importRegionValues();
+        inputBuildMode.setSelectedValue(originalBuildMode, false);
+        inputRegionType.setSelectedValue(originalRegionType, false);
+        importRegion();
         updateControlProperties();
-        groupCylinderRadii.lockIfAllEqual();
-        groupSphereRadii.lockIfAllEqual();
 
         // Create other (non-row) controls.
         buttonHelp = new GuiStandardButton(this, i18n("button.help"));
@@ -250,70 +257,92 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
     /**
      * Populate control values from the region factory.
      */
-    private void importRegionValues() {
-        inputPlaneAxis.setSelectedValue(regionFactory.getPlane().getAxis(), false);
-        inputPlaneCoord.setValue(regionFactory.getPlane().getCoord());
-
-        inputCuboidLowerCornerX.setValue(regionFactory.getCuboid().getLowerCornerReadonly().getX());
-        inputCuboidLowerCornerY.setValue(regionFactory.getCuboid().getLowerCornerReadonly().getY());
-        inputCuboidLowerCornerZ.setValue(regionFactory.getCuboid().getLowerCornerReadonly().getZ());
-        inputCuboidSizeX.setValue(regionFactory.getCuboid().getSizeX());
-        inputCuboidSizeY.setValue(regionFactory.getCuboid().getSizeY());
-        inputCuboidSizeZ.setValue(regionFactory.getCuboid().getSizeZ());
-        // groupCuboidSizes is NOT auto-locked
-
-        inputCylinderOriginX.setValue(regionFactory.getCylinder().getOriginReadonly().getX());
-        inputCylinderOriginY.setValue(regionFactory.getCylinder().getOriginReadonly().getY());
-        inputCylinderOriginZ.setValue(regionFactory.getCylinder().getOriginReadonly().getZ());
-        inputCylinderAxis.setSelectedValue(regionFactory.getCylinder().getAxis(), false);
-        inputCylinderHeight.setValue(regionFactory.getCylinder().getHeight());
-        inputCylinderRadiusA.setValue(regionFactory.getCylinder().getRadiusA());
-        inputCylinderRadiusB.setValue(regionFactory.getCylinder().getRadiusB());
-        groupCylinderRadii.lockIfAllEqual();
-
-        inputSphereOriginX.setValue(regionFactory.getSphere().getOriginReadonly().getX());
-        inputSphereOriginY.setValue(regionFactory.getSphere().getOriginReadonly().getY());
-        inputSphereOriginZ.setValue(regionFactory.getSphere().getOriginReadonly().getZ());
-        inputSphereRadiusX.setValue(regionFactory.getSphere().getRadiusX());
-        inputSphereRadiusY.setValue(regionFactory.getSphere().getRadiusY());
-        inputSphereRadiusZ.setValue(regionFactory.getSphere().getRadiusZ());
-        groupSphereRadii.lockIfAllEqual();
+    private void importRegion() {
+        final RegionType active = inputRegionType.getSelectedValue();
+        final RegionBase region = regionFactory.convert(active);
+        if (active == RegionType.PLANE) {
+            RegionPlane plane = (RegionPlane) region;
+            inputPlaneAxis.setSelectedValue(plane.getAxis(), false);
+            inputPlaneCoord.setValue(plane.getCoord());
+        } else if (active == RegionType.CUBOID) {
+            RegionCuboid cuboid = (RegionCuboid) region;
+            inputCuboidLowerCornerX.setValue(cuboid.getLowerCornerReadonly().getX());
+            inputCuboidLowerCornerY.setValue(cuboid.getLowerCornerReadonly().getY());
+            inputCuboidLowerCornerZ.setValue(cuboid.getLowerCornerReadonly().getZ());
+            inputCuboidSizeX.setValue(cuboid.getSizeX());
+            inputCuboidSizeY.setValue(cuboid.getSizeY());
+            inputCuboidSizeZ.setValue(cuboid.getSizeZ());
+            groupCuboidSizes.unlock();
+        } else if (active == RegionType.CYLINDER) {
+            RegionCylinder cylinder = (RegionCylinder) region;
+            inputCylinderOriginX.setValue(cylinder.getOriginReadonly().getX());
+            inputCylinderOriginY.setValue(cylinder.getOriginReadonly().getY());
+            inputCylinderOriginZ.setValue(cylinder.getOriginReadonly().getZ());
+            inputCylinderAxis.setSelectedValue(cylinder.getAxis(), false);
+            inputCylinderHeight.setValue(cylinder.getHeight());
+            inputCylinderRadiusA.setValue(cylinder.getRadiusA());
+            inputCylinderRadiusB.setValue(cylinder.getRadiusB());
+            groupCylinderRadii.lockIfAllEqual();
+        } else if (active == RegionType.SPHERE) {
+            RegionSphere sphere = (RegionSphere) region;
+            inputSphereOriginX.setValue(sphere.getOriginReadonly().getX());
+            inputSphereOriginY.setValue(sphere.getOriginReadonly().getY());
+            inputSphereOriginZ.setValue(sphere.getOriginReadonly().getZ());
+            inputSphereRadiusX.setValue(sphere.getRadiusX());
+            inputSphereRadiusY.setValue(sphere.getRadiusY());
+            inputSphereRadiusZ.setValue(sphere.getRadiusZ());
+            groupSphereRadii.lockIfAllEqual();
+        }
+        // TODO: move radius/size locking logic to the Region classes instead and only auto-lock when converting in factory
     }
 
     /**
      * Update the region factory using control values.
      */
-    private void exportRegionValues() {
-        regionFactory.getPlane().setAxis(inputPlaneAxis.getSelectedValue());
-        regionFactory.getPlane().setCoord(inputPlaneCoord.getValue());
-
-        regionFactory.getCuboid().setFromCornerSize(
-                inputCuboidLowerCornerX.getValue(),
-                inputCuboidLowerCornerY.getValue(),
-                inputCuboidLowerCornerZ.getValue(),
-                inputCuboidSizeX.getValue(),
-                inputCuboidSizeY.getValue(),
-                inputCuboidSizeZ.getValue());
-
-        regionFactory.getCylinder().setAxis(inputCylinderAxis.getSelectedValue());
-        regionFactory.getCylinder().setOriginCoord(Axis.X, inputCylinderOriginX.getValue());
-        regionFactory.getCylinder().setOriginCoord(Axis.Y, inputCylinderOriginY.getValue());
-        regionFactory.getCylinder().setOriginCoord(Axis.Z, inputCylinderOriginZ.getValue());
-        regionFactory.getCylinder().setHeight(inputCylinderHeight.getValue());
-        regionFactory.getCylinder().setRadiusA(inputCylinderRadiusA.getValue());
-        regionFactory.getCylinder().setRadiusB(inputCylinderRadiusB.getValue());
-
-        regionFactory.getSphere().setOriginCoord(Axis.X, inputCylinderOriginX.getValue());
-        regionFactory.getSphere().setOriginCoord(Axis.Y, inputCylinderOriginY.getValue());
-        regionFactory.getSphere().setOriginCoord(Axis.Z, inputCylinderOriginZ.getValue());
-        regionFactory.getSphere().setRadiusX(inputSphereRadiusX.getValue());
-        regionFactory.getSphere().setRadiusY(inputSphereRadiusY.getValue());
-        regionFactory.getSphere().setRadiusZ(inputSphereRadiusZ.getValue());
+    private void exportRegion() {
+        final RegionType active = inputRegionType.getSelectedValue();
+        final RegionBase region = regionFactory.getRegion();
+        if (active == RegionType.PLANE) {
+            ((RegionPlane) region).set(
+                    inputPlaneAxis.getSelectedValue(),
+                    inputPlaneCoord.getValue());
+        } else if (active == RegionType.CUBOID) {
+            Vector3 lower = new Vector3(
+                    inputCuboidLowerCornerX.getValue(),
+                    inputCuboidLowerCornerY.getValue(),
+                    inputCuboidLowerCornerZ.getValue());
+            ((RegionCuboid) region).set(
+                    lower,
+                    inputCuboidSizeX.getValue(),
+                    inputCuboidSizeY.getValue(),
+                    inputCuboidSizeZ.getValue());
+        } else if (active == RegionType.CYLINDER) {
+            Vector3 origin = new Vector3(
+                    inputCylinderOriginX.getValue(),
+                    inputCylinderOriginY.getValue(),
+                    inputCylinderOriginZ.getValue());
+            ((RegionCylinder) region).set(
+                    origin,
+                    inputCylinderAxis.getSelectedValue(),
+                    inputCylinderHeight.getValue(),
+                    inputCylinderRadiusA.getValue(),
+                    inputCylinderRadiusB.getValue());
+        } else if (active == RegionType.SPHERE) {
+            Vector3 origin = new Vector3(
+                    inputSphereOriginX.getValue(),
+                    inputSphereOriginY.getValue(),
+                    inputSphereOriginZ.getValue());
+            ((RegionSphere) region).set(
+                    origin,
+                    inputSphereRadiusX.getValue(),
+                    inputSphereRadiusY.getValue(),
+                    inputSphereRadiusZ.getValue());
+        }
     }
 
     public void updateControlProperties() {
         // Hide controls that don't match the current region type being modified.
-        RegionType active = inputRegionType.getSelectedValue();
+        final RegionType active = inputRegionType.getSelectedValue();
         for (RegionType r : RegionType.values()) {
             for (GuiLabeledControl control : rows.get(r)) {
                 control.setVisible(r == RegionType.NONE || r == active);
@@ -321,9 +350,13 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
         }
 
         // Adjust dynamic label texts.
-        inputPlaneCoord.setText(i18n("label.coord", regionFactory.getPlane().getAxis()));
-        inputCylinderRadiusA.setText(i18n("label.radius", regionFactory.getCylinder().getRadiusAxisA()));
-        inputCylinderRadiusB.setText(i18n("label.radius", regionFactory.getCylinder().getRadiusAxisB()));
+        if (active == RegionType.PLANE) {
+            inputPlaneCoord.setText(i18n("label.coord", regionFactory.getRegion().getAxis()));
+        } else if (active == RegionType.CYLINDER) {
+            RegionCylinder cylinder = (RegionCylinder) regionFactory.getRegion();
+            inputCylinderRadiusA.setText(i18n("label.radius", cylinder.getRadiusAxisA()));
+            inputCylinderRadiusB.setText(i18n("label.radius", cylinder.getRadiusAxisB()));
+        }
     }
 
     @Override
@@ -356,16 +389,18 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
 
     @Override
     protected void onControlClick(GuiButton guiButton) {
-        exportRegionValues();
-        updateControlProperties();
         if (guiButton == buttonHelp) {
             open(new GuiScreenHelp(this, controller));
         } else if (guiButton == buttonOptions) {
             open(new GuiScreenOptions(this));
         } else if (guiButton == buttonReset) {
-            // TODO reset region to whatever it was when the user opened the gui
-            //regionFactory.reset();
-            importRegionValues();
+            // Reset build mode and region to whatever they were when the user
+            // opened the gui.
+            controller.cmdMode(inputBuildMode
+                    .setSelectedValue(originalBuildMode, true)
+                    .getSelectedValue());
+            regionFactory.reset();
+            onControlClick(inputRegionType.setSelectedValue(originalRegionType, true));
         } else if (guiButton == buttonDone) {
             // Restore the chat window. We do this here instead of overriding
             // onGuiClosed because we want chat hidden for child windows too.
@@ -373,14 +408,20 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
             close();
         } else if (guiButton == inputBuildMode) {
             controller.cmdMode(inputBuildMode.getSelectedValue());
+        } else if (guiButton == inputRegionType) {
+            importRegion();
+            updateControlProperties();
+            controller.cmdSet(regionFactory.getRegion(), true);
         } else {
-            controller.cmdSet(regionFactory.getRegionAs(inputRegionType.getSelectedValue()), true);
+            exportRegion();
+            updateControlProperties();
+            controller.cmdSet(regionFactory.getRegion(), true);
         }
     }
 
     @Override
     public void onControlUpdate(GuiControlBase control, boolean rapid) {
-        exportRegionValues();
-        controller.cmdSet(regionFactory.getRegionAs(inputRegionType.getSelectedValue()), !rapid);
+        exportRegion();
+        controller.cmdSet(regionFactory.getRegion(), !rapid);
     }
 }

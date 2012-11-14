@@ -90,21 +90,29 @@ public class RegionSphere extends RegionBase {
     public double getRadiusX() {
         return radii.getX();
     }
-    public void setRadiusX(double radiusX) {
+    public RegionSphere setRadiusX(double radiusX) {
         radii.setX(Math.max(0.5, Units.HALF.clamp(radiusX)));
+        return this;
     }
 
     public double getRadiusY() {
         return radii.getY();
     }
-    public void setRadiusY(double radiusY) {
+    public RegionSphere setRadiusY(double radiusY) {
         radii.setY(Math.max(0.5, Units.HALF.clamp(radiusY)));
+        return this;
     }
 
     public double getRadiusZ() {
         return radii.getZ();
     }
-    public void setRadiusZ(double radiusZ) {
+    public RegionSphere setRadiusZ(double radiusZ) {
         radii.setZ(Math.max(0.5, Units.HALF.clamp(radiusZ)));
+        return this;
+    }
+
+    public RegionSphere set(ReadonlyVector3 origin, double radiusX, double radiusY, double radiusZ) {
+        setOriginCoords(origin);
+        return setRadiusX(radiusX).setRadiusY(radiusY).setRadiusZ(radiusZ);
     }
 }

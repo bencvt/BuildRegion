@@ -82,7 +82,13 @@ public class RegionPlane extends RegionBase {
     public double getCoord() {
         return getAxis().getVectorComponent(getOriginReadonly());
     }
-    public void setCoord(double value) {
+    public RegionPlane setCoord(double value) {
         setOriginCoord(getAxis(), value);
+        return this;
+    }
+
+    public RegionPlane set(Axis axis, double coord) {
+        setAxis(axis);
+        return setCoord(coord);
     }
 }

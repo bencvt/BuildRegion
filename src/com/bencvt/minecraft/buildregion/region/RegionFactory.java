@@ -4,22 +4,35 @@ import libshapedraw.primitive.ReadonlyVector3;
 import libshapedraw.primitive.Vector3;
 
 public class RegionFactory {
-    private final RegionPlane plane;
-    private final RegionCuboid cuboid;
-    private final RegionCylinder cylinder;    
-    private final RegionSphere sphere;    
+    private final ReadonlyVector3 defaultOrigin;
+    private final RegionBase original;
+    private RegionBase region;
 
-    public RegionFactory(RegionBase proto, ReadonlyVector3 defaultOrigin) {
-        if (proto == null) {
+    public RegionFactory(RegionBase original, ReadonlyVector3 defaultOrigin) {
+        if (original == null) {
             throw new IllegalArgumentException();
         }
+        this.original = original;
+        this.defaultOrigin = defaultOrigin;
+    }
+
+    public RegionBase convert(RegionType regionType) {
+        if (regionType == null) {
+            throw new IllegalArgumentException();
+        }
+        if (regionType == RegionType.NONE) {
+            region = null;
+            return null;
+        }
+
+        final RegionBase proto = region == null ? original : region;
 
         // Convert proto to a cuboid.
         Vector3 lower = new Vector3();
         Vector3 upper = new Vector3();
         proto.getAABB(lower, upper);
         final Axis axis = proto.getAxis();
-        cuboid = new RegionCuboid(lower, upper, axis);
+        RegionCuboid cuboid = new RegionCuboid(lower, upper, axis);
         if (proto == RegionBase.DEFAULT_REGION) {
             // Reposition cuboid's origin in front of player.
             cuboid.setOriginCoords(defaultOrigin);
@@ -30,41 +43,37 @@ public class RegionFactory {
         }
         final ReadonlyVector3 origin = cuboid.getOriginReadonly();
 
-        // Convert the cuboid region into the other types.
-        plane = new RegionPlane(origin, axis);
-        cylinder = new RegionCylinder(origin, axis,
-                cuboid.getSize(axis),
-                cuboid.getSize(axis.next())/2.0,
-                cuboid.getSize(axis.next().next())/2.0);
-        sphere = new RegionSphere(origin, new Vector3(
-                cuboid.getSize(axis)/2.0,
-                cuboid.getSize(axis.next())/2.0,
-                cuboid.getSize(axis.next().next())/2.0), axis);
-    }
-
-    public RegionPlane getPlane() {
-        return plane;
-    }
-
-    public RegionCuboid getCuboid() {
-        return cuboid;
-    }
-
-    public RegionCylinder getCylinder() {
-        return cylinder;
-    }
-
-    public RegionSphere getSphere() {
-        return sphere;
-    }
-
-    public RegionBase getRegionAs(RegionType regionType) {
-        switch (regionType) {
-        case PLANE: return plane;
-        case CUBOID: return cuboid;
-        case CYLINDER: return cylinder;
-        case SPHERE: return sphere;
-        default: return null;
+        // Convert the cuboid region into the appropriate type.
+        if (regionType == RegionType.PLANE) {
+            region = new RegionPlane(origin, axis);
+        } else if (regionType == RegionType.CUBOID) {
+            region = cuboid;
+        } else if (regionType == RegionType.CYLINDER) {
+            region = new RegionCylinder(origin, axis,
+                    cuboid.getSize(axis),
+                    cuboid.getSize(axis.next())/2.0,
+                    cuboid.getSize(axis.next().next())/2.0);
+        } else if (regionType == RegionType.SPHERE) {
+            region = new RegionSphere(origin, new Vector3(
+                    cuboid.getSize(axis)/2.0,
+                    cuboid.getSize(axis.next())/2.0,
+                    cuboid.getSize(axis.next().next())/2.0), axis);
+        } else {
+            throw new UnsupportedOperationException(
+                    "unimplemented region type " + String.valueOf(regionType));
         }
+        return region;
+    }
+
+    public RegionBase getOriginal() {
+        return original;
+    }
+
+    public RegionBase getRegion() {
+        return region;
+    }
+
+    public void reset() {
+        region = null;
     }
 }

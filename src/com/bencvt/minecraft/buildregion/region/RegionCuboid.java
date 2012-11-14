@@ -171,12 +171,13 @@ public class RegionCuboid extends RegionBase {
         }
     }
 
-    public void setFromCornerSize(double cornerX, double cornerY, double cornerZ, double sizeX, double sizeY, double sizeZ) {
-        Units.WHOLE.clamp(lowerCorner.set(cornerX, cornerY, cornerZ));
+    public RegionCuboid set(ReadonlyVector3 lowerCorner, double sizeX, double sizeY, double sizeZ) {
+        Units.WHOLE.clamp(this.lowerCorner.set(lowerCorner));
         upperCorner.set(
-                lowerCorner.getX() - 1.0 + Math.max(1.0, Units.WHOLE.clamp(sizeX)),
-                lowerCorner.getY() - 1.0 + Math.max(1.0, Units.WHOLE.clamp(sizeY)),
-                lowerCorner.getZ() - 1.0 + Math.max(1.0, Units.WHOLE.clamp(sizeZ)));
+                this.lowerCorner.getX() - 1.0 + Math.max(1.0, Units.WHOLE.clamp(sizeX)),
+                this.lowerCorner.getY() - 1.0 + Math.max(1.0, Units.WHOLE.clamp(sizeY)),
+                this.lowerCorner.getZ() - 1.0 + Math.max(1.0, Units.WHOLE.clamp(sizeZ)));
         normalize();
+        return this;
     }
 }
