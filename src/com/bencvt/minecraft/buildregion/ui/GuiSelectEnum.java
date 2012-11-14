@@ -8,6 +8,7 @@ import libshapedraw.primitive.ReadonlyColor;
 import net.minecraft.client.Minecraft;
 
 import com.bencvt.minecraft.buildregion.lang.LocalizedString;
+import com.bencvt.minecraft.buildregion.region.RegionType;
 
 /**
  * A multi-select Minecraft GUI control.
@@ -55,6 +56,10 @@ public class GuiSelectEnum<T extends Enum> extends GuiLabeledControl {
         options = new LinkedHashMap<T, Option>();
         int controlWidth = 0;
         for (T value : values) {
+            // XXX: temporarily exclude region types
+            if (value == RegionType.CYLINDER || value == RegionType.SPHERE) {
+                continue;
+            }
             Option option = new Option();
             option.value = value;
             option.text = LocalizedString.translate(value);

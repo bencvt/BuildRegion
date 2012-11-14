@@ -17,8 +17,8 @@ import net.minecraft.src.ScaledResolution;
  */
 public class HUDMessage {
     private final Minecraft minecraft;
+    private final Color color = Color.WHITE.copy();
     private String[] lines;
-    private Color color;
 
     public HUDMessage(Minecraft minecraft) {
         this.minecraft = minecraft;
@@ -37,7 +37,7 @@ public class HUDMessage {
         }
         lines = message.split("\n");
         if (lines.length > 0) {
-            color = startColor.copy().animateStart(fadeToColor, fadeDuration);
+            color.set(startColor).animateStart(fadeToColor, fadeDuration);
         }
     }
 
