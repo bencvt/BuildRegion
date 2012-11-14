@@ -14,12 +14,10 @@ import libshapedraw.primitive.Vector3;
  * @author bencvt
  */
 public class RegionCylinder extends RegionBase {
-    private Axis axis;
     private final Vector3 halfHeightAndRadii;
 
     protected RegionCylinder(ReadonlyVector3 origin, Axis axis, double height, double radiusA, double radiusB) {
-        super(origin);
-        setAxis(axis);
+        super(origin, axis);
         halfHeightAndRadii = new Vector3();
         setHeight(height);
         setRadiusA(radiusA);
@@ -33,7 +31,7 @@ public class RegionCylinder extends RegionBase {
 
     @Override
     public RegionBase copyUsing(ReadonlyVector3 newOrigin, Axis newAxis) {
-        if (axis == newAxis) {
+        if (getAxis() == newAxis) {
             return new RegionCylinder(newOrigin, newAxis, getHeight(), getRadiusA(), getRadiusB());
         } else {
             return new RegionCylinder(newOrigin, newAxis, getHeight(), getRadiusB(), getRadiusA());
@@ -43,10 +41,8 @@ public class RegionCylinder extends RegionBase {
     @Override
     protected void onOriginUpdate() {
         Units.HALF.clamp(getOriginMutable());
-        if (axis != null) {
-            // axis can be null during the constructor
-            axis.setVectorComponent(getOriginMutable(), Units.WHOLE.clamp(axis.getVectorComponent(getOriginReadonly())));
-        }
+        getAxis().setVectorComponent(getOriginMutable(),
+                Units.WHOLE.clamp(getAxis().getVectorComponent(getOriginReadonly())));
     }
 
     @Override
@@ -69,12 +65,12 @@ public class RegionCylinder extends RegionBase {
 
     @Override
     public Units getUnits(Axis axis) {
-        return axis == this.axis ? Units.WHOLE : Units.HALF;
+        return axis == this.getAxis() ? Units.WHOLE : Units.HALF;
     }
 
     @Override
     public boolean expand(Axis axis, double amount) {
-        if (axis == this.axis) {
+        if (axis == this.getAxis()) {
             amount *= 0.5;
             // TODO: adjust origin too
         }
@@ -105,50 +101,45 @@ public class RegionCylinder extends RegionBase {
             b.append('=');
             b.append(Units.HALF.d2s(radiusB));
         }
-        b.append(' ').append(i18n("height")).append(' ').append(i18n(axis));
+        b.append(' ').append(i18n("height")).append(' ').append(i18n(getAxis()));
         b.append('=');
         b.append(Units.WHOLE.d2s(getHeight()));
         return b.toString();
     }
 
-    public Axis getAxis() {
-        return axis;
-    }
+    @Override
     public void setAxis(Axis axis) {
-        if (axis == null) {
-            throw new IllegalArgumentException();
-        }
-        this.axis = axis;
+        super.setAxis(axis);
         onOriginUpdate();
     }
 
     public double getHeight() {
-        return axis.getVectorComponent(halfHeightAndRadii) * 2.0;
+        return getAxis().getVectorComponent(halfHeightAndRadii) * 2.0;
     }
     public void setHeight(double height) {
-        axis.setVectorComponent(halfHeightAndRadii, Units.HALF.clampAtom(height * 0.5));
+        getAxis().setVectorComponent(halfHeightAndRadii, Units.HALF.clampAtom(height * 0.5));
     }
 
     public double getRadiusA() {
-        return axis.next().getVectorComponent(halfHeightAndRadii);
+        return getAxis().next().getVectorComponent(halfHeightAndRadii);
     }
     public void setRadiusA(double radiusA) {
-        axis.next().setVectorComponent(halfHeightAndRadii, Units.HALF.clampAtom(radiusA));
+        getAxis().next().setVectorComponent(halfHeightAndRadii, Units.HALF.clampAtom(radiusA));
     }
 
     public double getRadiusB() {
-        return axis.next().next().getVectorComponent(halfHeightAndRadii);
+        return getAxis().next().next().getVectorComponent(halfHeightAndRadii);
     }
     public void setRadiusB(double radiusB) {
-        axis.next().next().setVectorComponent(halfHeightAndRadii, Units.HALF.clampAtom(radiusB));
+        getAxis().next().next().setVectorComponent(halfHeightAndRadii, Units.HALF.clampAtom(radiusB));
     }
 
     public Axis getRadiusAxisA() {
-        return axis.next();
+        return getAxis().next();
     }
 
     public Axis getRadiusAxisB() {
-        return axis.next().next();
+        return getAxis().next().next();
     }
 
     public ReadonlyVector3 getHalfHeightAndRadiiReadonly() {

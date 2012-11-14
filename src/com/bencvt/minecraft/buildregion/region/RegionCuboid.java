@@ -14,8 +14,8 @@ public class RegionCuboid extends RegionBase {
     private final Vector3 lowerCorner;
     private final Vector3 upperCorner;
 
-    protected RegionCuboid(ReadonlyVector3 lowerCorner, ReadonlyVector3 upperCorner) {
-        super(lowerCorner.copy().midpoint(upperCorner));
+    protected RegionCuboid(ReadonlyVector3 lowerCorner, ReadonlyVector3 upperCorner, Axis axis) {
+        super(lowerCorner.copy().midpoint(upperCorner), axis);
         this.lowerCorner = lowerCorner.copy();
         this.upperCorner = upperCorner.copy();
         normalize();
@@ -28,11 +28,25 @@ public class RegionCuboid extends RegionBase {
 
     @Override
     public RegionBase copyUsing(ReadonlyVector3 newOrigin, Axis newAxis) {
-        // ignore axis
-        RegionCuboid result = new RegionCuboid(lowerCorner, upperCorner);
+        RegionCuboid result = new RegionCuboid(lowerCorner, upperCorner, newAxis);
+        if (getAxis() != newAxis) {
+            String a = getAxis().toString() + newAxis.toString();
+            if (!a.contains("X")) {
+                result.resize(getSizeX(), getSizeZ(), getSizeY());
+            } else if (!a.contains("Y")) {
+                result.resize(getSizeZ(), getSizeY(), getSizeX());
+            } else {
+                result.resize(getSizeY(), getSizeX(), getSizeZ());
+            }
+        }
+
         result.getOriginMutable().set(newOrigin);
         result.onOriginUpdate();
         return result;
+    }
+
+    private void resize(double sizeX, double sizeY, double sizeZ) {
+        upperCorner.set(lowerCorner).add(sizeX - 1, sizeY - 1, sizeZ - 1);        
     }
 
     @Override

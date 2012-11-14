@@ -12,15 +12,20 @@ import libshapedraw.primitive.Vector3;
  */
 public abstract class RegionBase {
     // TODO: remember the type (but not the dimensions) of the last region used by the player between sessions
-    //XXX: public static final RegionBase DEFAULT_REGION = new RegionPlane(Vector3.ZEROS, Axis.X);
-    public static final RegionBase DEFAULT_REGION = new RegionCuboid(new Vector3(0, 0, 0), new Vector3(1, 6, 6));
+    public static final RegionBase DEFAULT_REGION = new RegionPlane(Vector3.ZEROS, Axis.X);
+    //public static final RegionBase DEFAULT_REGION = new RegionCuboid(new Vector3(0, 0, 0), new Vector3(1, 6, 6));
     //public static final RegionBase DEFAULT_REGION = new RegionCylinder(new Vector3(0, 0, 0), Axis.Y, 12, 2.5, 5);
     //public static final RegionBase DEFAULT_REGION = new RegionSphere(new Vector3(0, 0, 0), new Vector3(5.5, 8, 8));
 
     private final Vector3 origin;
+    private Axis axis;
 
-    protected RegionBase(ReadonlyVector3 origin) {
+    protected RegionBase(ReadonlyVector3 origin, Axis axis) {
+        if (axis == null) {
+            throw new IllegalArgumentException();
+        }
         this.origin = origin.copy();
+        this.axis = axis;
         onOriginUpdate();
     }
 
@@ -96,6 +101,18 @@ public abstract class RegionBase {
         axis.addVectorComponent(origin, amount);
         onOriginUpdate();
     }
+
+    public Axis getAxis() {
+        return axis;
+    }
+
+    public void setAxis(Axis axis) {
+        if (axis == null) {
+            throw new IllegalArgumentException();
+        }
+        this.axis = axis;
+    }
+
 
     public static String i18n(String key, Object ... args) {
         return LocalizedString.translate(key, args);

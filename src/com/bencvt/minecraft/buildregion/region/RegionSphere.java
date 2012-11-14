@@ -13,8 +13,8 @@ import libshapedraw.primitive.Vector3;
 public class RegionSphere extends RegionBase {
     private final Vector3 radii;
 
-    protected RegionSphere(ReadonlyVector3 origin, ReadonlyVector3 radii) {
-        super(origin);
+    protected RegionSphere(ReadonlyVector3 origin, ReadonlyVector3 radii, Axis axis) {
+        super(origin, axis);
         this.radii = new Vector3();
         setRadiusX(radii.getX());
         setRadiusY(radii.getY());
@@ -28,8 +28,8 @@ public class RegionSphere extends RegionBase {
 
     @Override
     public RegionBase copyUsing(ReadonlyVector3 newOrigin, Axis newAxis) {
-        // ignore axis
-        return new RegionSphere(newOrigin, radii);
+        // TODO: rotate
+        return new RegionSphere(newOrigin, radii, newAxis);
     }
 
     @Override

@@ -10,14 +10,8 @@ import libshapedraw.primitive.Vector3;
  * @author bencvt
  */
 public class RegionPlane extends RegionBase {
-    private Axis axis;
-
     protected RegionPlane(ReadonlyVector3 origin, Axis axis) {
-        super(origin);
-        if (axis == null) {
-            throw new IllegalArgumentException();
-        }
-        this.axis = axis;
+        super(origin, axis);
     }
 
     @Override
@@ -37,16 +31,16 @@ public class RegionPlane extends RegionBase {
 
     @Override
     public boolean canAdjustAlongAxis(boolean expand, Axis axis) {
-        return !expand && axis == this.axis;
+        return !expand && axis == this.getAxis();
     }
 
     @Override
     public boolean isInsideRegion(double x, double y, double z) {
-        if (axis == Axis.X) {
+        if (getAxis() == Axis.X) {
             return (int) getOriginReadonly().getX() == (int) x;
-        } else if (axis == Axis.Y) {
+        } else if (getAxis() == Axis.Y) {
             return (int) getOriginReadonly().getY() == (int) y;
-        } else if (axis == Axis.Z) {
+        } else if (getAxis() == Axis.Z) {
             return (int) getOriginReadonly().getZ() == (int) z;
         } else {
             throw new IllegalStateException();
@@ -75,23 +69,13 @@ public class RegionPlane extends RegionBase {
 
     @Override
     public String toString() {
-        return i18n("enum.regiontype.plane") + " " + i18n(axis) + "=" + (int) getCoord();
-    }
-
-    public Axis getAxis() {
-        return axis;
-    }
-    public void setAxis(Axis axis) {
-        if (axis == null) {
-            throw new IllegalArgumentException();
-        }
-        this.axis = axis;
+        return i18n("enum.regiontype.plane") + " " + i18n(getAxis()) + "=" + (int) getCoord();
     }
 
     public double getCoord() {
-        return axis.getVectorComponent(getOriginReadonly());
+        return getAxis().getVectorComponent(getOriginReadonly());
     }
     public void setCoord(double value) {
-        setOriginCoord(axis, value);
+        setOriginCoord(getAxis(), value);
     }
 }
