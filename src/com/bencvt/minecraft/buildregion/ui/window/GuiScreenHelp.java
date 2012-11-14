@@ -46,6 +46,8 @@ public class GuiScreenHelp extends GuiScreenBase {
         lines.add(i18n("help.usage"));
         lines.addAll(Arrays.asList(controller.getInputManager().getUsage("  ").split("\n")));
         lines.add("");
+        lines.add(i18n("help.gui"));
+        lines.add("");
 
         rightColumnLines.clear();
         leftColumnWidth = 0;

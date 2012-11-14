@@ -41,9 +41,9 @@ public class GuiSelectEnum<T extends Enum> extends GuiLabeledControl {
         public void setAlpha(double alpha) { this.alpha = alpha; }
 
         public boolean isMouseOver(int xMouse, int yMouse) {
-            int xOffset = getControlXOffset();
-            return xMouse >= xOffset + xBegin && xMouse <= xOffset + xEnd &&
-                    yMouse >= yPosition && yMouse <= yPosition + height;
+            return parent.isMouseOver(
+                    xMouse, getControlXOffset() + xBegin, getControlXOffset() + xEnd,
+                    yMouse, yPosition, yPosition + height);
         }
     }
     private final LinkedHashMap<T, Option> options;

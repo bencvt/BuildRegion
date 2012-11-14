@@ -1,5 +1,7 @@
 package com.bencvt.minecraft.buildregion.ui.window;
 
+import org.lwjgl.input.Mouse;
+
 import libshapedraw.primitive.Color;
 import net.minecraft.client.Minecraft;
 
@@ -96,6 +98,7 @@ public class GuiInputNumber extends GuiLabeledControl {
         if (group != null) {
             group.setDragging(dragging);
         }
+        Mouse.setGrabbed(dragging);
     }
     protected void setDraggingFromGroup(boolean dragging) {
         this.dragging = dragging;
@@ -151,8 +154,9 @@ public class GuiInputNumber extends GuiLabeledControl {
             buttonARGB = BUTTON_DISABLED_ARGB;
             textARGB = CONTROL_DISABLED_ARGB;
         } else {
-            if (xMouse >= xBegin && xMouse <= xEndMouse &&
-                    yMouse >= yPosition && yMouse <= yPosition + height) {
+            if (parent.isMouseOver(
+                    xMouse, xBegin, xEndMouse,
+                    yMouse, yPosition, yPosition + height)) {
                 buttonARGB = locked ? BUTTON_MOUSEOVERLOCKED_ARGB : BUTTON_MOUSEOVER_ARGB;
                 textARGB = CONTROL_ENABLED_ARGB;
             } else {
@@ -205,8 +209,9 @@ public class GuiInputNumber extends GuiLabeledControl {
         final int borderARGB;
         if (dragging) {
             borderARGB = SLIDER_BORDER_DRAGGING_ARGB;
-        } else if (xMouse >= xMin && xMouse <= xMax &&
-                yMouse >= yPosition && yMouse <= yPosition + height) {
+        } else if (parent.isMouseOver(
+                xMouse, xMin, xMax,
+                yMouse, yPosition, yPosition + height)) {
             borderARGB = SLIDER_BORDER_MOUSEOVER_ARGB;
         } else {
             borderARGB = SLIDER_BORDER_NORMAL_ARGB;

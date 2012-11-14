@@ -6,6 +6,7 @@ import net.minecraft.src.GuiButton;
 import net.minecraft.src.GuiScreen;
 import net.minecraft.src.Tessellator;
 
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import com.bencvt.minecraft.buildregion.lang.LocalizedString;
@@ -18,15 +19,22 @@ import com.bencvt.minecraft.buildregion.lang.LocalizedString;
  * <li>Add parentScreen, open, and close for screens that open
  *     other screens temporarily.</li>
  * <li>Add onControlClick and onControlUpdate handlers</li>
+ * <li>Add the optional (enabled by default) ability to look around while in
+ *     the GUI by moving the mouse while holding the right button.</li>
  * <li>Add drawBottomOverlay and drawRectBorder</li>
  * </ul>
  * @author bencvt
  */
 public abstract class GuiScreenBase extends GuiScreen {
+    public static int BOTTOM_OVERLAY_HEIGHT = 28;
+
     public final GuiScreenBase parentScreen;
+    private boolean allowMouseLook;
+    private boolean mouseLooking;
 
     public GuiScreenBase(GuiScreenBase parentScreen) {
         this.parentScreen = parentScreen;
+        allowMouseLook = true;
         mc = Minecraft.getMinecraft();
         fontRenderer = mc.fontRenderer;
     }
@@ -36,9 +44,10 @@ public abstract class GuiScreenBase extends GuiScreen {
     }
 
     public void open() {
-        mc.displayGuiScreen(this);
+        open(this);
     }
     public void open(GuiScreen newScreen) {
+        Mouse.setGrabbed(false);
         mc.displayGuiScreen(newScreen);
     }
     public void close() {
@@ -73,7 +82,52 @@ public abstract class GuiScreenBase extends GuiScreen {
         // do nothing by default
     }
 
-    public static int BOTTOM_OVERLAY_HEIGHT = 28;
+    @Override
+    public void drawScreen(int xMouse, int yMouse, float partialTick) {
+        super.drawScreen(xMouse, yMouse, partialTick);
+        if (allowMouseLook) {
+            boolean newState = Mouse.isButtonDown(1);
+            if (newState != mouseLooking) {
+                Mouse.setGrabbed(newState);
+                mouseLooking = newState;
+            }
+            if (mouseLooking) {
+                // Player is holding the right mouse button and moving around.
+                // The updated angles won't affect anything until the next render
+                // frame as the world has already been rendered at this point.
+                mouseLook();
+            }
+        }
+    }
+
+    public boolean isAllowMouseLook() {
+        return allowMouseLook;
+    }
+    public void setAllowMouseLook(boolean allowMouseLook) {
+        this.allowMouseLook = allowMouseLook;
+    }
+
+    public boolean isMouseLooking() {
+        return mouseLooking;
+    }
+
+    public boolean isMouseOver(int xMouse, int xMin, int xMax, int yMouse, int yMin, int yMax) {
+        return !mouseLooking && xMouse >= xMin && xMouse <= xMax && yMouse >= yMin && yMouse <= yMax;
+    }
+
+    /** Adjust the game world camera to match mouse movements. */
+    protected void mouseLook() {
+        // The coefficients below are from EntityRenderer.updateCameraAndRender,
+        // excluding smooth camera handling.
+        float factor = mc.gameSettings.mouseSensitivity*0.6F + 0.2F;
+        factor = 8.0F*factor*factor*factor;
+        float adjustYaw = Mouse.getDX()*factor;
+        float adjustPitch = Mouse.getDY()*factor;
+        if (mc.gameSettings.invertMouse) {
+            adjustPitch = -adjustPitch;
+        }
+        mc.thePlayer.setAngles(adjustYaw, adjustPitch);
+    }
 
     /** Hide the HUD */
     public void drawBottomOverlay() {

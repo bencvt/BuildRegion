@@ -241,7 +241,6 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
         // Hide the chat window which would otherwise clutter up the screen.
         ChatHider.hide();
 
-        // TODO: possibly allow the user to look around by holding right-click and moving around, or auto-follow the origin
         // TODO: allow the keybinds to move regions around to still work
         // TODO: pressing B or Esc is the same as pressing the "OK" button
         // TODO: buttons to rotate the region around its origin (for planes, fill in using player coords)

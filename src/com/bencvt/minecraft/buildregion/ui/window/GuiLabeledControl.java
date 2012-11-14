@@ -51,9 +51,9 @@ public abstract class GuiLabeledControl extends GuiControlBase {
         }
 
         // Highlight background if mouseover.
-        if (ROW_MOUSEOVER_ARGB != 0 &&
-                xMouse >= xPosition && xMouse <= xPosition + width &&
-                yMouse >= yPosition && yMouse <= yPosition + height) {
+        if (ROW_MOUSEOVER_ARGB != 0 && parent.isMouseOver(
+                xMouse, xPosition, xPosition + width,
+                yMouse, yPosition, yPosition + height)) {
             drawRect(
                     xPosition, yPosition,
                     xPosition + width, yPosition + height,
