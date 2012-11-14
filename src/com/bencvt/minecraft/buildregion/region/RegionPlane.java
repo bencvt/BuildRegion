@@ -87,8 +87,8 @@ public class RegionPlane extends RegionBase {
         return this;
     }
 
-    public RegionPlane set(Axis axis, double coord) {
-        setAxis(axis);
-        return setCoord(coord);
+    public RegionPlane set(ReadonlyVector3 origin, Axis axis) {
+        setAxis(axis).setOriginCoords(origin);
+        return this;
     }
 }

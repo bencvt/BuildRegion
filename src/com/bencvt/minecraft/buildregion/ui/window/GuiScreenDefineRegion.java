@@ -43,7 +43,9 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
     private final GuiSelectEnum<RegionType>   inputRegionType;
     private final GuiHLine                    hLine;
     private final GuiSelectEnum<Axis>         inputPlaneAxis;
-    private final GuiInputNumber              inputPlaneCoord;
+    private final GuiInputNumber              inputPlaneOriginX;
+    private final GuiInputNumber              inputPlaneOriginY;
+    private final GuiInputNumber              inputPlaneOriginZ;
     private final GuiInputNumber              inputCuboidLowerCornerX;
     private final GuiInputNumber              inputCuboidLowerCornerY;
     private final GuiInputNumber              inputCuboidLowerCornerZ;
@@ -97,7 +99,9 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
         inputRegionType = new GuiSelectEnum<RegionType>(this, i18n("label.regiontype"), RegionType.values(), SELECT_COLOR);
         hLine = new GuiHLine(this, BORDER_THICKNESS, BORDER_COLOR);
         inputPlaneAxis = new GuiSelectEnum<Axis>(this, i18n("label.axis"), Axis.values(), SELECT_COLOR);
-        inputPlaneCoord = new GuiInputNumber(this, i18n("label.coord", "?"), Units.WHOLE, false, null);
+        inputPlaneOriginX = new GuiInputNumber(this, i18n("label.coord", Axis.X), Units.WHOLE, false, null);
+        inputPlaneOriginY = new GuiInputNumber(this, i18n("label.coord", Axis.Y), Units.WHOLE, false, null);
+        inputPlaneOriginZ = new GuiInputNumber(this, i18n("label.coord", Axis.Z), Units.WHOLE, false, null);
         inputCuboidLowerCornerX = new GuiInputNumber(this, i18n("label.corner", Axis.X), Units.WHOLE, false, null);
         inputCuboidLowerCornerY = new GuiInputNumber(this, i18n("label.corner", Axis.Y), Units.WHOLE, false, null);
         inputCuboidLowerCornerZ = new GuiInputNumber(this, i18n("label.corner", Axis.Z), Units.WHOLE, false, null);
@@ -131,7 +135,9 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
         rows.get(RegionType.NONE).add(inputRegionType);
         rows.get(RegionType.NONE).add(hLine);
         rows.get(RegionType.PLANE).add(inputPlaneAxis);
-        rows.get(RegionType.PLANE).add(inputPlaneCoord);
+        rows.get(RegionType.PLANE).add(inputPlaneOriginX);
+        rows.get(RegionType.PLANE).add(inputPlaneOriginY);
+        rows.get(RegionType.PLANE).add(inputPlaneOriginZ);
         rows.get(RegionType.CUBOID).add(inputCuboidLowerCornerX);
         rows.get(RegionType.CUBOID).add(inputCuboidLowerCornerY);
         rows.get(RegionType.CUBOID).add(inputCuboidLowerCornerZ);
@@ -263,7 +269,9 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
         if (active == RegionType.PLANE) {
             RegionPlane plane = (RegionPlane) region;
             inputPlaneAxis.setSelectedValue(plane.getAxis(), false);
-            inputPlaneCoord.setValue(plane.getCoord());
+            inputPlaneOriginX.setValue(plane.getOriginReadonly().getX());
+            inputPlaneOriginY.setValue(plane.getOriginReadonly().getY());
+            inputPlaneOriginZ.setValue(plane.getOriginReadonly().getZ());
         } else if (active == RegionType.CUBOID) {
             RegionCuboid cuboid = (RegionCuboid) region;
             inputCuboidLowerCornerX.setValue(cuboid.getLowerCornerReadonly().getX());
@@ -303,9 +311,13 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
         final RegionType active = inputRegionType.getSelectedValue();
         final RegionBase region = regionFactory.getRegion();
         if (active == RegionType.PLANE) {
+            Vector3 origin = new Vector3(
+                    inputPlaneOriginX.getValue(),
+                    inputPlaneOriginY.getValue(),
+                    inputPlaneOriginZ.getValue());
             ((RegionPlane) region).set(
-                    inputPlaneAxis.getSelectedValue(),
-                    inputPlaneCoord.getValue());
+                    origin,
+                    inputPlaneAxis.getSelectedValue());
         } else if (active == RegionType.CUBOID) {
             Vector3 lower = new Vector3(
                     inputCuboidLowerCornerX.getValue(),
@@ -348,11 +360,13 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
                 control.setVisible(r == RegionType.NONE || r == active);
             }
         }
-
-        // Adjust dynamic label texts.
         if (active == RegionType.PLANE) {
-            inputPlaneCoord.setText(i18n("label.coord", regionFactory.getRegion().getAxis()));
+            Axis axis = inputPlaneAxis.getSelectedValue();
+            inputPlaneOriginX.setVisible(axis == Axis.X);
+            inputPlaneOriginY.setVisible(axis == Axis.Y);
+            inputPlaneOriginZ.setVisible(axis == Axis.Z);
         } else if (active == RegionType.CYLINDER) {
+            // Adjust dynamic label texts.
             RegionCylinder cylinder = (RegionCylinder) regionFactory.getRegion();
             inputCylinderRadiusA.setText(i18n("label.radius", cylinder.getRadiusAxisA()));
             inputCylinderRadiusB.setText(i18n("label.radius", cylinder.getRadiusAxisB()));

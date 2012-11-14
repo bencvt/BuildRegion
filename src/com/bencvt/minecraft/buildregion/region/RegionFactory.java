@@ -41,37 +41,37 @@ public class RegionFactory {
         if (proto == RegionBase.DEFAULT_REGION) {
             // Reposition cuboid's origin in front of player.
             aabb.setOriginCoords(defaultOrigin);
-        } else if (proto.getRegionType() == RegionType.PLANE) {
+        } else if (proto == original && proto.getRegionType() == RegionType.PLANE) {
             // Project player coordinates onto origin.
             aabb.setOriginCoord(protoAxis.next(), protoAxis.next().getVectorComponent(defaultOrigin));
             aabb.setOriginCoord(protoAxis.next().next(), protoAxis.next().next().getVectorComponent(defaultOrigin));
         }
         final ReadonlyVector3 origin = aabb.getOriginReadonly();
+        final Axis squareAxis = getAxisForThinSquareCuboid(aabb);
 
         // Convert the cuboid region into the appropriate type.
         if (regionType == RegionType.PLANE) {
-            region = new RegionPlane(origin, protoAxis);
+            final Axis axis = squareAxis == null ? protoAxis : squareAxis;
+            region = new RegionPlane(origin, axis);
         } else if (regionType == RegionType.CUBOID) {
             region = aabb.copyUsing(origin, protoAxis);
         } else if (regionType == RegionType.CYLINDER) {
-            Axis axis = getAxisForThinSquareCuboid(aabb);
-            if (axis == null) {
-                axis = protoAxis;
-            }
+            final Axis axis = squareAxis == null ? protoAxis : squareAxis;
             region = new RegionCylinder(origin, axis,
                     aabb.getSize(axis),
                     aabb.getSize(axis.next())/2.0,
                     aabb.getSize(axis.next().next())/2.0);
         } else if (regionType == RegionType.SPHERE) {
-            Vector3 radii = new Vector3();
-            Axis axis = getAxisForThinSquareCuboid(aabb);
-            if (axis == null) {
+            final Vector3 radii = new Vector3();
+            final Axis axis;
+            if (squareAxis == null) {
                 axis = protoAxis;
                 axis.setVectorComponent(radii, aabb.getSize(axis)/2.0);
                 axis.next().setVectorComponent(radii, aabb.getSize(axis.next())/2.0);
                 axis.next().next().setVectorComponent(radii, aabb.getSize(axis.next().next())/2.0);
             } else {
                 // Special case: create spheres from 1-thick square cuboids
+                axis = squareAxis;
                 double radius = aabb.getSize(axis.next())/2.0;
                 radii.set(radius, radius, radius);
             }
