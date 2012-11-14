@@ -114,22 +114,33 @@ public class InputManager {
             return false;
         }
         // Check for mouse events.
-        if (MOUSE_MOD_LEFT_CLICK_CLEARS && Mouse.isButtonDown(0) && isMouseModKeyDown()) {
-            long now = System.currentTimeMillis();
-            if (now > lastMouseEvent + MOUSE_EVENT_INTERVAL) {
-                lastMouseEvent = now;
-                return controller.cmdClear(true);
-            }
-        } else if (MOUSE_MOD_RIGHT_CLICK_SETS && Mouse.isButtonDown(1) && isMouseModKeyDown()) {
-            long now = System.currentTimeMillis();
-            if (now > lastMouseEvent + MOUSE_EVENT_INTERVAL) {
-                lastMouseEvent = now;
-                return controller.cmdSetFacing(RelativeDirection3D.FORWARD);
-            }
+        if (MOUSE_MOD_LEFT_CLICK_CLEARS && Mouse.isButtonDown(0) && isMouseModKeyDown() && isMouseEventReady()) {
+            return controller.cmdClear(true);
+        } else if (MOUSE_MOD_RIGHT_CLICK_SETS && Mouse.isButtonDown(1) && isMouseModKeyDown() && isMouseEventReady()) {
+            return controller.cmdSetFacing(RelativeDirection3D.FORWARD);
+        } else if (Mouse.isButtonDown(2) && isMouseModKeyDown() && isMouseEventReady()) {
+            return controller.cmdOpenGui();
+        }
+        // Unfortunately there's no easy way to prevent mod-middle-click events
+        // from bubbling up to Minecraft's keybind handler. Middle-click is by
+        // default bound to creative mode select block... relatively harmless.
+        // 
+        // Also, it would be nice to allow mod-mouse-wheel to control the
+        // region, perhaps shifting it forward/backward. However we can't
+        // easily check for mouse wheel events outside of GUI screens.
+        // Minecraft's game loop consumes all mouse events, and there's no easy
+        // way to generate our own mouse wheel events like we do for mouse
+        // button presses. There's no hook either, of course.
+        return false;
+    }
+
+    private boolean isMouseEventReady() {
+        long now = System.currentTimeMillis();
+        if (now > lastMouseEvent + MOUSE_EVENT_INTERVAL) {
+            lastMouseEvent = now;
+            return true;
         }
         return false;
-        // TODO: mod+mousewheel to shift region forward/back
-        // TODO: mod+middle button to bring up gui
     }
 
     private boolean isMouseModKeyDown() {
@@ -211,6 +222,10 @@ public class InputManager {
         b.append(indent)
         .append(KEYBIND_MODE.getKeyNameColored(true))
         .append('\t').append(i18n("usage.gui")).append('\n');
+
+        b.append(indent)
+        .append("\u00a7c").append(MOUSE_MOD_KEY_NAME).append(i18n("input.middleclick"))
+        .append('\t').append(i18n("usage.ditto")).append('\n');
 
         return b.toString();
     }
