@@ -9,6 +9,7 @@ import com.bencvt.minecraft.buildregion.region.RegionCuboid;
 import com.bencvt.minecraft.buildregion.region.RegionCylinder;
 import com.bencvt.minecraft.buildregion.region.RegionPlane;
 import com.bencvt.minecraft.buildregion.region.RegionSphere;
+import com.bencvt.minecraft.buildregion.region.RegionType;
 
 /**
  * Manage LibShapeDraw Shape objects and animations... i.e., the in-world GUI.
@@ -59,31 +60,30 @@ public class ShapeManager {
     }
 
     private RenderBase createShape(RegionBase region) {
-        switch (region.getRegionType()) {
-        case NONE:
-            break;
-        case PLANE:
+        final RegionType r = region.getRegionType();
+        if (r == RegionType.PLANE) {
             return new RenderPlane(
                     controller.getBuildMode().getColorVisible(),
                     controller.getBuildMode().getColorHidden(),
                     (RegionPlane) region);
-        case CUBOID:
+        } else if (r == RegionType.CUBOID) {
             return new RenderCuboid(
                     controller.getBuildMode().getColorVisible(),
                     controller.getBuildMode().getColorHidden(),
                     (RegionCuboid) region);
-        case CYLINDER:
+        } else if (r == RegionType.CYLINDER) {
             return new RenderCylinder(
                     controller.getBuildMode().getColorVisible(),
                     controller.getBuildMode().getColorHidden(),
                     (RegionCylinder) region);
-        case SPHERE:
+        } else if (r == RegionType.SPHERE) {
             return new RenderSphere(
                     controller.getBuildMode().getColorVisible(),
                     controller.getBuildMode().getColorHidden(),
                     (RegionSphere) region);
+        } else {
+            throw new IllegalStateException();
         }
-        throw new IllegalStateException();
     }
 
     public void updateObserverPosition(ReadonlyVector3 playerCoords) {

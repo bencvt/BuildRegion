@@ -15,13 +15,13 @@ import com.bencvt.minecraft.buildregion.lang.LocalizedString;
  * Abstract GuiScreen base class. Same as vanilla Minecraft's, plus various
  * utility methods:<ul>
  * <li>Minecraft and FontRenderer fields are set in the constructor, so they
- *     will never be null. Better than than having to wait for initGui.</li>
+ *     will never be null. Better than having to wait for initGui.</li>
  * <li>Add parentScreen, open, and close for screens that open
  *     other screens temporarily.</li>
- * <li>Add onControlClick and onControlUpdate handlers</li>
+ * <li>Add onControlClick and onControlUpdate handlers.</li>
  * <li>Add the optional (enabled by default) ability to look around while in
  *     the GUI by moving the mouse while holding the right button.</li>
- * <li>Add drawBottomOverlay and drawRectBorder</li>
+ * <li>Add drawBottomOverlay and drawRectBorder.</li>
  * </ul>
  * @author bencvt
  */
