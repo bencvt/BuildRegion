@@ -54,6 +54,7 @@ public class RegionSphere extends RegionBase {
     public boolean getAABB(Vector3 lower, Vector3 upper) {
         lower.set(getOriginReadonly()).subtract(radii);
         upper.set(getOriginReadonly()).add(radii);
+        // TODO: fix
         return true;
     }
 

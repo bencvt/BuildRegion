@@ -60,6 +60,7 @@ public class RegionCylinder extends RegionBase {
     public boolean getAABB(Vector3 lower, Vector3 upper) {
         lower.set(getOriginReadonly()).subtract(halfHeightAndRadii);
         upper.set(getOriginReadonly()).add(halfHeightAndRadii);
+        // TODO: fix
         return true;
     }
 
