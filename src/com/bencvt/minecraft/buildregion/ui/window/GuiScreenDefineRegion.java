@@ -109,7 +109,6 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
         inputCuboidSizeX = new GuiInputNumber(this, i18n("label.size.x"), Units.WHOLE, true, groupCuboidSizes);
         inputCuboidSizeY = new GuiInputNumber(this, i18n("label.size.y"), Units.WHOLE, true, groupCuboidSizes);
         inputCuboidSizeZ = new GuiInputNumber(this, i18n("label.size.z"), Units.WHOLE, true, groupCuboidSizes);
-        // TODO: special value restriction... origin matching cylinder axis must be whole units; other two can be half units
         inputCylinderOriginX = new GuiInputNumber(this, i18n("label.origin", Axis.X), Units.WHOLE, false, null);
         inputCylinderOriginY = new GuiInputNumber(this, i18n("label.origin", Axis.Y), Units.WHOLE, false, null);
         inputCylinderOriginZ = new GuiInputNumber(this, i18n("label.origin", Axis.Z), Units.WHOLE, false, null);
@@ -371,6 +370,12 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
             RegionCylinder cylinder = (RegionCylinder) regionFactory.getRegion();
             inputCylinderRadiusA.setText(i18n("label.radius", cylinder.getRadiusAxisA()));
             inputCylinderRadiusB.setText(i18n("label.radius", cylinder.getRadiusAxisB()));
+            // Special value restriction: origin matching cylinder axis must be
+            // whole units; the other two can be half units.
+            final Axis axis = inputCylinderAxis.getSelectedValue();
+            inputCylinderOriginX.setUnits(axis == Axis.X ? Units.WHOLE : Units.HALF);
+            inputCylinderOriginY.setUnits(axis == Axis.Y ? Units.WHOLE : Units.HALF);
+            inputCylinderOriginZ.setUnits(axis == Axis.Z ? Units.WHOLE : Units.HALF);
         }
     }
 

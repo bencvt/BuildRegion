@@ -1,9 +1,9 @@
 package com.bencvt.minecraft.buildregion.ui.window;
 
-import org.lwjgl.input.Mouse;
-
 import libshapedraw.primitive.Color;
 import net.minecraft.client.Minecraft;
+
+import org.lwjgl.input.Mouse;
 
 import com.bencvt.minecraft.buildregion.region.Units;
 
@@ -44,7 +44,7 @@ public class GuiInputNumber extends GuiLabeledControl {
     public static final double SLIDER_SENSITIVITY = 0.25;
 
     private double value;
-    private final Units units;
+    private Units units;
     private final boolean positive;
     private final GuiInputNumberGroup group;
     private boolean dragging;
@@ -80,6 +80,17 @@ public class GuiInputNumber extends GuiLabeledControl {
         final int xMaxSlider = xPosition + width - R_XBEGIN_SLIDER;
         final int xMidSlider = xMinSlider + (xMaxSlider - xMinSlider)/2;
         setValue(dragBaseValue + units.atom*(xMouse - xMidSlider)*SLIDER_SENSITIVITY);
+    }
+
+    public Units getUnits() {
+        return units;
+    }
+    public void setUnits(Units units) {
+        if (units == null) {
+            throw new IllegalArgumentException();
+        }
+        this.units = units;
+        setValueFromGroup(value); // re-clamp
     }
 
     private boolean isMinusButtonEnabled() {
