@@ -478,15 +478,6 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
 
     @Override
     public void actionPerformedByControl(GuiControlBase guiButton) {
-        if (guiButton == inputBuildMode || guiButton == inputRegionType) {
-            actionPerformed(guiButton);
-        } else {
-            // User is adjusting a slider via mouse dragging or mouse wheeling,
-            // which means this method is probably being called rapidly.
-            exportRegion();
-            updateControlProperties();
-            controller.cmdSet(regionFactory.getRegion(), false);
-            buttonUndo.setEnabled(true);
-        }
+        actionPerformed(guiButton);
     }
 }
