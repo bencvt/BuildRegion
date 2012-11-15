@@ -3,12 +3,16 @@
 - added options file and GUI screen
 
 ## partially implemented features to be released in 2.0
+- updated for Minecraft 1.4.4
 - added cuboid region type
 - added a GUI screen to set region parameters, accessible by pressing `ctrl-B`,
   `shift-B`, or `ctrl-middle-click` (or `cmd-middle-click` on Mac)
 - moved usage text to a GUI help screen
 - added new keybinds to move and resize regions
 - added localization support; translators needed!
+
+## 1.1.1
+- updated for Minecraft 1.4.2
 
 ## 1.1
 - updated for Minecraft 1.4
@@ -31,4 +35,4 @@
 - added keybinds making mouse use optional
 
 ## 1.0
-- initial release
+- initial release for Minecraft 1.3.2

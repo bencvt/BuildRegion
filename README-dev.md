@@ -27,14 +27,5 @@ instructions in the main `README.md` document.
 
 ## Planned features
 
-Planned for BuildRegion 1.2, partially implemented:
-
- +  More region types: cuboids, cylinders, spheres
- +  A GUI window for changing general settings and for adjusting complex region
-    parameters (e.g., the origin and radii for spheres)
-
-Tentative future plans:
-
  +  Allow half-height horizontal regions for slab and step placement
  +  A [schematic](http://www.minecraftwiki.net/wiki/Schematic) region type
- 
