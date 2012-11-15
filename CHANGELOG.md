@@ -2,6 +2,11 @@
 - added cylinder and sphere region types
 - added options file and GUI screen
 
+## partially implemented features to be released in 2.0.1
+- crafting tables, chests, and other containers can now be opened regardless of
+  the build region
+- adjusted GUI window background for better readability
+
 ## 2.0
 - updated for Minecraft 1.4.4
 - added cuboid region type

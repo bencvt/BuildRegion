@@ -2,6 +2,8 @@ package net.minecraft.src;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 
 import net.minecraft.client.Minecraft;
@@ -14,7 +16,7 @@ import net.minecraft.client.Minecraft;
  * @author bencvt
  */
 public class PlayerControllerHooks extends PlayerControllerMP {
-    public static final int VERSION = 3;
+    public static final int VERSION = 4;
 
     public interface PlayerControllerEventListener {
         /**
@@ -22,10 +24,17 @@ public class PlayerControllerHooks extends PlayerControllerMP {
          * @param blockX
          * @param blockY
          * @param blockZ
-         * @param blockFace
-         * @return false to cancel the click event
+         * @param direction
+         * @param cancelled true if this event was cancelled by another
+         *                  PlayerControllerEventListener, false normally
+         * @return whether to allow the click event to be processed.
+         *         <p>
+         *         Normally, just return the value of the <b>cancelled</b>
+         *         parameter. Alternately, returning <b>true</b> will
+         *         explicitly cancel the event, while <b>false</b> will
+         *         explicitly allow the event.
          */
-        public boolean onBlockClick(boolean isLeftClick, int blockX, int blockY, int blockZ, int direction);
+        public boolean onBlockClick(boolean isLeftClick, int blockX, int blockY, int blockZ, int direction, boolean cancelled);
 
         /**
          * Block damage events happen when you hold down the left-click mouse
@@ -35,16 +44,30 @@ public class PlayerControllerHooks extends PlayerControllerMP {
          * @param blockY
          * @param blockZ
          * @param direction
-         * @return false to cancel the damage event
+         * @param cancelled true if this event was cancelled by another
+         *                  PlayerControllerEventListener, false normally
+         * @return whether to allow the click event to be processed.
+         *         <p>
+         *         Normally, just return the value of the <b>cancelled</b>
+         *         parameter. Alternately, returning <b>true</b> will
+         *         explicitly cancel the event, while <b>false</b> will
+         *         explicitly allow the event.
          */
-        public boolean onBlockDamage(int blockX, int blockY, int blockZ, int direction);
+        public boolean onBlockDamage(int blockX, int blockY, int blockZ, int direction, boolean cancelled);
 
         /**
          * @param isLeftClick
          * @param entity
-         * @return false to cancel the click event
+         * @param cancelled true if this event was cancelled by another
+         *                  PlayerControllerEventListener, false normally
+         * @return whether to allow the click event to be processed.
+         *         <p>
+         *         Normally, just return the value of the <b>cancelled</b>
+         *         parameter. Alternately, returning <b>true</b> will
+         *         explicitly cancel the event, while <b>false</b> will
+         *         explicitly allow the event.
          */
-        public boolean onEntityClick(boolean isLeftClick, Entity entity);
+        public boolean onEntityClick(boolean isLeftClick, Entity entity, boolean cancelled);
     }
 
     private static LinkedHashSet<PlayerControllerEventListener> eventListeners = new LinkedHashSet();
@@ -88,7 +111,7 @@ public class PlayerControllerHooks extends PlayerControllerMP {
 
     @Override
     public void clickBlock(int x, int y, int z, int direction) {
-        if (!dispatchBlockClickEvent(true, x, y, z, direction)) {
+        if (dispatchBlockClickEvent(true, x, y, z, direction)) {
             return;
         }
         super.clickBlock(x, y, z, direction);
@@ -96,7 +119,7 @@ public class PlayerControllerHooks extends PlayerControllerMP {
 
     @Override
     public void onPlayerDamageBlock(int x, int y, int z, int direction) {
-        if (!dispatchBlockDamageEvent(x, y, z, direction)) {
+        if (dispatchBlockDamageEvent(x, y, z, direction)) {
             return;
         }
         super.onPlayerDamageBlock(x, y, z, direction);
@@ -104,7 +127,7 @@ public class PlayerControllerHooks extends PlayerControllerMP {
 
     @Override
     public boolean onPlayerRightClick(EntityPlayer player, World world, ItemStack itemStack, int x, int y, int z, int direction, Vec3 hitVec) {
-        if (!dispatchBlockClickEvent(false, x, y, z, direction)) {
+        if (dispatchBlockClickEvent(false, x, y, z, direction)) {
             return false;
         }
         return super.onPlayerRightClick(player, world, itemStack, x, y, z, direction, hitVec);
@@ -112,7 +135,7 @@ public class PlayerControllerHooks extends PlayerControllerMP {
 
     @Override
     public void attackEntity(EntityPlayer player, Entity target) {
-        if (!dispatchEntityClickEvent(true, target)) {
+        if (dispatchEntityClickEvent(true, target)) {
             return;
         }
         super.attackEntity(player, target);
@@ -120,37 +143,37 @@ public class PlayerControllerHooks extends PlayerControllerMP {
 
     @Override
     public boolean func_78768_b(EntityPlayer player, Entity target) {
-        if (!dispatchEntityClickEvent(false, target)) {
+        if (dispatchEntityClickEvent(false, target)) {
             return false;
         }
         return super.func_78768_b(player, target);
     }
 
+    /** @return true if the click event should be cancelled */
     protected boolean dispatchBlockClickEvent(boolean isLeftClick, int blockX, int blockY, int blockZ, int direction) {
+        boolean cancelled = false;
         for (PlayerControllerEventListener listener : eventListeners) {
-            if (!listener.onBlockClick(isLeftClick, blockX, blockY, blockZ, direction)) {
-                return false;
-            }
+            cancelled = listener.onBlockClick(isLeftClick, blockX, blockY, blockZ, direction, cancelled);
         }
-        return true;
+        return cancelled;
     }
 
+    /** @return true if the click event should be cancelled */
     protected boolean dispatchBlockDamageEvent(int blockX, int blockY, int blockZ, int direction) {
+        boolean cancelled = false;
         for (PlayerControllerEventListener listener : eventListeners) {
-            if (!listener.onBlockDamage(blockX, blockY, blockZ, direction)) {
-                return false;
-            }
+            cancelled = listener.onBlockDamage(blockX, blockY, blockZ, direction, cancelled);
         }
-        return true;
+        return cancelled;
     }
 
+    /** @return true if the click event should be cancelled */
     protected boolean dispatchEntityClickEvent(boolean isLeftClick, Entity entity) {
+        boolean cancelled = false;
         for (PlayerControllerEventListener listener : eventListeners) {
-            if (!listener.onEntityClick(isLeftClick, entity)) {
-                return false;
-            }
+            cancelled = listener.onEntityClick(isLeftClick, entity, cancelled);
         }
-        return true;
+        return cancelled;
     }
 
     /**
@@ -217,5 +240,66 @@ public class PlayerControllerHooks extends PlayerControllerMP {
             throw new RuntimeException("internal reflection error", e);
         }
         throw new RuntimeException("internal reflection error - missing field");
+    }
+
+    /**
+     * Clunky list of block IDs that normally intercept right-click when
+     * attempting to place a block adjacent to it. I.e., the block's class
+     * overrides onBlockActivated() to return true when the player is holding
+     * holding an ItemBlock.
+     * <p>
+     * There are also several block classes that *sometimes* return true; they
+     * are special-cased.
+     */
+    private static final HashSet<Integer> blockIdsConsumingRightClick =
+            new HashSet<Integer>(Arrays.asList(new Integer[] {
+                    Block.anvil.blockID,
+                    Block.beacon.blockID,
+                    Block.bed.blockID,
+                    Block.brewingStand.blockID,
+                    Block.cake.blockID,
+                    Block.cauldron.blockID,
+                    Block.chest.blockID,
+                    Block.dispenser.blockID,
+                    Block.doorSteel.blockID,
+                    Block.doorWood.blockID,
+                    Block.dragonEgg.blockID,
+                    Block.enchantmentTable.blockID,
+                    Block.enderChest.blockID,
+                    Block.fenceGate.blockID,
+                    Block.lever.blockID,
+                    Block.music.blockID,
+                    Block.redstoneRepeaterActive.blockID,
+                    Block.redstoneRepeaterIdle.blockID,
+                    Block.stoneButton.blockID,
+                    Block.stoneOvenActive.blockID,
+                    Block.stoneOvenIdle.blockID,
+                    Block.trapdoor.blockID,
+                    Block.woodenButton.blockID,
+                    Block.workbench.blockID
+            }));
+
+    public static boolean isRightClickConsumerBlock(int blockX, int blockY, int blockZ) {
+        final Minecraft mc = Minecraft.getMinecraft();
+        if (mc.theWorld == null) {
+            return false;
+        }
+        int blockId = mc.theWorld.getBlockId(blockX, blockY, blockZ);
+        if (blockIdsConsumingRightClick.contains(blockId)) {
+            return true;
+        }
+        final ItemStack heldItemStack = mc.thePlayer == null ? null : mc.thePlayer.inventory.getCurrentItem();
+        // Special case: jukeboxes
+        if (blockId == Block.jukebox.blockID) {
+            if (mc.theWorld.getBlockMetadata(blockX, blockY, blockZ) != 0) {
+                return true;
+            } else if (heldItemStack != null && heldItemStack.getItem() instanceof ItemRecord) {
+                return true;
+            }
+            // Else the player is right-clicking on a non-empty jukebox with
+            // something other than a record.
+        }
+        // Other special cases (e.g., flower pots) are ignored.
+        return false;
     }
 }

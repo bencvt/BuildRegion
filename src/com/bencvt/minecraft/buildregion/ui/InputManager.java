@@ -163,23 +163,30 @@ public class InputManager {
         return false;
     }
 
+    /**
+     * @return true if we're consuming/cancelling the event, or
+     *         false if the click should be allowed,
+     */
     public boolean handleBlockClick(boolean isLeftClick, int blockX, int blockY, int blockZ, int direction) {
         if (shouldConsumeClick(isLeftClick)) {
-            return false;
+            return true;
         }
-        // TODO: do not block chest/furnace/etc access
-        if (!isLeftClick &&
-                !PlayerControllerHooks.isBuildReplaceBlock(blockX, blockY, blockZ, direction)) {
-            Direction3D dir = Direction3D.fromValue(direction);
-            blockX = dir.getNeighborX(blockX);
-            blockY = dir.getNeighborY(blockY);
-            blockZ = dir.getNeighborZ(blockZ);
+        if (!isLeftClick) {
+            if (PlayerControllerHooks.isRightClickConsumerBlock(blockX, blockY, blockZ)) {
+                // Do not block access to crafting tables, chests, and other containers.
+                return false;
+            } else if (!PlayerControllerHooks.isBuildReplaceBlock(blockX, blockY, blockZ, direction)) {
+                Direction3D dir = Direction3D.fromValue(direction);
+                blockX = dir.getNeighborX(blockX);
+                blockY = dir.getNeighborY(blockY);
+                blockZ = dir.getNeighborZ(blockZ);
+            }
         }
-        boolean allow = controller.canBuild(blockX, blockY, blockZ);
-        if (!allow) {
+        boolean cancelEvent = !controller.canBuild(blockX, blockY, blockZ);
+        if (cancelEvent) {
             controller.notifyDenyClick();
         }
-        return allow;
+        return cancelEvent;
     }
 
     public String getUsage(String indent) {

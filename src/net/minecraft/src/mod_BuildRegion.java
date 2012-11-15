@@ -102,19 +102,17 @@ public class mod_BuildRegion extends BaseMod implements LSDEventListener, Player
     // ========
 
     @Override
-    public boolean onBlockClick(boolean isLeftClick, int blockX, int blockY, int blockZ, int direction) {
-        return inputManager.handleBlockClick(
-                isLeftClick, blockX, blockY, blockZ, direction);
+    public boolean onBlockClick(boolean isLeftClick, int blockX, int blockY, int blockZ, int direction, boolean cancelled) {
+        return cancelled || inputManager.handleBlockClick(isLeftClick, blockX, blockY, blockZ, direction);
     }
 
     @Override
-    public boolean onBlockDamage(int blockX, int blockY, int blockZ, int direction) {
-        return inputManager.handleBlockClick(
-                true, blockX, blockY, blockZ, direction);
+    public boolean onBlockDamage(int blockX, int blockY, int blockZ, int direction, boolean cancelled) {
+        return cancelled || inputManager.handleBlockClick(true, blockX, blockY, blockZ, direction);
     }
 
     @Override
-    public boolean onEntityClick(boolean isLeftClick, Entity entity) {
-        return !inputManager.shouldConsumeClick(isLeftClick);
+    public boolean onEntityClick(boolean isLeftClick, Entity entity, boolean cancelled) {
+        return cancelled || inputManager.shouldConsumeClick(isLeftClick);
     }
 }
