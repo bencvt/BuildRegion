@@ -2,7 +2,7 @@
 - added cylinder and sphere region types
 - added options file and GUI screen
 
-## partially implemented features to be released in 2.0
+## 2.0
 - updated for Minecraft 1.4.4
 - added cuboid region type
 - added a GUI screen to set region parameters, accessible by pressing `ctrl-B`,
