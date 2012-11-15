@@ -64,7 +64,8 @@ Finally, press `shift-B` or `control-middle-click` to open up a GUI window to
 help you define the region. Most of the things that you can do in the GUI are
 already covered by a keyboard or mouse shortcut, listed above. The GUI is
 intended as an alternate way to set up your region -- use whichever method you
-prefer!
+prefer! Even if the GUI is open, you can still use keyboard/mouse shortcuts, and
+you can adjust the camera by moving the mouse while holding `right-click`.
 
 Note: if you're using a Mac, use `command (⌘)` instead of `control`.
 

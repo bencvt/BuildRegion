@@ -3,8 +3,9 @@
 - added options file and GUI screen
 
 ## partially implemented features to be released in 2.0.1
-- crafting tables, chests, and other containers can now be opened regardless of
-  the build region
+- crafting tables, buttons, doors, chests, furnaces, etc. can now be accessed
+  regardless of the build region
+- regular torches can now be placed and destroyed regardless of the build region
 - adjusted GUI window background for better readability
 
 ## 2.0
