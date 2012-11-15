@@ -15,13 +15,9 @@ import net.minecraft.src.ScaledResolution;
  * @author bencvt
  */
 public class HUDMessage {
-    private final Minecraft minecraft;
+    private final Minecraft minecraft = Minecraft.getMinecraft();
     private final Color color = Color.WHITE.copy();
     private String[] lines;
-
-    public HUDMessage(Minecraft minecraft) {
-        this.minecraft = minecraft;
-    }
 
     private boolean isHiddenByGui(boolean highPriority) {
         if (minecraft.currentScreen == null && !minecraft.gameSettings.hideGUI) {

@@ -39,13 +39,14 @@ public class Controller {
 
     public Controller(LibShapeDraw libShapeDraw, mod_BuildRegion mod, Minecraft minecraft) {
         this.minecraft = minecraft;
-        inputManager = new InputManager(this, mod, minecraft);
-        messageManager = new MessageManager(minecraft);
+        inputManager = new InputManager(this, mod);
+        messageManager = new MessageManager();
         shapeManager = new ShapeManager(this, libShapeDraw);
         modTitle = mod.getName() + " v" + MOD_VERSION;
         modDirectory = new File(Minecraft.getMinecraftDir(), "mods" + File.separator + mod.getName());
         buildMode = new BuildModeValue(BuildMode.INSIDE);
         cmdReset();
+        new BlockClickHandler(this); // no need to keep a reference; the handler registers itself
     }
 
     // ========
@@ -179,18 +180,6 @@ public class Controller {
 
     public ReadonlyBuildModeValue getBuildMode() {
         return buildMode;
-    }
-
-    public boolean canBuild(double x, double y, double z) {
-        if (curRegion == null) {
-            return true;
-        } else if (buildMode.getValue() == BuildMode.INSIDE) {
-            return curRegion.isInsideRegion(x, y, z);
-        } else if (buildMode.getValue() == BuildMode.OUTSIDE) {
-            return !curRegion.isInsideRegion(x, y, z);
-        } else {
-            return true;
-        }
     }
 
     public RegionBase getCurRegion() {

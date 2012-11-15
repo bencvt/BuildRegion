@@ -2,18 +2,14 @@ package com.bencvt.minecraft.buildregion.ui;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.BaseMod;
-import net.minecraft.src.Block;
 import net.minecraft.src.EnumOS;
-import net.minecraft.src.ItemStack;
 import net.minecraft.src.KeyBinding;
-import net.minecraft.src.PlayerControllerHooks;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import com.bencvt.minecraft.buildregion.Controller;
 import com.bencvt.minecraft.buildregion.lang.LocalizedString;
-import com.bencvt.minecraft.buildregion.region.Direction3D;
 import com.bencvt.minecraft.buildregion.region.RelativeDirection3D;
 
 /**
@@ -73,9 +69,9 @@ public class InputManager {
     private final Minecraft minecraft;
     private long lastMouseEvent;
 
-    public InputManager(Controller controller, BaseMod mod, Minecraft minecraft) {
+    public InputManager(Controller controller, BaseMod mod) {
         this.controller = controller;
-        this.minecraft = minecraft;
+        minecraft = Minecraft.getMinecraft();
         for (CustomKeyBinding key : ALL_KEYBINDS) {
             key.register(mod);
         }
@@ -155,7 +151,7 @@ public class InputManager {
                 Keyboard.isKeyDown(Keyboard.KEY_RCONTROL));
     }
 
-    public boolean shouldConsumeClick(boolean isLeftClick) {
+    public boolean consumesClick(boolean isLeftClick) {
         if (isLeftClick && MOUSE_MOD_LEFT_CLICK_CLEARS && isMouseModKeyDown()) {
             return true;
         }
@@ -163,61 +159,6 @@ public class InputManager {
             return true;
         }
         return false;
-    }
-
-    /**
-     * @return true if we're consuming/cancelling the event, or
-     *         false if the click should be allowed,
-     */
-    public boolean handleBlockClick(boolean isLeftClick, int blockX, int blockY, int blockZ, int direction) {
-        if (shouldConsumeClick(isLeftClick)) {
-            return true;
-        }
-        if (isLeftClick) {
-            if (minecraft.theWorld != null && isExcludedBlock(minecraft.theWorld.getBlockId(blockX, blockY, blockZ))) {
-                // Allow certain block types to be destroyed no matter what.
-                return false;
-            }
-            // Else this is a normal block being destroyed.
-        } else {
-            if (PlayerControllerHooks.isRightClickConsumerBlock(blockX, blockY, blockZ)) {
-                // Do not block access to crafting tables, buttons, doors,
-                // chests, furnaces, etc.
-                return false;
-            } else if (isPlayerHoldingExcludedBlock()) {
-                // Allow certain block types to be placed no matter what.
-                return false;
-            } else if (!PlayerControllerHooks.isBuildReplaceBlock(blockX, blockY, blockZ, direction)) {
-                // Placing a block on top of grass or turning a single slab
-                // into a double slab.
-                Direction3D dir = Direction3D.fromValue(direction);
-                blockX = dir.getNeighborX(blockX);
-                blockY = dir.getNeighborY(blockY);
-                blockZ = dir.getNeighborZ(blockZ);
-            }
-            // Else this is a normal block being placed.
-        }
-
-        boolean cancelEvent = !controller.canBuild(blockX, blockY, blockZ);
-        if (cancelEvent) {
-            controller.notifyDenyClick();
-        }
-        return cancelEvent;
-    }
-
-    private boolean isPlayerHoldingExcludedBlock() {
-        if (minecraft.thePlayer == null) {
-            return false;
-        }
-        ItemStack held = minecraft.thePlayer.getCurrentEquippedItem();
-        if (held == null) {
-            return false;
-        }
-        return isExcludedBlock(held.itemID);
-    }
-
-    private boolean isExcludedBlock(int blockId) {
-        return blockId == Block.torchWood.blockID;
     }
 
     public String getUsage(String indent) {

@@ -15,13 +15,8 @@ public class MessageManager {
     public static final long MESSAGE_DURATION_INFO = 1500;
     public static final long MESSAGE_DURATION_ERROR = 3000;
 
-    private final Minecraft minecraft;
-    private final HUDMessage hudMessage;
-
-    public MessageManager(Minecraft minecraft) {
-        this.minecraft = minecraft;
-        hudMessage = new HUDMessage(minecraft);
-    }
+    private final Minecraft minecraft = Minecraft.getMinecraft();
+    private final HUDMessage hudMessage = new HUDMessage();
 
     public void info(String message) {
         hudMessage.update(message, false, MESSAGE_COLOR_INFO, MESSAGE_COLOR_INFO, MESSAGE_DURATION_INFO);

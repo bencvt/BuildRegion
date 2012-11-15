@@ -6,21 +6,21 @@ import libshapedraw.event.LSDGameTickEvent;
 import libshapedraw.event.LSDPreRenderEvent;
 import libshapedraw.event.LSDRespawnEvent;
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.PlayerControllerHooks.PlayerControllerEventListener;
 
 import com.bencvt.minecraft.buildregion.Controller;
 import com.bencvt.minecraft.buildregion.UpdateCheck;
 import com.bencvt.minecraft.buildregion.ui.InputManager;
 
 /**
- * Front-end class that handles events raised by various APIs:
- * LibShapeDraw, ModLoader, and PlayerControllerHooks.
+ * Front-end class that hooks into various APIs: LibShapeDraw, ModLoader, and
+ * PlayerControllerHooks.
  * <p>
- * Simply passes everything along to the Controller and InputManager.
+ * Simply passes everything along to the Controller and InputManager wherever
+ * possible.
  * 
  * @author bencvt
  */
-public class mod_BuildRegion extends BaseMod implements LSDEventListener, PlayerControllerEventListener {
+public class mod_BuildRegion extends BaseMod implements LSDEventListener {
     private Controller controller;
     private InputManager inputManager;
     private UpdateCheck updateCheck;
@@ -44,8 +44,6 @@ public class mod_BuildRegion extends BaseMod implements LSDEventListener, Player
         inputManager = controller.getInputManager();
 
         ModLoader.setInGameHook(this, true, false); // include partial ticks
-
-        PlayerControllerHooks.register(this);
     }
 
     // ========
@@ -95,24 +93,5 @@ public class mod_BuildRegion extends BaseMod implements LSDEventListener, Player
     @Override
     public void onPreRender(LSDPreRenderEvent event) {
         controller.updatePlayerPosition(event.getPlayerCoords());
-    }
-
-    // ========
-    // PlayerControllerHooks events
-    // ========
-
-    @Override
-    public boolean onBlockClick(boolean isLeftClick, int blockX, int blockY, int blockZ, int direction, boolean cancelled) {
-        return cancelled || inputManager.handleBlockClick(isLeftClick, blockX, blockY, blockZ, direction);
-    }
-
-    @Override
-    public boolean onBlockDamage(int blockX, int blockY, int blockZ, int direction, boolean cancelled) {
-        return cancelled || inputManager.handleBlockClick(true, blockX, blockY, blockZ, direction);
-    }
-
-    @Override
-    public boolean onEntityClick(boolean isLeftClick, Entity entity, boolean cancelled) {
-        return cancelled || inputManager.shouldConsumeClick(isLeftClick);
     }
 }
