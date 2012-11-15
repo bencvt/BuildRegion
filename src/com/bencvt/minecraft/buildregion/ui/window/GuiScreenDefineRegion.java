@@ -31,7 +31,8 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
     public static final int ROW_SPACING = 2;
     public static final int PAD = 2;
     public static final int BORDER_THICKNESS = 1;
-    public static final int BACKGROUND_ARGB        = Color.BLACK.copy().setAlpha(3.0/8.0).getARGB();
+    public static final int BACKGROUND_TOP_ARGB    = Color.BLACK.copy().setAlpha(1.0/4.0).getARGB();
+    public static final int BACKGROUND_BOTTOM_ARGB = Color.BLACK.copy().setAlpha(7.0/8.0).getARGB();
     public static final ReadonlyColor BORDER_COLOR = Color.BLACK.copy().setAlpha(1.0/8.0);
     public static final int BORDER_ARGB            = BORDER_COLOR.getARGB();
     public static final ReadonlyColor SELECT_COLOR = Color.DODGER_BLUE;
@@ -417,7 +418,7 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
         final int xRight  = windowXPosition + windowWidth;
         final int yTop    = windowYPosition;
         final int yBottom = windowYPosition + windowHeight;
-        drawRect(xLeft, yTop, xRight, yBottom, BACKGROUND_ARGB);
+        drawGradientRect(xLeft, yTop, xRight, yBottom, BACKGROUND_TOP_ARGB, BACKGROUND_BOTTOM_ARGB);
         if (BORDER_THICKNESS > 0) {
             drawRectBorder(xLeft, yTop, xRight, yBottom, BORDER_ARGB, BORDER_THICKNESS);
         }

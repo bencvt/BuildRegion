@@ -165,12 +165,12 @@ public abstract class GuiScreenBase extends GuiScreen {
         GL11.glShadeModel(GL11.GL_SMOOTH);
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         tess.startDrawingQuads();
-        tess.setColorRGBA_I(0, 0);
-        tess.addVertexWithUV(  0.0, top + 4, 0.0,   0.0, 1.0);
-        tess.addVertexWithUV(width, top + 4, 0.0,   1.0, 1.0);
-        tess.setColorRGBA_I(0, 255);
-        tess.addVertexWithUV(width,     top, 0.0,   1.0, 0.0);
-        tess.addVertexWithUV(  0.0,     top, 0.0,   0.0, 0.0);
+        tess.setColorRGBA_I(0x000000, 255);
+        tess.addVertexWithUV(  0.0, top, 0.0,   0.0, 1.0);
+        tess.addVertexWithUV(width, top, 0.0,   1.0, 1.0);
+        tess.setColorRGBA_I(0x000000, 0);
+        tess.addVertexWithUV(width,     top - 4, 0.0,   1.0, 0.0);
+        tess.addVertexWithUV(  0.0,     top - 4, 0.0,   0.0, 0.0);
         tess.draw();
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glShadeModel(GL11.GL_FLAT);
