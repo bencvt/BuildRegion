@@ -1,16 +1,21 @@
-[
 {
-  "modid": "mod_BuildRegion",
-  "name": "BuildRegion",
-  "description": "In Minecraft, having to go back and fix blocks that you accidentally placed or destroyed is time-consuming and annoying. BuildRegion is a user interface enhancement mod, designed to help you avoid these little accidents.",
-  "logoFile": "",
-  "version": "2.0-SNAPSHOT",
-  "credits": "",
-  "authors": [ "bencvt" ],
-  "url": "http://bit.ly/BuildRegion",
-  "updateUrl": "",
-  "parent": "",
-  "screenshots": [],
-  "dependencies": [ "mod_LibShapeDraw" ]
+  "modinfoversion": 2,
+  "modlist": [{
+    "modid": "mod_BuildRegion",
+    "name": "BuildRegion",
+    "description": "In Minecraft, having to go back and fix blocks that you accidentally placed or destroyed is time-consuming and annoying. BuildRegion is a user interface enhancement mod, designed to help you avoid these little accidents.",
+    "version": "2.0-SNAPSHOT",
+    "mcversion": "1.4.4",
+    "url": "http://bit.ly/BuildRegion",
+    "updateUrl": "",
+    "authors": [ "bencvt" ],
+    "credits": "",
+    "logoFile": "",
+    "screenshots": [],
+    "parent": "",
+    "requiredMods": [ "mod_LibShapeDraw" ],
+    "dependencies": [],
+    "dependants": [],
+    "useDependencyInformation": "true"
+  }]
 }
-]
