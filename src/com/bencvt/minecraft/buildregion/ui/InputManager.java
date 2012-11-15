@@ -167,6 +167,7 @@ public class InputManager {
         if (shouldConsumeClick(isLeftClick)) {
             return false;
         }
+        // TODO: do not block chest/furnace/etc access
         if (!isLeftClick &&
                 !PlayerControllerHooks.isBuildReplaceBlock(blockX, blockY, blockZ, direction)) {
             Direction3D dir = Direction3D.fromValue(direction);

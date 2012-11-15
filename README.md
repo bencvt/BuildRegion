@@ -36,11 +36,8 @@ patching `minecraft.jar` directly, you can.
 ## Compatibility
 
 BuildRegion does not modify *any* vanilla classes directly and therefore should
-be compatible with virtually every mod. Forge is supported but *not* required.
-
-By necessity, BuildRegion does set up a "PlayerControllerMP proxy" internally,
-which could potentially be a source of some incompatibilies. If you find an
-incompatible mod please post to
+be compatible with virtually every mod that works with ModLoader or Forge. If
+you find an incompatible mod please post to
 [the minecraftforums thread](http://www.minecraftforum.net/topic/1514724-buildregion/)
 or [open an issue on github](https://github.com/bencvt/BuildRegion/issues)
 and we'll try to sort it out.
@@ -54,21 +51,22 @@ build region.
 
 You can easily redefine the region: just move around or face a different
 direction, then `control-right-click` again. You can also move the region
-around using `[` and `]`.
+around using `[`, `]`, and the arrow keys.
 
-If you're using a Mac, use `command (⌘)` instead of `control`. If you prefer
-to use a keyboard shortcut instead of the mouse, `shift-[` and `shift-]` also
-work to clear and set the build region, respectively.
-
-Additionally, you can press `B` to change how the build region works:
+Press `B` to change how the build region works:
 
  *   *Blue (default)*: you can only place or destroy blocks *inside* the grid.
  *   *Red*: you can only place or destroy blocks *outside* the grid.
  *   *Green and white*: the grid is for *display* only; it won't affect block
      placement.
 
-Finally, press `shift-B` to get a list of all commands (i.e., a short version
-of everything you just read.)
+Finally, press `shift-B` or `control-middle-click` to open up a GUI window to
+help you define the region. Most of the things that you can do in the GUI are
+already covered by a keyboard or mouse shortcut, listed above. The GUI is
+intended as an alternate way to set up your region -- use whichever method you
+prefer!
+
+Note: if you're using a Mac, use `command (⌘)` instead of `control`.
 
 ## More info
 

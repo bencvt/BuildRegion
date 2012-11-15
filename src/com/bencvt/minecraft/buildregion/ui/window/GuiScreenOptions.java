@@ -5,6 +5,7 @@ import net.minecraft.src.GuiControls;
 
 /**
  * TODO: user-specified options. Possible options:
+ * Allow torch placement regardless of region: {YES, NO}
  * Remember region type between sessions: {YES, NO}
  * New region placement: {ORIGIN, CORNER}
  * GUI camera adjust: {YES, NO}
