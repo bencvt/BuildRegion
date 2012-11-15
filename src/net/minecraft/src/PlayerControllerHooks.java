@@ -141,6 +141,8 @@ public class PlayerControllerHooks extends PlayerControllerMP {
         super.attackEntity(player, target);
     }
 
+    // This method should be deobfuscated as something like rightClickEntity or
+    // interactWithEntity.
     @Override
     public boolean func_78768_b(EntityPlayer player, Entity target) {
         if (dispatchEntityClickEvent(false, target)) {
@@ -245,11 +247,11 @@ public class PlayerControllerHooks extends PlayerControllerMP {
     /**
      * Clunky list of block IDs that normally intercept right-click when
      * attempting to place a block adjacent to it. I.e., the block's class
-     * overrides onBlockActivated() to return true when the player is holding
+     * overrides onBlockActivated() to always return true when the player is
      * holding an ItemBlock.
      * <p>
      * There are also several block classes that *sometimes* return true; they
-     * are special-cased.
+     * are either special-cased or ignored.
      */
     private static final HashSet<Integer> blockIdsConsumingRightClick =
             new HashSet<Integer>(Arrays.asList(new Integer[] {
@@ -260,6 +262,7 @@ public class PlayerControllerHooks extends PlayerControllerMP {
                     Block.cake.blockID,
                     Block.cauldron.blockID,
                     Block.chest.blockID,
+                    Block.commandBlock.blockID,
                     Block.dispenser.blockID,
                     Block.doorSteel.blockID,
                     Block.doorWood.blockID,
@@ -268,7 +271,7 @@ public class PlayerControllerHooks extends PlayerControllerMP {
                     Block.enderChest.blockID,
                     Block.fenceGate.blockID,
                     Block.lever.blockID,
-                    Block.music.blockID,
+                    Block.music.blockID, // a.k.a. note block
                     Block.redstoneRepeaterActive.blockID,
                     Block.redstoneRepeaterIdle.blockID,
                     Block.stoneButton.blockID,
@@ -276,7 +279,7 @@ public class PlayerControllerHooks extends PlayerControllerMP {
                     Block.stoneOvenIdle.blockID,
                     Block.trapdoor.blockID,
                     Block.woodenButton.blockID,
-                    Block.workbench.blockID
+                    Block.workbench.blockID // a.k.a. crafting table
             }));
 
     public static boolean isRightClickConsumerBlock(int blockX, int blockY, int blockZ) {
@@ -288,6 +291,7 @@ public class PlayerControllerHooks extends PlayerControllerMP {
         if (blockIdsConsumingRightClick.contains(blockId)) {
             return true;
         }
+
         final ItemStack heldItemStack = mc.thePlayer == null ? null : mc.thePlayer.inventory.getCurrentItem();
         // Special case: jukeboxes
         if (blockId == Block.jukebox.blockID) {
@@ -299,7 +303,15 @@ public class PlayerControllerHooks extends PlayerControllerMP {
             // Else the player is right-clicking on a non-empty jukebox with
             // something other than a record.
         }
-        // Other special cases (e.g., flower pots) are ignored.
+        // Other special cases (e.g., flower pots, redstone ore, TNT) are
+        // ignored.
+        // 
+        // Other block types don't override onBlockActivated() but can
+        // still consume right-clicks depending on the held item (e.g., using a
+        // hoe on dirt). We ignore those cases too.
+        // 
+        // Finally, it's worth noting that item frames are entities, not
+        // blocks, so it's also not considered by this method.
         return false;
     }
 }
