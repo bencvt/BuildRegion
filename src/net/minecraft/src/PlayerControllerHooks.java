@@ -203,7 +203,7 @@ public class PlayerControllerHooks extends PlayerControllerMP {
         if (!(Block.blocksList[blockId] instanceof BlockHalfSlab)) {
             return false;
         }
-        ItemStack heldItemStack = mc.thePlayer.inventory.getCurrentItem();
+        ItemStack heldItemStack = mc.thePlayer.getCurrentEquippedItem();
         if (heldItemStack == null || !(heldItemStack.getItem() instanceof ItemSlab)) {
             return false;
         }
@@ -292,7 +292,7 @@ public class PlayerControllerHooks extends PlayerControllerMP {
             return true;
         }
 
-        final ItemStack heldItemStack = mc.thePlayer == null ? null : mc.thePlayer.inventory.getCurrentItem();
+        final ItemStack heldItemStack = mc.thePlayer == null ? null : mc.thePlayer.getCurrentEquippedItem();
         // Special case: jukeboxes
         if (blockId == Block.jukebox.blockID) {
             if (mc.theWorld.getBlockMetadata(blockX, blockY, blockZ) != 0) {
