@@ -35,6 +35,8 @@ public class GuiSelectEnum<T extends Enum> extends GuiLabeledControl {
         protected int xEnd;   // relative to the control column's x coordinate
         protected Timeline alphaTimeline;
         protected double alpha;
+        protected Option prev;
+        protected Option next;
 
         // getter/setter required for property interpolation
         public double getAlpha() { return alpha; }
@@ -46,6 +48,7 @@ public class GuiSelectEnum<T extends Enum> extends GuiLabeledControl {
                     yMouse, yPosition, yPosition + height);
         }
     }
+    private final boolean enableMousewheel;
     private final LinkedHashMap<T, Option> options;
     private int labelWidth;
     private boolean allowSetNull;
@@ -55,6 +58,7 @@ public class GuiSelectEnum<T extends Enum> extends GuiLabeledControl {
         super(parent, text);
         options = new LinkedHashMap<T, Option>();
         int controlWidth = 0;
+        Option prevOption = null;
         for (T value : values) {
             // XXX: temporarily exclude region types
             if (value == RegionType.CYLINDER || value == RegionType.SPHERE) {
@@ -73,8 +77,14 @@ public class GuiSelectEnum<T extends Enum> extends GuiLabeledControl {
             option.xBegin = controlWidth;
             controlWidth += PAD_LEFT + parent.getFontRenderer().getStringWidth(option.text) + PAD_RIGHT;
             option.xEnd = controlWidth;
+            option.prev = prevOption;
+            if (prevOption != null) {
+                prevOption.next = option;
+            }
+            prevOption = option;
             options.put(value, option);
         }
+        enableMousewheel = options.size() >= 8;
         selectedValue = null;
         setControlWidth(controlWidth); // also sets width
         height = PAD_TOP + parent.getFontRenderer().FONT_HEIGHT + PAD_BOTTOM;
@@ -157,6 +167,21 @@ public class GuiSelectEnum<T extends Enum> extends GuiLabeledControl {
     }
 
     @Override
+    protected void mouseWheelScrolled(boolean back) {
+        if (!enableMousewheel) {
+            return;
+        }
+        Option cur = getOptionForValue(selectedValue);
+        if (back && cur.prev != null) {
+            setSelectedValue(cur.prev.value, true);
+            parent.actionPerformedByControl(this);
+        } else if (!back && cur.next != null) {
+            setSelectedValue(cur.next.value, true);
+            parent.actionPerformedByControl(this);
+        }
+    }
+
+    @Override
     protected void drawControl(int xMouse, int yMouse) {
         int xOffset = getControlXOffset();
         for (Option option : options.values()) {
@@ -179,6 +204,7 @@ public class GuiSelectEnum<T extends Enum> extends GuiLabeledControl {
             }
         }
     }
+
     /** so we don't create a bunch of temporary objects when rendering */
     private static final Color tempColor = Color.BLACK.copy();
 
@@ -187,7 +213,6 @@ public class GuiSelectEnum<T extends Enum> extends GuiLabeledControl {
         if (!super.mousePressed(minecraft, xMouse, yMouse)) {
             return false;
         }
-        // TODO: respond to mouse wheel
         int xOffset = getControlXOffset();
         for (Option option : options.values()) {
             if (xMouse >= option.xBegin + xOffset && xMouse <= option.xEnd + xOffset) {

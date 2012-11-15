@@ -443,7 +443,7 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
     }
 
     @Override
-    protected void onControlClick(GuiButton guiButton) {
+    protected void actionPerformed(GuiButton guiButton) {
         if (guiButton == buttonHelp) {
             open(new GuiScreenHelp(this, controller));
         } else if (guiButton == buttonOptions) {
@@ -455,7 +455,7 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
                     .setSelectedValue(originalBuildMode, true)
                     .getSelectedValue());
             regionFactory.setRegion(null);
-            onControlClick(inputRegionType.setSelectedValue(originalRegionType, true));
+            actionPerformed(inputRegionType.setSelectedValue(originalRegionType, true));
             buttonUndo.setEnabled(false);
         } else if (guiButton == buttonDone) {
             close();
@@ -476,8 +476,16 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
     }
 
     @Override
-    public void onControlUpdate(GuiControlBase control, boolean rapid) {
-        exportRegion();
-        controller.cmdSet(regionFactory.getRegion(), !rapid);
+    public void actionPerformedByControl(GuiControlBase guiButton) {
+        if (guiButton == inputBuildMode || guiButton == inputRegionType) {
+            actionPerformed(guiButton);
+        } else {
+            // User is adjusting a slider via mouse dragging or mouse wheeling,
+            // which means this method is probably being called rapidly.
+            exportRegion();
+            updateControlProperties();
+            controller.cmdSet(regionFactory.getRegion(), false);
+            buttonUndo.setEnabled(true);
+        }
     }
 }

@@ -2,7 +2,6 @@ package com.bencvt.minecraft.buildregion.ui.window;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.FontRenderer;
-import net.minecraft.src.GuiButton;
 import net.minecraft.src.GuiScreen;
 import net.minecraft.src.Tessellator;
 
@@ -18,7 +17,7 @@ import com.bencvt.minecraft.buildregion.lang.LocalizedString;
  *     will never be null. Better than having to wait for initGui.</li>
  * <li>Add parentScreen, open, and close for screens that open
  *     other screens temporarily.</li>
- * <li>Add onControlClick and onControlUpdate handlers.</li>
+ * <li>Add actionPerformedByControl handler.</li>
  * <li>Add the optional (enabled by default) ability to look around while in
  *     the GUI by moving the mouse while holding the right button.</li>
  * <li>Add drawBottomOverlay and drawRectBorder.</li>
@@ -55,31 +54,15 @@ public abstract class GuiScreenBase extends GuiScreen {
         mc.displayGuiScreen(parentScreen);
     }
 
-    @Override
-    protected final void actionPerformed(GuiButton guiButton) {
-        onControlClick(guiButton);
-    }
-
-    /**
-     * Called whenever a control is clicked, assuming the control's
-     * mousePressed method returns true.
-     */
-    protected void onControlClick(GuiButton guiButton) {
-        // do nothing by default
-    }
-
     /**
      * When a control is clicked, its parent GuiScreen's actionPerformed method
      * is invoked, assuming the control's mousePressed method returns true.
      * <p>
      * However this does not cover other ways that a control can be updated,
-     * such as dragging the mouse.
-     * 
-     * @param control the control being updated
-     * @param rapid if true the control is being rapidly updated and the screen
-     *              should expect subsequent updates within a few milliseconds
+     * such as dragging the mouse or using the mouse wheel. This method can be
+     * called by child controls when those events occur.
      */
-    public void onControlUpdate(GuiControlBase control, boolean rapid) {
+    public void actionPerformedByControl(GuiControlBase guiButton) {
         // do nothing by default
     }
 

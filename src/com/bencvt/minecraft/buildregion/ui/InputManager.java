@@ -13,7 +13,6 @@ import com.bencvt.minecraft.buildregion.Controller;
 import com.bencvt.minecraft.buildregion.lang.LocalizedString;
 import com.bencvt.minecraft.buildregion.region.Direction3D;
 import com.bencvt.minecraft.buildregion.region.RelativeDirection3D;
-import com.bencvt.minecraft.buildregion.ui.window.GuiScreenDefineRegion;
 
 /**
  * Handle user input (keyboard/mouse events).

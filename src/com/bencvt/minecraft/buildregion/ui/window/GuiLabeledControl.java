@@ -3,6 +3,8 @@ package com.bencvt.minecraft.buildregion.ui.window;
 import libshapedraw.primitive.Color;
 import net.minecraft.client.Minecraft;
 
+import org.lwjgl.input.Mouse;
+
 public abstract class GuiLabeledControl extends GuiControlBase {
     public static final int LABEL_SPACING = 4;
     public static final int LABEL_ARGB             = Color.LIGHT_GRAY.getARGB();
@@ -13,6 +15,7 @@ public abstract class GuiLabeledControl extends GuiControlBase {
 
     private int labelWidth;
     private int controlWidth;
+    private boolean wasMouseOver;
 
     public GuiLabeledControl(GuiScreenBase parent, String text) {
         super(parent, text);
@@ -45,19 +48,32 @@ public abstract class GuiLabeledControl extends GuiControlBase {
     }
 
     @Override
-    public void drawButton(Minecraft minecraft, int xMouse, int yMouse) {
+    public final void drawButton(Minecraft minecraft, int xMouse, int yMouse) {
         if (!isVisible()) {
             return;
         }
 
-        // Highlight background if mouseover.
-        if (ROW_MOUSEOVER_ARGB != 0 && parent.isMouseOver(
-                xMouse, xPosition, xPosition + width,
-                yMouse, yPosition, yPosition + height)) {
-            drawRect(
-                    xPosition, yPosition,
-                    xPosition + width, yPosition + height,
-                    ROW_MOUSEOVER_ARGB);
+        if (isMouseOver(xMouse, yMouse)) {
+            // Dispatch mouse wheel event.
+            int wheel = Mouse.getDWheel();
+            if (wasMouseOver) {
+                boolean back = wheel < 0;
+                if (back || wheel > 0) {
+                    mouseWheelScrolled(back);
+                }
+            }
+            // Else do nothing; we consumed the event if there was one.
+
+            // Highlight background on mouseover.
+            if (ROW_MOUSEOVER_ARGB != 0) {
+                drawRect(
+                        xPosition, yPosition,
+                        xPosition + width, yPosition + height,
+                        ROW_MOUSEOVER_ARGB);
+            }
+            wasMouseOver = true;
+        } else {
+            wasMouseOver = false;
         }
 
         // Draw label text.
@@ -69,6 +85,10 @@ public abstract class GuiLabeledControl extends GuiControlBase {
 
         // Defer control rendering to inheriting class.
         drawControl(xMouse, yMouse);
+    }
+
+    protected void mouseWheelScrolled(boolean back) {
+        // do nothing by default
     }
 
     protected abstract void drawControl(int xMouse, int yMouse);

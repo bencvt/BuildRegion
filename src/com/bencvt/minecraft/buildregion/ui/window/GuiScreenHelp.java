@@ -130,7 +130,7 @@ public class GuiScreenHelp extends GuiScreenBase {
     }
 
     @Override
-    protected void onControlClick(GuiButton guiButton) {
+    protected void actionPerformed(GuiButton guiButton) {
         if (guiButton == buttonDone) {
             close();
         }

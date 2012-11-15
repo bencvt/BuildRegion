@@ -86,4 +86,10 @@ public abstract class GuiControlBase extends GuiButton {
         this.yPosition = yPosition;
         return this;
     }
+
+    public final boolean isMouseOver(int xMouse, int yMouse) {
+        return parent.isMouseOver(
+                xMouse, xPosition, xPosition + width,
+                yMouse, yPosition, yPosition + height);
+    }
 }
