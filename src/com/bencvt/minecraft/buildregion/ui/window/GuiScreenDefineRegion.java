@@ -399,6 +399,7 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
         importRegion();
         updateControlProperties();
         buttonUndo.setEnabled(true);
+        setControlConsumingKeys(null);
     }
 
     @Override

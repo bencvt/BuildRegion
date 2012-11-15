@@ -9,6 +9,8 @@ import net.minecraft.src.GuiButton;
  * <li>Add a reference to the GuiScreenBase parent window</li>
  * <li>Add fluent getter/setter methods for non-final public fields. The fields
  *     are still publicly mutable (ugh), but at least there's methods too.</li>
+ * <li>Add keyTyped method, which is called by the parent window after calling
+ *     parent.setControlConsumingKeys(this).</li>
  * </ul>
  * @author bencvt
  */
@@ -91,5 +93,9 @@ public abstract class GuiControlBase extends GuiButton {
         return parent.isMouseOver(
                 xMouse, xPosition, xPosition + width,
                 yMouse, yPosition, yPosition + height);
+    }
+
+    public boolean keyTyped(char keyChar, int keyCode) {
+        return false;
     }
 }

@@ -30,6 +30,7 @@ public abstract class GuiScreenBase extends GuiScreen {
     public final GuiScreenBase parentScreen;
     private boolean allowMouseLook;
     private boolean mouseLooking;
+    private GuiControlBase controlConsumingKeys;
 
     public GuiScreenBase(GuiScreenBase parentScreen) {
         this.parentScreen = parentScreen;
@@ -64,6 +65,30 @@ public abstract class GuiScreenBase extends GuiScreen {
      */
     public void actionPerformedByControl(GuiControlBase guiButton) {
         // do nothing by default
+    }
+
+    public GuiControlBase getControlConsumingKeys() {
+        return controlConsumingKeys;
+    }
+    /**
+     * Designate a child control to send all keyboard events to.
+     * Cancelled if the mouse is clicked.
+     */
+    public void setControlConsumingKeys(GuiControlBase controlConsumingKeys) {
+        this.controlConsumingKeys = controlConsumingKeys;
+    }
+
+    @Override
+    protected void mouseClicked(int xMouse, int yMouse, int button) {
+        controlConsumingKeys = null;
+        super.mouseClicked(xMouse, yMouse, button);
+    }
+
+    @Override
+    protected void keyTyped(char keyChar, int keyCode) {
+        if (controlConsumingKeys == null || !controlConsumingKeys.keyTyped(keyChar, keyCode)) {
+            super.keyTyped(keyChar, keyCode);
+        }
     }
 
     @Override
