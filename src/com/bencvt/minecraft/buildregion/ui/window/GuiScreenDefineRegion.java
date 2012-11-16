@@ -440,7 +440,7 @@ public class GuiScreenDefineRegion extends GuiScreenBase {
     public void close() {
         super.close();
         // Restore the chat window. We do this here instead of overriding
-        // onGuiClosed because we want chat hidden for child windows too.
+        // onGuiClosed because we want chat hidden for child screens too.
         ChatHider.show();
     }
 

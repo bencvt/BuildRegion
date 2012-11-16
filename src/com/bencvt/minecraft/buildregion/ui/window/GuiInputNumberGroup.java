@@ -2,6 +2,11 @@ package com.bencvt.minecraft.buildregion.ui.window;
 
 import java.util.HashSet;
 
+/**
+ * A helper class to allow GuiInputNumbers to synchronize their values.
+ * 
+ * @author bencvt
+ */
 public class GuiInputNumberGroup {
     public static final int UNLOCKED_ARGB = GuiInputNumber.BUTTON_ENABLED_ARGB;
     public static final int LOCKED_ARGB = GuiInputNumber.BUTTON_LOCKED_ARGB;

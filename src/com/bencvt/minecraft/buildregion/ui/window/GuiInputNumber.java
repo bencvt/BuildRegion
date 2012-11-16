@@ -8,6 +8,21 @@ import org.lwjgl.input.Mouse;
 
 import com.bencvt.minecraft.buildregion.region.Units;
 
+/**
+ * Allow the user to input a constrained floating-point number in various ways.
+ * Designed to be flexible and user-friendly. The user can change the number
+ * by:<ul>
+ * <li>clicking on the number itself and then entering the number on the
+ *     keyboard;</li>
+ * <li>clicking plus (+) and minus (-) buttons;</li>
+ * <li>using the click-and-drag slider; or</li>
+ * <li>hovering the mouse over the control and using the mouse scroll wheel.</li>
+ * </ul>
+ * Holding the shift key while clicking the +/- buttons or using the mouse
+ * wheel will increase the magnitude of the change.
+ * 
+ * @author bencvt
+ */
 public class GuiInputNumber extends GuiLabeledControl {
     public static final int PAD_TOP = 2;
     public static final int PAD_BOTTOM = 1;

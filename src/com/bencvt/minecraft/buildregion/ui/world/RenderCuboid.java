@@ -11,6 +11,16 @@ import org.lwjgl.opengl.GL11;
 import com.bencvt.minecraft.buildregion.region.RegionBase;
 import com.bencvt.minecraft.buildregion.region.RegionCuboid;
 
+/**
+ * A LibShapeDraw Shape representing a cuboid. This is purely cosmetic; see
+ * RegionCuboid for the object that actually defines the cuboid.
+ * <p>
+ * The cuboid is rendered as a translucent box. The edges are rendered as
+ * thicker than normal lines. The sides are filled with block-sized grid lines,
+ * unless the side is too long.
+ * 
+ * @author bencvt
+ */
 public class RenderCuboid extends RenderBase {
     /** Somewhat arbitrary limit for the number of grid lines. */
     public static final int MAX_GRID_SIZE = 100;

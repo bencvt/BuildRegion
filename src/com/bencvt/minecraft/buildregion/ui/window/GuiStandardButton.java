@@ -2,6 +2,12 @@ package com.bencvt.minecraft.buildregion.ui.window;
 
 import net.minecraft.client.Minecraft;
 
+/**
+ * A basic GuiButton with the utility methods defined by GuiControlBase and
+ * extended to properly handle in-GUI mouse looking.
+ * 
+ * @author bencvt
+ */
 public class GuiStandardButton extends GuiControlBase {
     public static final int PAD = 8;
 

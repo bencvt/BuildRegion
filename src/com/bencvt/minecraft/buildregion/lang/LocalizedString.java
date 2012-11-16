@@ -6,6 +6,12 @@ import java.util.Properties;
 
 import net.minecraft.src.StringTranslate;
 
+/**
+ * Internationalization (i18n): ideally, every string that the user can see
+ * during normal operation should be translated here.
+ * 
+ * @author bencvt
+ */
 public abstract class LocalizedString {
     private static String lang;
     private static Properties defaultTable;

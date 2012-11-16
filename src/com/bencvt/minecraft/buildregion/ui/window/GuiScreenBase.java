@@ -15,12 +15,13 @@ import com.bencvt.minecraft.buildregion.lang.LocalizedString;
  * utility methods:<ul>
  * <li>Minecraft and FontRenderer fields are set in the constructor, so they
  *     will never be null. Better than having to wait for initGui.</li>
- * <li>Add parentScreen, open, and close for screens that open
- *     other screens temporarily.</li>
+ * <li>Add parentScreen, open, and close for screens that open other screens
+ *     temporarily.</li>
  * <li>Add actionPerformedByControl handler.</li>
  * <li>Add the optional (enabled by default) ability to look around while in
  *     the GUI by moving the mouse while holding the right button.</li>
- * <li>Add drawBottomOverlay and drawRectBorder.</li>
+ * <li>Add the ability to route key presses to a child control.</li>
+ * <li>Add drawBottomOverlay and drawRectBorder utility methods.</li>
  * </ul>
  * @author bencvt
  */

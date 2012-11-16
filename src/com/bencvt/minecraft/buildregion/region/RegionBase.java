@@ -6,7 +6,8 @@ import libshapedraw.primitive.Vector3;
 import com.bencvt.minecraft.buildregion.lang.LocalizedString;
 
 /**
- * A geometric region in space.
+ * A geometric region in space. At minimum, every region has an x/y/z origin
+ * and an axis.
  * 
  * @author bencvt
  */

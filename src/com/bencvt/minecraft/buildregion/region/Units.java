@@ -3,10 +3,20 @@ package com.bencvt.minecraft.buildregion.region;
 import libshapedraw.primitive.ReadonlyVector3;
 import libshapedraw.primitive.Vector3;
 
+/**
+ * Utility enum to help constrain floating point values to whole or half units.
+ * <p>
+ * Obviously, if a value must always be constrained to whole units you should
+ * just use an integer type instead. However some values used by BuildRegion
+ * are constrained dynamically: sometimes only whole units are allowed, other
+ * times half units are acceptable.
+ * 
+ * @author bencvt
+ */
 public enum Units {
     WHOLE(1.0),
     HALF(0.5),
-    ANY(1.0);
+    ANY(Double.MIN_NORMAL);
 
     /**
      * The basic "smallest" value for this unit restriction type.

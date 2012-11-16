@@ -5,6 +5,12 @@ import net.minecraft.client.Minecraft;
 
 import org.lwjgl.input.Mouse;
 
+/**
+ * A GuiButton-derived control with a label on the left and the actual control
+ * on the right.
+ * 
+ * @author bencvt
+ */
 public abstract class GuiLabeledControl extends GuiControlBase {
     public static final int LABEL_SPACING = 4;
     public static final int LABEL_ARGB             = Color.LIGHT_GRAY.getARGB();

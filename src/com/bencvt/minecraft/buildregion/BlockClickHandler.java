@@ -16,6 +16,11 @@ import net.minecraft.src.PlayerControllerHooks.PlayerControllerEventListener;
 
 import com.bencvt.minecraft.buildregion.region.Direction3D;
 
+/**
+ * Determine whether a player's mouse click should be prevented.
+ * 
+ * @author bencvt
+ */
 public class BlockClickHandler implements PlayerControllerEventListener {
     private final Minecraft minecraft;
     private final Controller controller;

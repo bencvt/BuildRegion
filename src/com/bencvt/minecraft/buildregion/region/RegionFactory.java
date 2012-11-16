@@ -3,6 +3,11 @@ package com.bencvt.minecraft.buildregion.region;
 import libshapedraw.primitive.ReadonlyVector3;
 import libshapedraw.primitive.Vector3;
 
+/**
+ * Convert regions from one type to another.
+ * 
+ * @author bencvt
+ */
 public class RegionFactory {
     private final ReadonlyVector3 defaultOrigin;
     private final RegionBase original;

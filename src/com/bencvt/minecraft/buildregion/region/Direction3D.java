@@ -1,6 +1,5 @@
 package com.bencvt.minecraft.buildregion.region;
 
-
 /**
  * Cardinal direction in 3 dimensions.
  * 

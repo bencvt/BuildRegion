@@ -5,11 +5,11 @@ import net.minecraft.src.GuiButton;
 /**
  * Abstract GuiButton base class. Same as vanilla Minecraft's, plus various
  * utility methods:<ul>
- * <li>Automatically set the button id</li>
- * <li>Add a reference to the GuiScreenBase parent window</li>
+ * <li>Automatically set the button id.</li>
+ * <li>Add a reference to the GuiScreenBase parent screen.</li>
  * <li>Add fluent getter/setter methods for non-final public fields. The fields
  *     are still publicly mutable (ugh), but at least there's methods too.</li>
- * <li>Add keyTyped method, which is called by the parent window after calling
+ * <li>Add keyTyped method, which is called by the parent screen after calling
  *     parent.setControlConsumingKeys(this).</li>
  * </ul>
  * @author bencvt

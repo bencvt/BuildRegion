@@ -8,6 +8,11 @@ import org.lwjgl.input.Keyboard;
 
 import com.bencvt.minecraft.buildregion.lang.LocalizedString;
 
+/**
+ * Extends Minecraft's KeyBinding class to include various utility methods.
+ * 
+ * @author bencvt
+ */
 public class CustomKeyBinding extends KeyBinding {
     private final boolean allowRepeat;
     private boolean registered;

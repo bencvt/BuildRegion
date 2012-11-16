@@ -146,8 +146,8 @@ public class Controller {
     }
 
     // ========
-    // Methods called from mod_BuildRegion, InputManager, and GuiBuildRegion
-    // to react to game events
+    // Methods called from mod_BuildRegion and BlockClickHandler to react to
+    // game events
     // ========
 
     public void renderHUD() {
@@ -196,11 +196,7 @@ public class Controller {
         throw new IllegalStateException("prevRegion should never be null");
     }
 
-    public String i18n(String key, Object ... args) {
-        return LocalizedString.translate(key, args);
-    }
-
-    public Vector3 getBlockInFrontOfPlayer() {
+    public ReadonlyVector3 getBlockInFrontOfPlayer() {
         return getBlockInFrontOfPlayerWork(getFacingDirection(RelativeDirection3D.FORWARD, false));
     }
 
@@ -208,7 +204,7 @@ public class Controller {
     // Internal helper methods
     // ========
 
-    private Vector3 getBlockInFrontOfPlayerWork(Direction3D dir) {
+    private ReadonlyVector3 getBlockInFrontOfPlayerWork(Direction3D dir) {
         Vector3 coords = Units.WHOLE.clamp(new Vector3(
                 minecraft.thePlayer.posX,
                 minecraft.thePlayer.posY,
@@ -237,5 +233,9 @@ public class Controller {
                     minecraft.thePlayer.rotationYaw,
                     minecraft.thePlayer.rotationPitch).getRelative(relDir);
         }
+    }
+
+    public static String i18n(String key, Object ... args) {
+        return LocalizedString.translate(key, args);
     }
 }

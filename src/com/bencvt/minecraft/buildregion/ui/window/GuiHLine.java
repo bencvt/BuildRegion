@@ -2,6 +2,11 @@ package com.bencvt.minecraft.buildregion.ui.window;
 
 import libshapedraw.primitive.ReadonlyColor;
 
+/**
+ * A display-only GuiLabeledControl that is rendered as a horizontal line.
+ * 
+ * @author bencvt
+ */
 public class GuiHLine extends GuiLabeledControl {
     private final ReadonlyColor color;
 

@@ -14,6 +14,15 @@ import com.bencvt.minecraft.buildregion.region.Axis;
 import com.bencvt.minecraft.buildregion.region.RegionBase;
 import com.bencvt.minecraft.buildregion.region.RegionCylinder;
 
+/**
+ * A LibShapeDraw Shape representing a cylinder. This is purely cosmetic; see
+ * RegionCylinder for the object that actually defines the cylinder.
+ * <p>
+ * The cylinder is rendered as a wireframe grid, aligned to block boundaries.
+ * It's also rendered as a non-aligned translucent shell.
+ * 
+ * @author bencvt
+ */
 public class RenderCylinder extends RenderBase {
     private final Axis axis;
     private final Vector3 halfHeightAndRadii;
