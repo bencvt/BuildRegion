@@ -15,6 +15,7 @@ public class CustomKeyBinding extends KeyBinding {
     public CustomKeyBinding(int defaultKeyCode, boolean allowRepeat, String bindingId, String description) {
         super(bindingId, defaultKeyCode);
         this.allowRepeat = allowRepeat;
+        // TODO: what about localizations for other languages?
         ModLoader.addLocalization(bindingId, description);
     }
 

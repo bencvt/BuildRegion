@@ -24,6 +24,7 @@ public class UpdateCheck {
     private String result;
 
     public UpdateCheck(final String curVersion, File modDirectory) {
+        // TODO: make this part of options.txt instead
         if (new File(modDirectory, "noupdatecheck.txt").exists()) {
             return;
         }
@@ -70,6 +71,7 @@ public class UpdateCheck {
                 }
             }
             private String buildOutput(String newVersion) {
+                // TODO: i18n
                 return new StringBuilder().append("\u00a7c")
                         .append("BuildRegion is out of date. ")
                         .append(newVersion.isEmpty() ? "A new version" : "Version ")

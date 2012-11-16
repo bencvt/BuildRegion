@@ -62,7 +62,7 @@ public class HUDMessage {
         for (int i = 0; i < lines.length; i++) {
             int x = (res.getScaledWidth() - minecraft.fontRenderer.getStringWidth(lines[i])) / 2;
             int y = yStart + i*minecraft.fontRenderer.FONT_HEIGHT;
-            // TODO: Minecraft's font renderer has some whack-ass alpha channel
+            // TODO: Minecraft's font renderer has some weird alpha channel
             // logic... may need to implement custom version for smooth fading.
             minecraft.fontRenderer.drawStringWithShadow(lines[i], x, y, argb);
         }

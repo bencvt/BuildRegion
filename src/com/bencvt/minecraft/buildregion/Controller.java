@@ -37,8 +37,8 @@ public class Controller {
     private RegionBase curRegion;
     private RegionBase prevRegion; // will never be null
 
-    public Controller(LibShapeDraw libShapeDraw, mod_BuildRegion mod, Minecraft minecraft) {
-        this.minecraft = minecraft;
+    public Controller(mod_BuildRegion mod, LibShapeDraw libShapeDraw) {
+        minecraft = Minecraft.getMinecraft();
         inputManager = new InputManager(this, mod);
         messageManager = new MessageManager();
         shapeManager = new ShapeManager(this, libShapeDraw);

@@ -15,8 +15,8 @@ import com.bencvt.minecraft.buildregion.ui.InputManager;
  * Front-end class that hooks into various APIs: LibShapeDraw, ModLoader, and
  * PlayerControllerHooks.
  * <p>
- * Simply passes everything along to the Controller and InputManager wherever
- * possible.
+ * This class does the bare minimum of processing: it simply passes everything
+ * along to the Controller, InputManager, and UpdateCheck wherever possible.
  * 
  * @author bencvt
  */
@@ -37,10 +37,8 @@ public class mod_BuildRegion extends BaseMod implements LSDEventListener {
 
     @Override
     public void load() {
-        controller = new Controller(
-                new LibShapeDraw().addEventListener(this).verifyInitialized(),
-                this,
-                ModLoader.getMinecraftInstance());
+        controller = new Controller(this,
+                new LibShapeDraw().addEventListener(this).verifyInitialized());
         inputManager = controller.getInputManager();
 
         ModLoader.setInGameHook(this, true, false); // include partial ticks
