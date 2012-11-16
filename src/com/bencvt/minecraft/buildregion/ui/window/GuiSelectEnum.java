@@ -60,10 +60,6 @@ public class GuiSelectEnum<T extends Enum> extends GuiLabeledControl {
         int controlWidth = 0;
         Option prevOption = null;
         for (T value : values) {
-            // XXX: temporarily exclude region types
-            if (value == RegionType.CYLINDER || value == RegionType.SPHERE) {
-                continue;
-            }
             Option option = new Option();
             option.value = value;
             option.text = LocalizedString.translate(value);

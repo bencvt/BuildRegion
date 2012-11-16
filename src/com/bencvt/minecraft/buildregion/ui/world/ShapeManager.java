@@ -1,6 +1,7 @@
 package com.bencvt.minecraft.buildregion.ui.world;
 
 import libshapedraw.LibShapeDraw;
+import libshapedraw.primitive.ReadonlyColor;
 import libshapedraw.primitive.ReadonlyVector3;
 
 import com.bencvt.minecraft.buildregion.Controller;
@@ -60,27 +61,19 @@ public class ShapeManager {
     }
 
     private RenderBase createShape(RegionBase region) {
+        final ReadonlyColor colorVisible = controller.getBuildMode().getColorVisible();
+        final ReadonlyColor colorHidden = controller.getBuildMode().getColorHidden();
         final RegionType r = region.getRegionType();
         if (r == RegionType.PLANE) {
-            return new RenderPlane(
-                    controller.getBuildMode().getColorVisible(),
-                    controller.getBuildMode().getColorHidden(),
-                    (RegionPlane) region);
+            return new RenderPlane(colorVisible, colorHidden, (RegionPlane) region);
         } else if (r == RegionType.CUBOID) {
-            return new RenderCuboid(
-                    controller.getBuildMode().getColorVisible(),
-                    controller.getBuildMode().getColorHidden(),
-                    (RegionCuboid) region);
+            return new RenderCuboid(colorVisible, colorHidden, (RegionCuboid) region);
         } else if (r == RegionType.CYLINDER) {
-            return new RenderCylinder(
-                    controller.getBuildMode().getColorVisible(),
-                    controller.getBuildMode().getColorHidden(),
-                    (RegionCylinder) region);
+            return new RenderJagged(colorVisible, colorHidden, region);//XXX
+            //return new RenderCylinder(colorVisible, colorHidden, (RegionCylinder) region);
         } else if (r == RegionType.SPHERE) {
-            return new RenderSphere(
-                    controller.getBuildMode().getColorVisible(),
-                    controller.getBuildMode().getColorHidden(),
-                    (RegionSphere) region);
+            return new RenderJagged(colorVisible, colorHidden, region);//XXX
+            //return new RenderSphere(colorVisible, colorHidden, (RegionSphere) region);
         } else {
             throw new IllegalStateException();
         }
