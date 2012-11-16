@@ -37,10 +37,9 @@ public class mod_BuildRegion extends BaseMod implements LSDEventListener {
 
     @Override
     public void load() {
-        controller = new Controller(this,
-                new LibShapeDraw().addEventListener(this).verifyInitialized());
+        controller = new Controller(this);
         inputManager = controller.getInputManager();
-
+        new LibShapeDraw().addEventListener(this).verifyInitialized();
         ModLoader.setInGameHook(this, true, false); // include partial ticks
     }
 

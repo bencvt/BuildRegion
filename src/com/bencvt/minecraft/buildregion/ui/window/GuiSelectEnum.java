@@ -8,7 +8,6 @@ import libshapedraw.primitive.ReadonlyColor;
 import net.minecraft.client.Minecraft;
 
 import com.bencvt.minecraft.buildregion.lang.LocalizedString;
-import com.bencvt.minecraft.buildregion.region.RegionType;
 
 /**
  * A multi-select Minecraft GUI control.

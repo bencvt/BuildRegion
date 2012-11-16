@@ -7,9 +7,7 @@ import libshapedraw.primitive.ReadonlyVector3;
 import com.bencvt.minecraft.buildregion.Controller;
 import com.bencvt.minecraft.buildregion.region.RegionBase;
 import com.bencvt.minecraft.buildregion.region.RegionCuboid;
-import com.bencvt.minecraft.buildregion.region.RegionCylinder;
 import com.bencvt.minecraft.buildregion.region.RegionPlane;
-import com.bencvt.minecraft.buildregion.region.RegionSphere;
 import com.bencvt.minecraft.buildregion.region.RegionType;
 
 /**
@@ -23,13 +21,19 @@ public class ShapeManager {
     private RenderBase mainShape;
     private RenderBase prevShape;
 
-    public ShapeManager(Controller controller, LibShapeDraw libShapeDraw) {
+    public ShapeManager(Controller controller) {
         this.controller = controller;
-        this.libShapeDraw = libShapeDraw;
+        libShapeDraw = new LibShapeDraw().verifyInitialized();
     }
 
     public void reset() {
         libShapeDraw.getShapes().clear();
+        if (mainShape != null) {
+            mainShape.cleanup();
+        }
+        if (prevShape != null) {
+            prevShape.cleanup();
+        }
         mainShape = null;
         prevShape = null;
     }
@@ -53,7 +57,8 @@ public class ShapeManager {
             return;
         }
         if (prevShape != null) {
-            libShapeDraw.getShapes().remove(prevShape);
+            libShapeDraw.removeShape(prevShape);
+            prevShape.cleanup();
         }
         prevShape = mainShape;
         mainShape = null;
@@ -69,10 +74,10 @@ public class ShapeManager {
         } else if (r == RegionType.CUBOID) {
             return new RenderCuboid(colorVisible, colorHidden, (RegionCuboid) region);
         } else if (r == RegionType.CYLINDER) {
-            return new RenderJagged(colorVisible, colorHidden, region);//XXX
+            return new RenderVertexBuffer(colorVisible, colorHidden, region);//XXX
             //return new RenderCylinder(colorVisible, colorHidden, (RegionCylinder) region);
         } else if (r == RegionType.SPHERE) {
-            return new RenderJagged(colorVisible, colorHidden, region);//XXX
+            return new RenderVertexBuffer(colorVisible, colorHidden, region);//XXX
             //return new RenderSphere(colorVisible, colorHidden, (RegionSphere) region);
         } else {
             throw new IllegalStateException();

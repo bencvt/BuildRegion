@@ -85,6 +85,14 @@ public abstract class RenderBase extends Shape {
     }
 
     /**
+     * Clean up any external resources owned by this Shape (e.g. OpenGL VBOs).
+     * Called whenever this Shape is removed.
+     */
+    public void cleanup() {
+        // do nothing
+    }
+
+    /**
      * To keep the origin marker rendering consistent, this method must be
      * called whenever the origin is being updated, either directly or via a
      * Timeline.
