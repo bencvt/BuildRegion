@@ -2,7 +2,7 @@
 - added cylinder and sphere region types
 - added options file and GUI screen
 
-## partially implemented features to be released in 2.0.1
+## 2.0.1
 - crafting tables, buttons, doors, chests, furnaces, etc. can now be accessed
   regardless of the build region
 - regular torches can now be placed and destroyed regardless of the build region
