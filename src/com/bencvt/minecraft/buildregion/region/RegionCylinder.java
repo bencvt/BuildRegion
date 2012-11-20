@@ -47,8 +47,23 @@ public class RegionCylinder extends RegionBase {
 
     @Override
     public boolean isInsideRegion(double x, double y, double z) {
-        // TODO Auto-generated method stub
-        return false;
+        ReadonlyVector3 o = getOriginReadonly();
+        double halfHeight = getHeight() / 2.0;
+        double rA = getRadiusA();
+        double rB = getRadiusB();
+        boolean axisOk;
+        boolean ellipseOk;
+        if (getAxis() == Axis.X) {
+            axisOk = x >= o.getX() - halfHeight && x <= o.getX() + halfHeight;
+            ellipseOk = Math.pow(y - rA, 2.0) + Math.pow(z - rB, 2.0) < 1.0;
+        } else if (getAxis() == Axis.Y) {
+            axisOk = y >= o.getY() - halfHeight && y <= o.getY() + halfHeight;
+            ellipseOk = Math.pow(x - rA, 2.0) + Math.pow(z - rB, 2.0) < 1.0;
+        } else {
+            axisOk = z >= o.getZ() - halfHeight && z <= o.getZ() + halfHeight;
+            ellipseOk = Math.pow(x - rA, 2.0) + Math.pow(y - rB, 2.0) < 1.0;
+        }
+        return axisOk && ellipseOk;
     }
 
     @Override

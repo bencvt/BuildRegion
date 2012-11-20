@@ -36,10 +36,11 @@ public class RenderPlane extends RenderBase {
     private final double[] curCoords = {0.0, 0.0, 0.0};
 
     public RenderPlane(ReadonlyColor lineColorVisible, ReadonlyColor lineColorHidden, RegionPlane region) {
-        super(lineColorVisible, lineColorHidden, false);
+        super(lineColorVisible, lineColorHidden);
         onUpdateOrigin(getOrigin().set(region.getOriginReadonly()));
         axis = region.getAxis();
         observerPosition = new Vector3(); // only two of these coords are relevant
+        renderMarkers = false;
     }
 
     @Override

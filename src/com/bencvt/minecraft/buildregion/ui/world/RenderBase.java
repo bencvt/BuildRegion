@@ -63,12 +63,12 @@ public abstract class RenderBase extends Shape {
     private final ReadonlyColor lineColorHidden;
     private double alphaBase; // [0.0, 1.0] alpha scaling factor to apply to all lines
     private final ShapeScale shapeScale; // transform the entire shape
-    private final boolean renderMarkers;
     private final Vector3 actualOrigin;
     private Timeline timelineShiftOrigin;
     private Timeline timelineFade;
+    protected boolean renderMarkers;
 
-    protected RenderBase(ReadonlyColor lineColorVisible, ReadonlyColor lineColorHidden, boolean renderOriginMarker) {
+    protected RenderBase(ReadonlyColor lineColorVisible, ReadonlyColor lineColorHidden) {
         super(Vector3.ZEROS.copy()); // child class responsible for setting origin
         setRelativeToOrigin(false);
         if (lineColorVisible == null || lineColorHidden == null ||
@@ -80,8 +80,8 @@ public abstract class RenderBase extends Shape {
         setAlphaBase(1.0);
         shapeScale = new ShapeScale(1.0, 1.0, 1.0);
         addTransform(shapeScale);
-        this.renderMarkers = renderOriginMarker;
         actualOrigin = getOriginReadonly().copy();
+        renderMarkers = true;
     }
 
     /**
@@ -101,6 +101,7 @@ public abstract class RenderBase extends Shape {
         actualOrigin.set(newOrigin);
     }
 
+    /** @return the coordinate where the corner marker should be rendered. */
     protected ReadonlyVector3 getCornerReadonly() {
         return null;
     }

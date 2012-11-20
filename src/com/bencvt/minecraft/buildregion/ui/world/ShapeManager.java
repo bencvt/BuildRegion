@@ -7,7 +7,9 @@ import libshapedraw.primitive.ReadonlyVector3;
 import com.bencvt.minecraft.buildregion.Controller;
 import com.bencvt.minecraft.buildregion.region.RegionBase;
 import com.bencvt.minecraft.buildregion.region.RegionCuboid;
+import com.bencvt.minecraft.buildregion.region.RegionCylinder;
 import com.bencvt.minecraft.buildregion.region.RegionPlane;
+import com.bencvt.minecraft.buildregion.region.RegionSphere;
 import com.bencvt.minecraft.buildregion.region.RegionType;
 
 /**
@@ -74,11 +76,9 @@ public class ShapeManager {
         } else if (r == RegionType.CUBOID) {
             return new RenderCuboid(colorVisible, colorHidden, (RegionCuboid) region);
         } else if (r == RegionType.CYLINDER) {
-            return new RenderVertexBuffer(colorVisible, colorHidden, region);//XXX
-            //return new RenderCylinder(colorVisible, colorHidden, (RegionCylinder) region);
+            return new RenderCylinder(colorVisible, colorHidden, (RegionCylinder) region);
         } else if (r == RegionType.SPHERE) {
-            return new RenderVertexBuffer(colorVisible, colorHidden, region);//XXX
-            //return new RenderSphere(colorVisible, colorHidden, (RegionSphere) region);
+            return new RenderSphere(colorVisible, colorHidden, (RegionSphere) region);
         } else {
             throw new IllegalStateException();
         }

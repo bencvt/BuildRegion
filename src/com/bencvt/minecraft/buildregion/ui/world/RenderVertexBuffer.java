@@ -33,7 +33,7 @@ import com.bencvt.minecraft.buildregion.region.Units;
  * 
  * @author bencvt
  */
-public class RenderVertexBuffer extends RenderBase {
+public /*abstract*/ class RenderVertexBuffer extends RenderBase {
     /** The VBO handle. */
     private int vboId;
 
@@ -43,16 +43,12 @@ public class RenderVertexBuffer extends RenderBase {
     /** To support animation, all vertices are relative to the lower corner of the AABB. */
     protected final ShapeTranslate vertexOffset;
 
-    private final Vector3 aabbUpperCorner; 
-
     protected RenderVertexBuffer(ReadonlyColor lineColorVisible, ReadonlyColor lineColorHidden, RegionBase region) {
-        super(lineColorVisible, lineColorHidden, true);
+        super(lineColorVisible, lineColorHidden);
         onUpdateOrigin(getOrigin().set(region.getOriginReadonly()));
         vertexCache = new ArrayList<Vector3>();
         vertexOffset = new ShapeTranslate();
-        aabbUpperCorner = new Vector3();
         populateVertexCache(region);
-        addTransform(vertexOffset);
     }
 
     @Override
@@ -62,7 +58,14 @@ public class RenderVertexBuffer extends RenderBase {
     }
 
     @Override
+    protected ReadonlyVector3 getCornerReadonly() {
+        return vertexOffset.getTranslateXYZ();
+    }
+
+    @Override
     protected void renderLines(MinecraftAccess mc, ReadonlyColor lineColor) {
+        GL11.glPushMatrix();
+        vertexOffset.preRender();
         lineColor.glApply(getAlphaBase() * 0.5);
         if (vboId == 0) {
             mc.startDrawing(GL11.GL_LINES);
@@ -78,6 +81,7 @@ public class RenderVertexBuffer extends RenderBase {
             GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
             ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, 0);
         }
+        GL11.glPopMatrix();
     }
 
     @Override
@@ -91,6 +95,7 @@ public class RenderVertexBuffer extends RenderBase {
         // The following helper methods may be relevant:
         //  - getAABBLowerCornerReadonly()
         //  - getAABBUpperCornerReadonly()
+        //  - populateVertexCache()
         //  - vertexOffset.animateStart()
         return false;
     }
@@ -100,29 +105,22 @@ public class RenderVertexBuffer extends RenderBase {
         // TODO: maybe implement a "chunk" system to cache a section of vertices, based on player position.
     }
 
-    protected ReadonlyVector3 getAABBLowerCornerReadonly() {
-        return vertexOffset.getTranslateXYZ();
-    }
-
-    protected ReadonlyVector3 getAABBUpperCornerReadonly() {
-        return aabbUpperCorner;
-    }
-
     protected void populateVertexCache(RegionBase region) {
         removeVBO();
         vertexCache.clear();
 
-        Vector3 aabbLowerCorner = vertexOffset.getTranslateXYZ();
-        region.getAABB(aabbLowerCorner, aabbUpperCorner);
-        Units.WHOLE.clamp(aabbLowerCorner);
-        Units.WHOLE.clamp(aabbUpperCorner);
+        Vector3 aabbLower = vertexOffset.getTranslateXYZ();
+        Vector3 aabbUpper = new Vector3();
+        region.getAABB(aabbLower, aabbUpper);
+        Units.WHOLE.clamp(aabbLower);
+        Units.WHOLE.clamp(aabbUpper);
 
-        int offX = (int) aabbLowerCorner.getX();
-        int offY = (int) aabbLowerCorner.getY();
-        int offZ = (int) aabbLowerCorner.getZ();
-        int sizeX = (int) aabbUpperCorner.getX() - offX + 1;
-        int sizeY = (int) aabbUpperCorner.getY() - offY + 1;
-        int sizeZ = (int) aabbUpperCorner.getZ() - offZ + 1;
+        int offX = (int) aabbLower.getX();
+        int offY = (int) aabbLower.getY();
+        int offZ = (int) aabbLower.getZ();
+        int sizeX = (int) aabbUpper.getX() - offX + 1;
+        int sizeY = (int) aabbUpper.getY() - offY + 1;
+        int sizeZ = (int) aabbUpper.getZ() - offZ + 1;
 
         populateVertexCacheWork(vertexCache, region, offX, offY, offZ, sizeX, sizeY, sizeZ);
         createVBO();
@@ -135,14 +133,14 @@ public class RenderVertexBuffer extends RenderBase {
      * <p>
      * Derived classes should override this method to use a more intelligent
      * algorithm if possible, tailored to the derived class's target region
-     * type.
+     * type. E.g., Bresenham's circle algorithm.
      * <p>
      * TODO: Enforce a size limit. Looping over millions of blocks in the main
      *       thread is a bad idea. And even if the client can chug through
      *       that, we still end up with a large vertex cache. This can slow
      *       rendering to a crawl, even with a VBO.
      */
-    protected static void populateVertexCacheWork(List<Vector3> vertexCache, RegionBase region, int offX, int offY, int offZ, int sizeX, int sizeY, int sizeZ) {
+    protected void populateVertexCacheWork(List<Vector3> vertexCache, RegionBase region, int offX, int offY, int offZ, int sizeX, int sizeY, int sizeZ) {
         for (int x = 0; x < sizeX; x++) {
             for (int y = 0; y < sizeY; y++) {
                 for (int z = 0; z < sizeZ; z++) {

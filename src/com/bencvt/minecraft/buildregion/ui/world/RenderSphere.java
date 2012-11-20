@@ -1,5 +1,8 @@
 package com.bencvt.minecraft.buildregion.ui.world;
 
+import java.util.Arrays;
+import java.util.List;
+
 import libshapedraw.MinecraftAccess;
 import libshapedraw.animation.trident.Timeline;
 import libshapedraw.primitive.ReadonlyColor;
@@ -22,14 +25,13 @@ import com.bencvt.minecraft.buildregion.region.RegionSphere;
  * 
  * @author bencvt
  */
-public class RenderSphere extends RenderBase {
+public class RenderSphere extends RenderVertexBuffer {
     private final Vector3 radii;
     private final Sphere shell;
     private Timeline timelineResize;
 
     public RenderSphere(ReadonlyColor lineColorVisible, ReadonlyColor lineColorHidden, RegionSphere region) {
-        super(lineColorVisible, lineColorHidden, true);
-        onUpdateOrigin(getOrigin().set(region.getOriginReadonly()));
+        super(lineColorVisible, lineColorHidden, region);
         radii = region.getRadiiReadonly().copy();
         shell = new Sphere();
     }
@@ -66,11 +68,6 @@ public class RenderSphere extends RenderBase {
     }
 
     @Override
-    protected void renderLines(MinecraftAccess mc, ReadonlyColor lineColor) {
-        // TODO
-    }
-
-    @Override
     public boolean updateIfPossible(RegionBase region, boolean animate) {
         if (!region.isRegionType(RegionSphere.class)) {
             return false;
@@ -79,6 +76,12 @@ public class RenderSphere extends RenderBase {
             return false;
         }
         RegionSphere sphere = (RegionSphere) region;
+        // TODO
+        //this.vertexOffset.animateStart(toTranslate, durationMs)
+        //  - getAABBLowerCornerReadonly()
+        //  - getAABBUpperCornerReadonly()
+        //  - populateVertexCache()
+        //  - vertexOffset.animateStart()
         animateShiftOrigin(sphere.getOriginReadonly(), animate);
         if (timelineResize != null && !timelineResize.isDone()) {
             timelineResize.abort();
@@ -97,8 +100,10 @@ public class RenderSphere extends RenderBase {
         return true;
     }
 
+    /*
     @Override
-    public void updateObserverPosition(ReadonlyVector3 observerPosition) {
-        // TODO: eventually use this to better support huge shapes, culling distant grid points
+    protected void populateVertexCacheWork(List<Vector3> vertexCache, RegionBase region, int offX, int offY, int offZ, int sizeX, int sizeY, int sizeZ) {
+        // TODO
     }
+    */
 }

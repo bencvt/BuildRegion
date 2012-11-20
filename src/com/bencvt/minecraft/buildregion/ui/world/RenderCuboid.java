@@ -30,7 +30,7 @@ public class RenderCuboid extends RenderBase {
     private Timeline timelineShiftCorners;
 
     protected RenderCuboid(ReadonlyColor lineColorVisible, ReadonlyColor lineColorHidden, RegionCuboid region) {
-        super(lineColorVisible, lineColorHidden, true);
+        super(lineColorVisible, lineColorHidden);
         onUpdateOrigin(getOrigin().set(region.getOriginReadonly()));
         lower = new Vector3();
         upper = new Vector3();

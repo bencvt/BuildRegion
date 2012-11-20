@@ -1,5 +1,7 @@
 package com.bencvt.minecraft.buildregion.ui.world;
 
+import java.util.List;
+
 import libshapedraw.MinecraftAccess;
 import libshapedraw.animation.trident.Timeline;
 import libshapedraw.primitive.ReadonlyColor;
@@ -23,30 +25,19 @@ import com.bencvt.minecraft.buildregion.region.RegionCylinder;
  * 
  * @author bencvt
  */
-public class RenderCylinder extends RenderBase {
+public class RenderCylinder extends RenderVertexBuffer {
     private final Axis axis;
     private final Vector3 halfHeightAndRadii;
     private final Cylinder shell;
     private Timeline timelineResize;
 
     public RenderCylinder(ReadonlyColor lineColorVisible, ReadonlyColor lineColorHidden, RegionCylinder region) {
-        super(lineColorVisible, lineColorHidden, true);
-        onUpdateOrigin(getOrigin().set(region.getOriginReadonly()));
+        super(lineColorVisible, lineColorHidden, region);
         axis = region.getAxis();
         halfHeightAndRadii = region.getHalfHeightAndRadiiReadonly().copy();
         shell = new Cylinder();
     }
-
-    private double axisOffset(Axis axis) {
-        if (axis == this.axis) {
-            if (axis == Axis.Y) {
-                return axis.getVectorComponent(halfHeightAndRadii);
-            }   
-            return -axis.getVectorComponent(halfHeightAndRadii);
-        }
-        return 0.0;
-    }
-
+/*
     @Override
     protected void renderShell(MinecraftAccess mc) {
         GL11.glPushMatrix();
@@ -88,11 +79,18 @@ public class RenderCylinder extends RenderBase {
         GL11.glPopMatrix();
     }
 
-    @Override
-    protected void renderLines(MinecraftAccess mc, ReadonlyColor lineColor) {
-        // TODO Auto-generated method stub
+    private double axisOffset(Axis axis) {
+        if (axis == this.axis) {
+            if (axis == Axis.Y) {
+                return axis.getVectorComponent(halfHeightAndRadii);
+            }   
+            return -axis.getVectorComponent(halfHeightAndRadii);
+        }
+        return 0.0;
     }
+*/
 
+    /*
     @Override
     public boolean updateIfPossible(RegionBase region, boolean animate) {
         if (!region.isRegionType(RegionCylinder.class)) {
@@ -128,9 +126,46 @@ public class RenderCylinder extends RenderBase {
         timelineResize.play();
         return true;
     }
+    */
 
-    @Override
-    public void updateObserverPosition(ReadonlyVector3 observerPosition) {
-        // TODO: eventually use this to better support huge shapes, culling distant grid points
+    // XXX: temporary
+    private void boxAt(List<Vector3> vertexCache, int x, int y, int z) {
+        double x0 = x + CUBE_MARGIN;
+        double x1 = x + 1 - CUBE_MARGIN;
+        double y0 = y + CUBE_MARGIN;
+        double y1 = y + 1 - CUBE_MARGIN;
+        double z0 = z + CUBE_MARGIN;
+        double z1 = z + 1 - CUBE_MARGIN;
+        vertexCache.add(new Vector3(x0, y0, z0));
+        vertexCache.add(new Vector3(x0, y0, z1));
+        vertexCache.add(new Vector3(x0, y1, z0));
+        vertexCache.add(new Vector3(x0, y1, z1));
+        vertexCache.add(new Vector3(x0, y0, z0));
+        vertexCache.add(new Vector3(x0, y1, z0));
+        vertexCache.add(new Vector3(x0, y0, z1));
+        vertexCache.add(new Vector3(x0, y1, z1));
+        vertexCache.add(new Vector3(x0, y0, z0));
+        vertexCache.add(new Vector3(x1, y0, z0));
+        vertexCache.add(new Vector3(x0, y0, z1));
+        vertexCache.add(new Vector3(x1, y0, z1));
+        vertexCache.add(new Vector3(x0, y1, z0));
+        vertexCache.add(new Vector3(x1, y1, z0));
+        vertexCache.add(new Vector3(x0, y1, z1));
+        vertexCache.add(new Vector3(x1, y1, z1));
+        vertexCache.add(new Vector3(x1, y0, z0));
+        vertexCache.add(new Vector3(x1, y0, z1));
+        vertexCache.add(new Vector3(x1, y1, z0));
+        vertexCache.add(new Vector3(x1, y1, z1));
+        vertexCache.add(new Vector3(x1, y0, z0));
+        vertexCache.add(new Vector3(x1, y1, z0));
+        vertexCache.add(new Vector3(x1, y0, z1));
+        vertexCache.add(new Vector3(x1, y1, z1));
     }
+/*
+    @Override
+    protected void populateVertexCacheWork(List<Vector3> vertexCache, RegionBase region, int offX, int offY, int offZ, int sizeX, int sizeY, int sizeZ) {
+        RegionCylinder cylinder = (RegionCylinder) region;
+        // TODO
+    }
+*/
 }
