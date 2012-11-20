@@ -2,7 +2,6 @@ package com.bencvt.minecraft.buildregion.ui.window;
 
 import java.util.LinkedHashMap;
 
-import libshapedraw.animation.trident.Timeline;
 import libshapedraw.primitive.Color;
 import libshapedraw.primitive.ReadonlyColor;
 import net.minecraft.client.Minecraft;
@@ -22,8 +21,6 @@ public class GuiSelectEnum<T extends Enum> extends GuiLabeledControl {
     public static final int PAD_TOP = 2;
     public static final int PAD_BOTTOM = 1;
     public static final int ANIM_DURATION = 350;
-    public static final double ALPHA_OFF = 0.0;
-    public static final double ALPHA_ON = 1.0;
 
     public class Option {
         protected T value;
@@ -32,14 +29,9 @@ public class GuiSelectEnum<T extends Enum> extends GuiLabeledControl {
         protected ReadonlyColor color;
         protected int xBegin; // relative to the control column's x coordinate
         protected int xEnd;   // relative to the control column's x coordinate
-        protected Timeline alphaTimeline;
-        protected double alpha;
+        protected Color alpha;
         protected Option prev;
         protected Option next;
-
-        // getter/setter required for property interpolation
-        public double getAlpha() { return alpha; }
-        public void setAlpha(double alpha) { this.alpha = alpha; }
 
         public boolean isMouseOver(int xMouse, int yMouse) {
             return parent.isMouseOver(
@@ -64,8 +56,7 @@ public class GuiSelectEnum<T extends Enum> extends GuiLabeledControl {
             option.text = LocalizedString.translate(value);
             option.textMouseOver = "\u00a7n" + option.text;
             option.color = color;
-            option.setAlpha(ALPHA_OFF);
-            option.alphaTimeline = null;
+            option.alpha = Color.TRANSPARENT_WHITE.copy();
             if (controlWidth > 0) {
                 controlWidth += OPTION_SPACING;
             }
@@ -123,33 +114,19 @@ public class GuiSelectEnum<T extends Enum> extends GuiLabeledControl {
 
         if (prev != null) {
             // Fade out previous selection
-            if (prev.alphaTimeline != null && !prev.alphaTimeline.isDone()) {
-                prev.alphaTimeline.abort();
-                prev.alphaTimeline = null;
-            }
             if (animate) {
-                prev.alphaTimeline = new Timeline(prev);
-                prev.alphaTimeline.addPropertyToInterpolate("alpha", prev.getAlpha(), ALPHA_OFF);
-                prev.alphaTimeline.setDuration(ANIM_DURATION);
-                prev.alphaTimeline.play();
+                prev.alpha.animateStart(Color.TRANSPARENT_WHITE, ANIM_DURATION);
             } else {
-                prev.setAlpha(ALPHA_OFF);
+                prev.alpha.animateStop().set(Color.TRANSPARENT_WHITE);
             }
         }
 
         if (cur != null) {
             // Fade in current selection
-            if (cur.alphaTimeline != null && !cur.alphaTimeline.isDone()) {
-                cur.alphaTimeline.abort();
-                cur.alphaTimeline = null;
-            }
             if (animate) {
-                cur.alphaTimeline = new Timeline(cur);
-                cur.alphaTimeline.addPropertyToInterpolate("alpha", cur.getAlpha(), ALPHA_ON);
-                cur.alphaTimeline.setDuration(ANIM_DURATION);
-                cur.alphaTimeline.play();
+                cur.alpha.animateStart(Color.WHITE, ANIM_DURATION);
             } else {
-                cur.setAlpha(ALPHA_ON);
+                cur.alpha.animateStop().set(Color.WHITE);
             }
         }
 
@@ -181,7 +158,7 @@ public class GuiSelectEnum<T extends Enum> extends GuiLabeledControl {
         int xOffset = getControlXOffset();
         for (Option option : options.values()) {
             // Draw background rectangle.
-            tempColor.set(option.color).scaleAlpha(option.getAlpha());
+            tempColor.set(option.color).scaleAlpha(option.alpha.getAlpha());
             drawRect(
                     xOffset + option.xBegin,  yPosition,
                     xOffset + option.xEnd,    yPosition + height,
