@@ -1,5 +1,6 @@
 package com.bencvt.minecraft.buildregion.region;
 
+import libshapedraw.primitive.Axis;
 import libshapedraw.primitive.ReadonlyVector3;
 import libshapedraw.primitive.Vector3;
 
@@ -41,8 +42,9 @@ public class RegionCylinder extends RegionBase {
     @Override
     protected void onOriginUpdate() {
         Units.HALF.clamp(getOriginMutable());
-        getAxis().setVectorComponent(getOriginMutable(),
-                Units.WHOLE.clamp(getAxis().getVectorComponent(getOriginReadonly())));
+        getOriginMutable().setComponent(
+                getAxis(),
+                Units.WHOLE.clamp(getOriginReadonly().getComponent(getAxis())));
     }
 
     @Override
@@ -90,9 +92,9 @@ public class RegionCylinder extends RegionBase {
             amount *= 0.5;
             // TODO: adjust origin too
         }
-        double prev = axis.getVectorComponent(halfHeightAndRadii);
-        Units.HALF.clampAtom(axis.addVectorComponent(halfHeightAndRadii, amount));
-        return axis.getVectorComponent(halfHeightAndRadii) != prev;
+        double prev = halfHeightAndRadii.getComponent(axis);
+        Units.HALF.clampAtom(halfHeightAndRadii.addComponent(axis, amount));
+        return halfHeightAndRadii.getComponent(axis) != prev;
     }
 
     @Override
@@ -131,26 +133,26 @@ public class RegionCylinder extends RegionBase {
     }
 
     public double getHeight() {
-        return getAxis().getVectorComponent(halfHeightAndRadii) * 2.0;
+        return halfHeightAndRadii.getComponent(getAxis()) * 2.0;
     }
     public RegionCylinder setHeight(double height) {
-        getAxis().setVectorComponent(halfHeightAndRadii, Units.HALF.clampAtom(height * 0.5));
+        halfHeightAndRadii.setComponent(getAxis(), Units.HALF.clampAtom(height * 0.5));
         return this;
     }
 
     public double getRadiusA() {
-        return getAxis().next().getVectorComponent(halfHeightAndRadii);
+        return halfHeightAndRadii.getComponent(getAxis().next());
     }
     public RegionCylinder setRadiusA(double radiusA) {
-        getAxis().next().setVectorComponent(halfHeightAndRadii, Units.HALF.clampAtom(radiusA));
+        halfHeightAndRadii.setComponent(getAxis().next(), Units.HALF.clampAtom(radiusA));
         return this;
     }
 
     public double getRadiusB() {
-        return getAxis().next().next().getVectorComponent(halfHeightAndRadii);
+        return halfHeightAndRadii.getComponent(getAxis().next().next());
     }
     public RegionCylinder setRadiusB(double radiusB) {
-        getAxis().next().next().setVectorComponent(halfHeightAndRadii, Units.HALF.clampAtom(radiusB));
+        halfHeightAndRadii.setComponent(getAxis().next().next(), Units.HALF.clampAtom(radiusB));
         return this;
     }
 

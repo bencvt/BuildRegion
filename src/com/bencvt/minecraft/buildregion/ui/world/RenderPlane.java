@@ -1,13 +1,13 @@
 package com.bencvt.minecraft.buildregion.ui.world;
 
 import libshapedraw.MinecraftAccess;
+import libshapedraw.primitive.Axis;
 import libshapedraw.primitive.ReadonlyColor;
 import libshapedraw.primitive.ReadonlyVector3;
 import libshapedraw.primitive.Vector3;
 
 import org.lwjgl.opengl.GL11;
 
-import com.bencvt.minecraft.buildregion.region.Axis;
 import com.bencvt.minecraft.buildregion.region.RegionBase;
 import com.bencvt.minecraft.buildregion.region.RegionPlane;
 

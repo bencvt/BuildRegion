@@ -1,5 +1,6 @@
 package com.bencvt.minecraft.buildregion.region;
 
+import libshapedraw.primitive.Axis;
 import libshapedraw.primitive.ReadonlyVector3;
 import libshapedraw.primitive.Vector3;
 
@@ -65,9 +66,9 @@ public class RegionSphere extends RegionBase {
 
     @Override
     public boolean expand(Axis axis, double amount) {
-        double prev = axis.getVectorComponent(radii);
-        Units.HALF.clampAtom(axis.addVectorComponent(radii, amount));
-        return axis.getVectorComponent(radii) != prev;
+        double prev = radii.getComponent(axis);
+        Units.HALF.clampAtom(radii.addComponent(axis, amount));
+        return radii.getComponent(axis) != prev;
     }
 
     @Override

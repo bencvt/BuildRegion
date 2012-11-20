@@ -1,5 +1,7 @@
 package com.bencvt.minecraft.buildregion.region;
 
+import libshapedraw.primitive.Axis;
+
 /**
  * Cardinal direction in 3 dimensions.
  * 

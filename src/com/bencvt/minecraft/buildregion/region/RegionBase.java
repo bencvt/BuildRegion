@@ -1,5 +1,6 @@
 package com.bencvt.minecraft.buildregion.region;
 
+import libshapedraw.primitive.Axis;
 import libshapedraw.primitive.ReadonlyVector3;
 import libshapedraw.primitive.Vector3;
 
@@ -91,7 +92,7 @@ public abstract class RegionBase {
     }
 
     public final RegionBase setOriginCoord(Axis axis, double value) {
-        axis.setVectorComponent(origin, value);
+        origin.setComponent(axis, value);
         onOriginUpdate();
         return this;
     }
@@ -103,7 +104,7 @@ public abstract class RegionBase {
     }
 
     public final RegionBase addOriginCoord(Axis axis, double amount) {
-        axis.addVectorComponent(origin, amount);
+        origin.addComponent(axis, amount);
         onOriginUpdate();
         return this;
     }

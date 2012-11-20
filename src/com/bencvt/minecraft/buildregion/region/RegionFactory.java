@@ -1,5 +1,6 @@
 package com.bencvt.minecraft.buildregion.region;
 
+import libshapedraw.primitive.Axis;
 import libshapedraw.primitive.ReadonlyVector3;
 import libshapedraw.primitive.Vector3;
 
@@ -48,8 +49,8 @@ public class RegionFactory {
             aabb.setOriginCoords(defaultOrigin);
         } else if (proto == original && proto.getRegionType() == RegionType.PLANE) {
             // Project player coordinates onto origin.
-            aabb.setOriginCoord(protoAxis.next(), protoAxis.next().getVectorComponent(defaultOrigin));
-            aabb.setOriginCoord(protoAxis.next().next(), protoAxis.next().next().getVectorComponent(defaultOrigin));
+            aabb.setOriginCoord(protoAxis.next(), defaultOrigin.getComponent(protoAxis.next()));
+            aabb.setOriginCoord(protoAxis.next().next(), defaultOrigin.getComponent(protoAxis.next().next()));
         }
         final ReadonlyVector3 origin = aabb.getOriginReadonly();
         final Axis squareAxis = getAxisForThinSquareCuboid(aabb);
@@ -71,9 +72,9 @@ public class RegionFactory {
             final Axis axis;
             if (squareAxis == null) {
                 axis = protoAxis;
-                axis.setVectorComponent(radii, aabb.getSize(axis)/2.0);
-                axis.next().setVectorComponent(radii, aabb.getSize(axis.next())/2.0);
-                axis.next().next().setVectorComponent(radii, aabb.getSize(axis.next().next())/2.0);
+                radii.setComponent(axis, aabb.getSize(axis)/2.0);
+                radii.setComponent(axis.next(), aabb.getSize(axis.next())/2.0);
+                radii.setComponent(axis.next().next(), aabb.getSize(axis.next().next())/2.0);
             } else {
                 // Special case: create spheres from 1-thick square cuboids
                 axis = squareAxis;

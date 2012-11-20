@@ -3,6 +3,7 @@ package com.bencvt.minecraft.buildregion.ui.window;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import libshapedraw.primitive.Axis;
 import libshapedraw.primitive.Color;
 import libshapedraw.primitive.ReadonlyColor;
 import libshapedraw.primitive.Vector3;
@@ -10,7 +11,6 @@ import net.minecraft.src.GuiButton;
 
 import com.bencvt.minecraft.buildregion.BuildMode;
 import com.bencvt.minecraft.buildregion.Controller;
-import com.bencvt.minecraft.buildregion.region.Axis;
 import com.bencvt.minecraft.buildregion.region.RegionBase;
 import com.bencvt.minecraft.buildregion.region.RegionCuboid;
 import com.bencvt.minecraft.buildregion.region.RegionCylinder;

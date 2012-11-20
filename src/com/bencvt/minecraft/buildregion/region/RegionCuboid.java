@@ -1,5 +1,6 @@
 package com.bencvt.minecraft.buildregion.region;
 
+import libshapedraw.primitive.Axis;
 import libshapedraw.primitive.ReadonlyVector3;
 import libshapedraw.primitive.Vector3;
 
@@ -110,8 +111,8 @@ public class RegionCuboid extends RegionBase {
 
     @Override
     public boolean expand(Axis axis, double amount) {
-        if (amount >= 0.0 || axis.getVectorComponent(upperCorner) > axis.getVectorComponent(lowerCorner)) {
-            axis.addVectorComponent(upperCorner, amount);
+        if (amount >= 0.0 || upperCorner.getComponent(axis) > lowerCorner.getComponent(axis)) {
+            upperCorner.addComponent(axis, amount);
             normalize();
             return true;
         }

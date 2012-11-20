@@ -1,5 +1,6 @@
 package com.bencvt.minecraft.buildregion.region;
 
+import libshapedraw.primitive.Axis;
 import libshapedraw.primitive.ReadonlyVector3;
 import libshapedraw.primitive.Vector3;
 
@@ -57,10 +58,10 @@ public class RegionPlane extends RegionBase {
         // make a 7x7x1 box
         lower.set(getOriginReadonly());
         upper.set(getOriginReadonly());
-        getAxis().next().addVectorComponent(lower, -3);
-        getAxis().next().addVectorComponent(upper,  3);
-        getAxis().next().next().addVectorComponent(lower, -3);
-        getAxis().next().next().addVectorComponent(upper,  3);
+        lower.addComponent(getAxis().next(), -3);
+        lower.addComponent(getAxis().next().next(), -3);
+        upper.addComponent(getAxis().next(), 3);
+        upper.addComponent(getAxis().next().next(), 3);
         return false;
     }
 
@@ -80,7 +81,7 @@ public class RegionPlane extends RegionBase {
     }
 
     public double getCoord() {
-        return getAxis().getVectorComponent(getOriginReadonly());
+        return getOriginReadonly().getComponent(getAxis());
     }
     public RegionPlane setCoord(double value) {
         setOriginCoord(getAxis(), value);

@@ -204,11 +204,11 @@ public class Controller {
     // ========
 
     private ReadonlyVector3 getBlockInFrontOfPlayerWork(Direction3D dir) {
-        Vector3 coords = Units.WHOLE.clamp(new Vector3(
+        return Units.WHOLE.clamp(new Vector3(
                 minecraft.thePlayer.posX,
                 minecraft.thePlayer.posY,
-                minecraft.thePlayer.posZ));
-        return dir.axis.addVectorComponent(coords, dir.axisDirection * 2.0);
+                minecraft.thePlayer.posZ))
+                .addComponent(dir.axis, dir.axisDirection*2.0);
     }
 
     private Direction3D getFacingDirection(RelativeDirection3D relDir, boolean unambiguously) {

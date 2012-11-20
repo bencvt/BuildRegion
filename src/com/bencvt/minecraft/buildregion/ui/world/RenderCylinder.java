@@ -4,6 +4,7 @@ import java.util.List;
 
 import libshapedraw.MinecraftAccess;
 import libshapedraw.animation.trident.Timeline;
+import libshapedraw.primitive.Axis;
 import libshapedraw.primitive.ReadonlyColor;
 import libshapedraw.primitive.ReadonlyVector3;
 import libshapedraw.primitive.Vector3;
@@ -12,7 +13,6 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.Cylinder;
 import org.lwjgl.util.glu.GLU;
 
-import com.bencvt.minecraft.buildregion.region.Axis;
 import com.bencvt.minecraft.buildregion.region.RegionBase;
 import com.bencvt.minecraft.buildregion.region.RegionCylinder;
 
