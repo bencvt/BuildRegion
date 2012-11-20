@@ -29,7 +29,7 @@ public class ShapeManager {
     }
 
     public void reset() {
-        libShapeDraw.getShapes().clear();
+        libShapeDraw.clearShapes();
         if (mainShape != null) {
             mainShape.cleanup();
         }
