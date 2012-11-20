@@ -1,5 +1,6 @@
 package net.minecraft.src;
 
+import libshapedraw.ApiInfo;
 import libshapedraw.LibShapeDraw;
 import libshapedraw.event.LSDEventListener;
 import libshapedraw.event.LSDGameTickEvent;
@@ -37,10 +38,24 @@ public class mod_BuildRegion extends BaseMod implements LSDEventListener {
 
     @Override
     public void load() {
+        if (!isLibShapeDrawLoaded(Controller.MIN_LIBSHAPEDRAW_VERSION)) {
+            throw new RuntimeException(
+                    getName() + " v" + getVersion() +
+                    " requires LibShapeDraw v" +
+                    Controller.MIN_LIBSHAPEDRAW_VERSION + " or greater.");
+        }
         controller = new Controller(this);
         inputManager = controller.getInputManager();
         new LibShapeDraw().addEventListener(this).verifyInitialized();
         ModLoader.setInGameHook(this, true, false); // include partial ticks
+    }
+
+    public static boolean isLibShapeDrawLoaded(String minVersion) {
+        try {
+            return ApiInfo.isVersionAtLeast(minVersion);
+        } catch (LinkageError e) {
+            return false;
+        }
     }
 
     // ========

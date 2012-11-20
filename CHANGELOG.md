@@ -2,6 +2,9 @@
 - added cylinder and sphere region types
 - added options file and GUI screen
 
+## 2.0.2
+- updated for Minecraft 1.4.5 and LibShapeDraw 1.3
+
 ## 2.0.1
 - crafting tables, buttons, doors, chests, furnaces, etc. can now be accessed
   regardless of the build region
