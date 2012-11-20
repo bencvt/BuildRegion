@@ -23,7 +23,7 @@ import com.bencvt.minecraft.buildregion.ui.world.ShapeManager;
  * @author bencvt
  */
 public class Controller {
-    public static final String MOD_VERSION = "2.0.2";
+    public static final String MOD_VERSION = "2.0.2-SNAPSHOT";
     public static final String MINECRAFT_VERSION = "1.4.5";
     public static final String MIN_LIBSHAPEDRAW_VERSION = "1.3";
 

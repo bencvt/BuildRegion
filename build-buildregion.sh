@@ -3,7 +3,7 @@ set -e
 
 # replace with version number if creating a release
 # don't forget to update Controller.MOD_VERSION and mcmod.info files
-JAR=$PWD/BuildRegion-2.0.2.zip
+JAR=$PWD/BuildRegion-2.0.2-SNAPSHOT.zip
 
 rm $JAR || true
 
