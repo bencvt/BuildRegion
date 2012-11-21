@@ -51,9 +51,6 @@ public class GuiSelectEnum<T extends Enum> extends GuiLabeledControl {
         int controlWidth = 0;
         Option prevOption = null;
         for (T value : values) {
-            if (value == com.bencvt.minecraft.buildregion.region.RegionType.CYLINDER || value == com.bencvt.minecraft.buildregion.region.RegionType.SPHERE) {
-                continue; // XXX: temporarily disable region types not ready for release
-            }
             Option option = new Option();
             option.value = value;
             option.text = LocalizedString.translate(value);
