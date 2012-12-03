@@ -14,24 +14,29 @@ for screenshots and a demo video.
 
 ## Installation
 
-Installing this mod works exactly the same as any other Minecraft client mod.
+First of all, make sure that
+[LibShapeDraw](http://www.minecraftforum.net/topic/1458931-libshapedraw/) is
+installed as it is a base requirement. You'll also need
+[ModLoader](http://www.minecraftforum.net/topic/75440-modloader/) or
+[Forge](http://www.minecraftforge.net/forum/); BuildRegion is compatible with
+either.
 
-1.  Make sure that
-    [LibShapeDraw](http://www.minecraftforum.net/topic/1458931-libshapedraw/)
-    is installed as it is a base requirement. You'll also need
-    [ModLoader](http://www.minecraftforum.net/topic/75440-modloader/) or
-    [Forge](http://www.minecraftforge.net/forum/); BuildRegion is compatible
-    with either.
-2.  Download and extract the zip for the latest release.
-3.  Patch the contents of the zip file into your `minecraft.jar`, being sure to
-    remove the `META-INF` folder.
+Next, download the zip and do one of the following, whichever you prefer:
 
-Utilities like [Magic Launcher](http://www.minecraftforum.net/topic/939149-/)
-can automate this process. Highly recommended! Manually copying `.class` files
-is for the birds.
+ +  **Use a launcher utility to add the zip (recommended).** There are many
+    launchers out there, e.g.
+    [Magic Launcher](http://www.minecraftforum.net/topic/939149-magiclauncher/).
 
-Also, if you prefer to place the zip file in the `mods/` directory instead of
-patching `minecraft.jar` directly, you can.
+OR
+
+ +  **Move the zip file to the `mods` subdirectory.** This subdirectory can
+    be found in your
+    [Minecraft directory](http://www.minecraftwiki.net/wiki/Minecraft_directory).
+
+OR
+
+ +  **Manually patch the contents of the zip file into your `minecraft.jar`.**
+    Old-school modding still works. Be sure to remove the `META-INF` folder.
 
 ## Compatibility
 
