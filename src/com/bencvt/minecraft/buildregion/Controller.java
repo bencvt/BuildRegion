@@ -33,6 +33,7 @@ public class Controller implements LSDEventListener {
     public static final String MINECRAFT_VERSION = "1.4.5";
     public static final String MIN_LIBSHAPEDRAW_VERSION = "1.3";
 
+    private static Controller instance;
     private final Minecraft minecraft;
     private final InputManager inputManager;
     private final MessageManager messageManager;
@@ -45,6 +46,11 @@ public class Controller implements LSDEventListener {
     private RegionBase prevRegion; // will never be null
 
     public Controller(mod_BuildRegion mod) {
+        if (instance != null) {
+            throw new RuntimeException("multiple instances of singleton");
+        }
+        instance = this;
+
         minecraft = Minecraft.getMinecraft();
         inputManager = new InputManager(this, mod);
         messageManager = new MessageManager();
