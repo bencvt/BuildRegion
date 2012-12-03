@@ -2,9 +2,15 @@ package com.bencvt.minecraft.buildregion;
 
 import java.io.File;
 
+import libshapedraw.LibShapeDraw;
+import libshapedraw.event.LSDEventListener;
+import libshapedraw.event.LSDGameTickEvent;
+import libshapedraw.event.LSDPreRenderEvent;
+import libshapedraw.event.LSDRespawnEvent;
 import libshapedraw.primitive.ReadonlyVector3;
 import libshapedraw.primitive.Vector3;
 import net.minecraft.client.Minecraft;
+import net.minecraft.src.PlayerControllerHooks;
 import net.minecraft.src.mod_BuildRegion;
 
 import com.bencvt.minecraft.buildregion.lang.LocalizedString;
@@ -22,7 +28,7 @@ import com.bencvt.minecraft.buildregion.ui.world.ShapeManager;
  * 
  * @author bencvt
  */
-public class Controller {
+public class Controller implements LSDEventListener {
     public static final String MOD_VERSION = "2.0.2-SNAPSHOT";
     public static final String MINECRAFT_VERSION = "1.4.5";
     public static final String MIN_LIBSHAPEDRAW_VERSION = "1.3";
@@ -34,6 +40,7 @@ public class Controller {
     private final String modTitle;
     private final File modDirectory;
     private final BuildModeValue buildMode;
+    private UpdateCheck updateCheck;
     private RegionBase curRegion;
     private RegionBase prevRegion; // will never be null
 
@@ -46,7 +53,17 @@ public class Controller {
         modDirectory = new File(Minecraft.getMinecraftDir(), "mods" + File.separator + mod.getName());
         buildMode = new BuildModeValue(BuildMode.INSIDE);
         cmdReset();
-        new BlockClickHandler(this); // no need to keep a reference; the handler registers itself
+
+        // Register for PlayerControllerHooks events.
+        new BlockClickHandler(this);
+
+        // Register for LibShapeDraw events.
+        if (!libshapedraw.ApiInfo.isVersionAtLeast(MIN_LIBSHAPEDRAW_VERSION)) {
+            throw new RuntimeException(
+                    modTitle + " requires LibShapeDraw v" +
+                    MIN_LIBSHAPEDRAW_VERSION + " or greater.");
+        }
+        new LibShapeDraw().verifyInitialized().addEventListener(this);
     }
 
     // ========
@@ -146,16 +163,45 @@ public class Controller {
     }
 
     // ========
-    // Methods called from mod_BuildRegion and BlockClickHandler to react to
-    // game events
+    // LibShapeDraw events
     // ========
 
-    public void renderHUD() {
-        messageManager.render();
+    @Override
+    public void onRespawn(LSDRespawnEvent event) {
+        if (event.isNewServer()) {
+            cmdReset();
+        } else {
+            cmdClear(false);
+        }
+        PlayerControllerHooks.installHooks();
+        if (updateCheck == null) {
+            updateCheck = new UpdateCheck(Controller.MOD_VERSION, getModDirectory());
+        }
     }
 
-    public void updatePlayerPosition(ReadonlyVector3 playerCoords) {
-        shapeManager.updateObserverPosition(playerCoords);
+    @Override
+    public void onGameTick(LSDGameTickEvent event) {
+        if (updateCheck != null && updateCheck.getResult() != null) {
+            for (String line : updateCheck.getResult().split("\n")) {
+                messageManager.chat(line);
+            }
+            updateCheck.setResult(null);
+        }
+    }
+
+    @Override
+    public void onPreRender(LSDPreRenderEvent event) {
+        shapeManager.updateObserverPosition(event.getPlayerCoords());
+    }
+
+    // ========
+    // Other methods to react to game events, called from mod_BuildRegion and
+    // BlockClickHandler
+    // ========
+
+    public void onRenderTick() {
+        inputManager.handleInput(false);
+        messageManager.render();
     }
 
     public void notifyDenyClick() {

@@ -1,30 +1,17 @@
 package net.minecraft.src;
 
-import libshapedraw.ApiInfo;
-import libshapedraw.LibShapeDraw;
-import libshapedraw.event.LSDEventListener;
-import libshapedraw.event.LSDGameTickEvent;
-import libshapedraw.event.LSDPreRenderEvent;
-import libshapedraw.event.LSDRespawnEvent;
 import net.minecraft.client.Minecraft;
 
 import com.bencvt.minecraft.buildregion.Controller;
-import com.bencvt.minecraft.buildregion.UpdateCheck;
-import com.bencvt.minecraft.buildregion.ui.InputManager;
 
 /**
- * Front-end class that hooks into various APIs: LibShapeDraw, ModLoader, and
- * PlayerControllerHooks.
- * <p>
- * This class does the bare minimum of processing: it simply passes everything
- * along to the Controller, InputManager, and UpdateCheck wherever possible.
+ * Front-end class, does the bare minimum of processing. Simply instantiates
+ * the Controller and passes ModLoader events to it.
  * 
  * @author bencvt
  */
-public class mod_BuildRegion extends BaseMod implements LSDEventListener {
+public class mod_BuildRegion extends BaseMod {
     private Controller controller;
-    private InputManager inputManager;
-    private UpdateCheck updateCheck;
 
     @Override
     public String getName() {
@@ -38,72 +25,18 @@ public class mod_BuildRegion extends BaseMod implements LSDEventListener {
 
     @Override
     public void load() {
-        if (!isLibShapeDrawLoaded(Controller.MIN_LIBSHAPEDRAW_VERSION)) {
-            throw new RuntimeException(
-                    getName() + " v" + getVersion() +
-                    " requires LibShapeDraw v" +
-                    Controller.MIN_LIBSHAPEDRAW_VERSION + " or greater.");
-        }
         controller = new Controller(this);
-        inputManager = controller.getInputManager();
-        new LibShapeDraw().addEventListener(this).verifyInitialized();
         ModLoader.setInGameHook(this, true, false); // include partial ticks
     }
 
-    public static boolean isLibShapeDrawLoaded(String minVersion) {
-        try {
-            return ApiInfo.isVersionAtLeast(minVersion);
-        } catch (LinkageError e) {
-            return false;
-        }
-    }
-
-    // ========
-    // ModLoader events
-    // ========
-
     @Override
     public boolean onTickInGame(float partialTickTime, Minecraft minecraft) {
-        inputManager.handleInput(false);
-        controller.renderHUD();
+        controller.onRenderTick();
         return true;
     }
 
     @Override
     public void keyboardEvent(KeyBinding key) {
-        inputManager.handleKeyboardEvent(key, false);
-    }
-
-    // ========
-    // LibShapeDraw events
-    // ========
-
-    @Override
-    public void onRespawn(LSDRespawnEvent event) {
-        if (event.isNewServer()) {
-            controller.cmdReset();
-        } else {
-            controller.cmdClear(false);
-        }
-        PlayerControllerHooks.installHooks();
-        if (updateCheck == null) {
-            updateCheck = new UpdateCheck(Controller.MOD_VERSION, controller.getModDirectory());
-        }
-    }
-
-    @Override
-    public void onGameTick(LSDGameTickEvent event) {
-        if (updateCheck != null && updateCheck.getResult() != null) {
-            GuiNewChat chat = Minecraft.getMinecraft().ingameGUI.getChatGUI();
-            for (String line : updateCheck.getResult().split("\n")) {
-                chat.printChatMessage(line);
-            }
-            updateCheck.setResult(null);
-        }
-    }
-
-    @Override
-    public void onPreRender(LSDPreRenderEvent event) {
-        controller.updatePlayerPosition(event.getPlayerCoords());
+        controller.getInputManager().handleKeyboardEvent(key, false);
     }
 }
