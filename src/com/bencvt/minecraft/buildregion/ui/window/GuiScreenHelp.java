@@ -109,7 +109,17 @@ public class GuiScreenHelp extends GuiScreenBase {
                 }
             }
 
-            @Override
+            /**
+             * This method is defined only by Forge, allowing mods to make a
+             * custom background for each slot. By overriding it with an empty
+             * method, the original background remains -- in our case, a
+             * nice darkened view of the game world.
+             * <p>
+             * This method will never be called if we're using ModLoader
+             * instead, as vanilla Minecraft hard-codes slot backgrounds. So
+             * our help screen will have an interesting background when using
+             * Forge, and a plain black/dirt background when not.
+             */
             protected void drawContainerBackground(Tessellator tess) {
                 // do nothing
             }
