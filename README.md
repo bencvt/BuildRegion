@@ -31,7 +31,7 @@ OR
 
  +  **Move the zip file to the `mods` subdirectory.** This subdirectory can
     be found in your
-    [Minecraft directory](http://www.minecraftwiki.net/wiki/Minecraft_directory).
+    [Minecraft directory](http://www.minecraftwiki.net/wiki/.minecraft).
 
 OR
 
