@@ -28,5 +28,16 @@ instructions in the main `README.md` document.
 
 ## Planned features
 
+The following features will likely be added to BuildRegion eventually. Features
+listed near the top of this list are coming sooner rather than later.
+
+ +  Sphere and cylinder region types
+ +  Speed optimizations: use OpenGL VBOs wherever possible
+ +  Allow user to specify a different modifier key (Shift/Alt/Ctrl/Cmd)
+ +  Remember the last region type used between game sessions
+ +  Add alternate cuboid selection method: specify corners (ala WorldEdit)
+ +  Basic integration with server-side plugins like WorldGuard, etc.
  +  Allow half-height horizontal regions for slab and step placement
  +  A [schematic](http://www.minecraftwiki.net/wiki/Schematic) region type
+ +  Cut/copy/paste functionality, *only* for single-player worlds with cheats
+    enabled, or for servers with an appropriate plugin (e.g. WorldEdit)
